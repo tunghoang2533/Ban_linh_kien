@@ -5,7 +5,7 @@ require_once 'core/Database.php';
 
 use App\Core\Database as Database;
 use App\Models\ProductModel;
-use App\Controllers\BannerController;
+require_once __DIR__ . '/admin/controllers/BannerController.php';
 
 $db           = Database::getInstance();
 $productModel = new ProductModel($db);
