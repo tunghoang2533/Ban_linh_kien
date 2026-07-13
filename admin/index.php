@@ -99,11 +99,13 @@ $handlerMap = [
 ];
 
 if (isset($handlerMap[$page])) {
+    // Handler page tự include layout trong file handler
     require __DIR__ . '/handlers/' . $handlerMap[$page];
+} else {
+    // Dashboard mặc định
+    include __DIR__ . '/views/layout/header.php';
+    include __DIR__ . '/views/layout/sidebar.php';
+    include __DIR__ . '/views/dashboard/index.php';
+    include __DIR__ . '/views/layout/footer.php';
 }
 
-// ── Fallback: Dashboard (mặc định) ─────────────────────────
-include __DIR__ . '/views/layout/header.php';
-include __DIR__ . '/views/layout/sidebar.php';
-include __DIR__ . '/views/dashboard/index.php';
-include __DIR__ . '/views/layout/footer.php';
