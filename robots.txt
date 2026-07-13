@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /_scripts/
+Disallow: /logs/
+Disallow: /core/
+Disallow: /app/
+Disallow: /vendor/
+Disallow: /?page=
+Disallow: /thanhtoan.php
+Disallow: /thanhtoan_success.php
+Disallow: /giohang.php
+Disallow: /taikhoan.php
+Disallow: /quenmatkhau.php
+
+# Cho phép crawl các trang sản phẩm, danh mục, tin tức
+Allow: /index.php
+Allow: /sanpham.php
+Allow: /chitietsanpham.php
+Allow: /tintuc.php
+Allow: /lienhe.php
+Allow: /gioithieu.php
+Allow: /chinh_sach.php
+Allow: /dieukhoan.php
+Allow: /baohanh.php
+
+# Tốc độ crawl
+Crawl-delay: 1
+
+# Sitemap
+Sitemap: <?php echo defined('BASE_URL') ? BASE_URL : 'http://localhost/Ban_linh_kien/'; ?>sitemap.php

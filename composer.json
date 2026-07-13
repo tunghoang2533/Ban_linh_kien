@@ -1,0 +1,36 @@
+{
+    "name": "ban-linh-kien/web",
+    "description": "Web bán linh kiện máy tính — Đồ án tốt nghiệp CNTT",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Controllers\\": "app/controllers/",
+            "App\\Models\\": "app/models/",
+            "App\\Helpers\\": "app/helpers/",
+            "App\\Core\\": "core/"
+        },
+        "classmap": [
+            "admin/controllers/",
+            "admin/handlers/"
+        ]
+    },
+    "autoload-dev": {},
+    "scripts": {
+        "post-autoload-dump": [],
+        "phpstan": "phpstan analyse",
+        "phpstan:level": "phpstan analyse --level"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,5 @@
+# Thư mục logs — Application Logs
+
+File này giúp git theo dõi thư mục `logs/` mà không commit file log thực tế.
+
+Các file `.log` và `.bak` đã được thêm vào `.gitignore` — chỉ thư mục trống được commit.

@@ -1,0 +1,391 @@
+/* ====================================================
+   PC Store — Design System v2.0
+   Base tokens, reset & global utilities
+   Font: Outfit (Google Fonts) — loaded in header
+   Accent: Electric Blue #2563eb on cool near-white
+   ==================================================== */
+
+/* ── Design Tokens ── */
+:root {
+    /* Color — background */
+    --bg-page:      #f8fafc;
+    --bg-surface:   #ffffff;
+    --bg-muted:     #f1f5f9;
+    --bg-subtle:    #e8f0fe;
+
+    /* Color — text */
+    --txt-primary:   #0f172a;
+    --txt-secondary: #475569;
+    --txt-tertiary:  #94a3b8;
+    --txt-link:      #2563eb;
+
+    /* Color — brand */
+    --accent:        #2563eb;
+    --accent-hover:  #1d4ed8;
+    --accent-light:  #dbeafe;
+    --accent-ring:   rgba(37, 99, 235, 0.18);
+
+    /* Color — states */
+    --danger:        #ef4444;
+    --danger-light:  #fee2e2;
+    --success:       #16a34a;
+    --success-light: #dcfce7;
+    --warn:          #f59e0b;
+    --warn-light:    #fef3c7;
+
+    /* Color — borders */
+    --border:        #e2e8f0;
+    --border-strong: #cbd5e1;
+
+    /* Radius scale — one system, used everywhere */
+    --r-sm:   6px;
+    --r-md:   12px;
+    --r-lg:   16px;
+    --r-xl:   24px;
+    --r-pill: 999px;
+
+    /* Shadow scale */
+    --shadow-sm:  0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+    --shadow-md:  0 4px 16px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
+    --shadow-lg:  0 12px 32px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.06);
+    --shadow-xl:  0 24px 56px rgba(15,23,42,0.16), 0 8px 24px rgba(15,23,42,0.08);
+
+    /* Spacing — 8px base grid */
+    --space-1:  4px;
+    --space-2:  8px;
+    --space-3:  12px;
+    --space-4:  16px;
+    --space-5:  20px;
+    --space-6:  24px;
+    --space-8:  32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+
+    /* Typography */
+    --font-sans: 'Outfit', 'Segoe UI', Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* Transitions */
+    --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Base Reset ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--txt-primary);
+    background-color: var(--bg-page);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--txt-primary);
+}
+
+p { color: var(--txt-secondary); line-height: 1.7; }
+
+a {
+    color: var(--txt-link);
+    text-decoration: none;
+    transition: color var(--transition);
+}
+a:hover { color: var(--accent-hover); }
+
+img { display: block; max-width: 100%; }
+
+ul, ol { list-style: none; }
+
+button, input, select, textarea {
+    font-family: var(--font-sans);
+    font-size: inherit;
+}
+
+/* ── Layout Container ── */
+.container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 var(--space-5);
+}
+
+/* Legacy section container (kept for compatibility) */
+section {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 var(--space-5);
+    box-sizing: border-box;
+}
+
+/* ── Flex Utilities ── */
+.flexContain {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ── HR ── */
+hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: var(--space-6) 0;
+}
+
+/* ── Divider ── */
+.clear { clear: both; line-height: 0; }
+
+/* ── Group clearfix ── */
+.group::before, .group::after { content: ""; display: table; }
+.group::after { clear: both; }
+.group { zoom: 1; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-muted); }
+::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: var(--r-pill);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--txt-tertiary); }
+
+/* ── Toast / Alert ── */
+#alert {
+    z-index: 9999;
+    display: block;
+    position: fixed;
+    bottom: var(--space-10);
+    right: var(--space-5);
+    padding: 14px 20px;
+    background: var(--txt-primary);
+    border-radius: var(--r-lg);
+    opacity: 0;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-xl);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+    transform: translateY(8px);
+    pointer-events: none;
+    max-width: 320px;
+}
+#alert.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+#closebtn {
+    margin-left: var(--space-4);
+    color: rgba(255,255,255,0.7);
+    font-weight: 700;
+    float: right;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color var(--transition);
+}
+#closebtn:hover { color: #fff; }
+
+/* ── Back to Top Button ── */
+#goto-top-page {
+    position: fixed;
+    bottom: var(--space-5);
+    right: var(--space-5);
+    z-index: 100;
+    background: var(--txt-primary);
+    color: #fff;
+    font-size: 16px;
+    border-radius: var(--r-md);
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    transition: background var(--transition), transform var(--transition), opacity var(--transition);
+    opacity: 0.85;
+    border: none;
+    text-decoration: none;
+}
+#goto-top-page:hover {
+    background: var(--accent);
+    transform: translateY(-3px);
+    opacity: 1;
+}
+
+/* ── Tooltip ── */
+.tooltip { position: absolute; display: inline-block; bottom: 5px; right: 5px; }
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background: var(--txt-primary);
+    color: #fff;
+    text-align: center;
+    border-radius: var(--r-md);
+    padding: 6px 10px;
+    font-size: 12px;
+    position: absolute;
+    z-index: 21;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -70px;
+    opacity: 0;
+    transition: opacity var(--transition);
+    pointer-events: none;
+    box-shadow: var(--shadow-md);
+}
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%; left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--txt-primary) transparent transparent transparent;
+}
+.tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+
+/* ── Ping dot animation ── */
+.dot {
+    width: 10px; height: 10px;
+    background: var(--danger);
+    border-radius: 50%;
+    display: block;
+}
+.dot .ping {
+    border: 1px solid var(--danger);
+    width: 10px; height: 10px;
+    opacity: 1;
+    background: rgba(239,68,68,.2);
+    border-radius: 50%;
+    animation: sonar 1.25s linear infinite;
+    display: block;
+    margin: -1px 0 0 -1px;
+}
+@keyframes sonar {
+    0%   { opacity: 1; transform: scale(1); }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+/* ── Pagination ── */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-8) 0 var(--space-12);
+    flex-wrap: wrap;
+}
+.pagination a,
+.pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 var(--space-3);
+    border-radius: var(--r-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--txt-secondary);
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    text-decoration: none;
+    transition: all var(--transition);
+}
+.pagination a:hover {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.pagination .current,
+.pagination span.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ── Badge ── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: var(--r-pill);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.badge-new     { background: var(--accent-light); color: var(--accent); }
+.badge-sale    { background: var(--danger-light);  color: var(--danger); }
+.badge-hot     { background: var(--warn-light);    color: var(--warn); }
+
+/* ── Button base ── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 10px 22px;
+    border-radius: var(--r-md);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--transition);
+    white-space: nowrap;
+    line-height: 1;
+}
+.btn:active { transform: scale(0.98); }
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+.btn-primary:hover {
+    background: var(--accent-hover);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--txt-secondary);
+    border: 1.5px solid var(--border);
+}
+.btn-ghost:hover {
+    background: var(--bg-muted);
+    color: var(--txt-primary);
+    border-color: var(--border-strong);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: #fff;
+}
+.btn-danger:hover { background: #dc2626; color: #fff; }

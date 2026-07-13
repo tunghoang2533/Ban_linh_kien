@@ -1,0 +1,2 @@
+# Chặn TẤT CẢ truy cập HTTP vào thư mục scripts/migrations
+Require all denied

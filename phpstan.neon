@@ -1,0 +1,76 @@
+parameters:
+    level: 1
+
+    # ── Paths to scan ────────────────────────────────────────
+    paths:
+        - app/
+        - core/
+        - admin/
+        - .
+
+    # ── Exclude external / generated ─────────────────────────
+    excludePaths:
+        - vendor/
+        - _scripts/
+        - logs/
+        - .git(?)
+        - node_modules/(?)
+        - public/
+        - .htaccess
+        - robots.txt
+        - sitemap.php
+
+    # ── Ignore errors ────────────────────────────────────────
+    ignoreErrors:
+        # Globals & superglobals
+        - '#Undefined variable: \$_SESSION#'
+        - '#Undefined variable: \$_GET#'
+        - '#Undefined variable: \$_POST#'
+        - '#Undefined variable: \$_SERVER#'
+        - '#Undefined variable: \$_FILES#'
+        - '#Undefined global variable#'
+
+        # Admin global variables (defined in admin/index.php)
+        - '#Undefined variable: \$db#'
+        - '#Undefined variable: \$admin#'
+        - '#Undefined variable: \$page#'
+        - '#Undefined variable: \$action#'
+        - '#Undefined variable: \$message#'
+        - '#Undefined variable: \$error#'
+        - '#Undefined variable: \$successMessage#'
+        - '#Undefined variable: \$product#'
+        - '#Undefined variable: \$editId#'
+        - '#Undefined variable: \$showAddForm#'
+        - '#Undefined variable: \$productId#'
+        - '#Undefined variable: \$chatAdmin#'
+
+        # Dynamic method calls via AdminController::__call
+        - '#Call to an undefined method AdminController::.+#'
+        - '#Call to an undefined method .+::getOrderItems#'
+
+        # class_alias backward compat — PHPStan chưa hiểu alias động
+        - '#Instantiated class (BuildPcController|CartController|ChatController|CheckoutController|Database|AssetHelper|AuditHelper|CacheHelper|CsrfHelper|EmailHelper|Logger|LoyaltyHelper|NotificationHelper|RateLimiter|UploadHelper|VNPayHelper|AddressModel|ConversationModel|MessageModel|OrderModel|PasswordResetModel|ProductCommentModel|ProductModel|ProductVariantModel|UserModel|VoucherModel|WishlistModel|VoucherController) not found#'
+
+    reportUnmatchedIgnoredErrors: false
+
+    # ── Bootstrap file ──────────────────────────────────────
+    bootstrapFiles:
+        - config.php
+
+    # ── Treat @phpDoc types as not certain ─────────────────
+    treatPhpDocTypesAsCertain: false
+
+    # ── Known runtime constants ─────────────────────────────
+    dynamicConstantNames:
+        - DB_HOST
+        - DB_NAME
+        - DB_USER
+        - DB_PASS
+        - BASE_URL
+        - SITE_NAME
+        - APP_DEBUG
+        - SESSION_TIMEOUT
+
+    # ── Class alias stubs ───────────────────────────────────
+    stubFiles:
+        - phpstan.stubs
