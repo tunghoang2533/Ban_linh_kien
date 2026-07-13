@@ -1,0 +1,23 @@
+cat > .antigravityignore << 'EOF'
+vendor/
+cache/
+public/img/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.svg
+*.min.css
+*.min.js
+logs/
+*.log
+php_server.log
+_scripts/
+.git/
+*.cache
+*.cache.expires
+composer.lock
+package-lock.json
+EOF
