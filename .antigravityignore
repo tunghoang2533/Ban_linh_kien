@@ -1,4 +1,3 @@
-cat > .antigravityignore << 'EOF'
 vendor/
 cache/
 public/img/
@@ -20,4 +19,3 @@ _scripts/
 *.cache.expires
 composer.lock
 package-lock.json
-EOF

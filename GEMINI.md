@@ -1,5 +1,3 @@
-cat > GEMINI.md << 'EOF'
-
 \# GEMINI.md — Global Rules cho Antigravity
 
 
@@ -75,6 +73,4 @@ cat > GEMINI.md << 'EOF'
 \- Guest checkout phải hoạt động
 
 \- Test: php -S localhost:8082 router.php
-
-EOF
 
