@@ -1,9 +1,40 @@
+#!/usr/bin/env python3
+"""Script tạo 2 file .antigravityignore và GEMINI.md cho project Ban Linh Kien"""
+import os
+
+# ── .antigravityignore ──
+antigravity_content = """\
+vendor/
+cache/
+public/img/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.svg
+*.min.css
+*.min.js
+logs/
+*.log
+php_server.log
+_scripts/
+.git/
+*.cache
+*.cache.expires
+composer.lock
+package-lock.json
+"""
+
+# ── GEMINI.md ──
+gemini_content = """\
 # GEMINI.md — Global Rules cho Antigravity
 
 ## Project: Ban Linh Kiện
 - Stack: PHP 8.0+ thuần, MySQL, jQuery, PDO
 - Architecture: Custom MVC với PSR-4 autoloader
-- Namespace: App\Controllers, App\Models, App\Helpers, App\Core
+- Namespace: App\\Controllers, App\\Models, App\\Helpers, App\\Core
 
 ## Cấu trúc thư mục
 - app/controllers/ — Controllers
@@ -36,3 +67,20 @@
 - Không thay đổi DB schema nếu không cần
 - Guest checkout phải hoạt động
 - Test: php -S localhost:8082 router.php
+"""
+
+# Ghi file
+with open('.antigravityignore', 'w', encoding='utf-8', newline='\n') as f:
+    f.write(antigravity_content)
+
+with open('GEMINI.md', 'w', encoding='utf-8', newline='\n') as f:
+    f.write(gemini_content)
+
+print("✅ Đã tạo thành công:")
+print("   - .antigravityignore")
+print("   - GEMINI.md")
+print()
+print("Chạy tiếp các lệnh sau để push lên GitHub:")
+print("   git add .antigravityignore GEMINI.md")
+print("   git commit -m \"fix: correct antigravity config files\"")
+print("   git push")
