@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'session_check.php';
 require_once 'config.php';
 require_once 'core/Database.php';
@@ -10,7 +10,7 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-$db     = (new Database())->connect();
+$db     = Database::getInstance();
 $userId = (int)$_SESSION['user']['id'];
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 

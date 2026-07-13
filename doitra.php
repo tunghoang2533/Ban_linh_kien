@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'session_check.php';
 require_once 'config.php';
 require_once 'core/Database.php';
@@ -12,7 +12,7 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 // AJAX endpoint for order items (before any output)
 if (isset($_GET['order_id']) && empty($_POST)) {

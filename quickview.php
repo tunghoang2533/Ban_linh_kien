@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * quickview.php — AJAX endpoint cho Product Quick View
  * 
@@ -24,7 +24,7 @@ if ($id <= 0) {
     exit();
 }
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 $productModel = new ProductModel($db);
 
 $product = $productModel->getProductById($id);

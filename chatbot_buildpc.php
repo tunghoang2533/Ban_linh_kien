@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Chatbot Build PC - Groq AI (LLaMA 3.3 70B)
  */
@@ -10,7 +10,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once 'core/Database.php';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 // ── Cấu hình Groq ──────────────────────────────────────────────
 define('GROQ_API_KEY', getenv('GROQ_API_KEY') ?: '');

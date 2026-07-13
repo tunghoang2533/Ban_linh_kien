@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace App\Controllers;
 
 use App\Models\ProductModel;
@@ -27,12 +27,12 @@ class BuildPcController {
     public function index() {
         $buildCategories = $this->categories;
         $productModel    = $this->productModel; // pass vào view
-        include 'app/views/header.php';
+        include __DIR__ . '/../views/header.php';
         
         // Đã sửa tên file view thành buildpc_view.php
-        include 'app/views/buildpc/buildpc_view.php'; 
+        include __DIR__ . '/../views/buildpc/buildpc_view.php'; 
         
-        include 'app/views/footer.php';
+        include __DIR__ . '/../views/footer.php';
     }
 
     public function select() {
@@ -53,11 +53,12 @@ class BuildPcController {
             // Gọi model để lấy danh sách sản phẩm (có lọc socket nếu cần)
             $products = $this->productModel->getProductsByCategory($cat_id, $required_socket);
 
-            include 'app/views/header.php';
-            include 'app/views/buildpc/select_view.php';
-            include 'app/views/footer.php';
+            include __DIR__ . '/../views/header.php';
+            include __DIR__ . '/../views/buildpc/select_view.php';
+            include __DIR__ . '/../views/footer.php';
         } else {
-            header("Location: buildpc.php");
+            header("Location: " . BASE_URL . "buildpc.php");
+            exit();
         }
     }
 
@@ -72,7 +73,7 @@ class BuildPcController {
                 // Kiểm tra tồn kho
                 if ((int)$product['quantity'] <= 0) {
                     $_SESSION['buildpc_error'] = "Sản phẩm <strong>{$product['name']}</strong> đã hết hàng, không thể thêm vào cấu hình.";
-                    header("Location: buildpc.php");
+                    header("Location: " . BASE_URL . "buildpc.php");
                     exit();
                 }
 
@@ -100,14 +101,16 @@ class BuildPcController {
                 ];
             }
         }
-        header("Location: buildpc.php");
+        header("Location: " . BASE_URL . "buildpc.php");
+        exit();
     }
 
     public function remove() {
         if (isset($_GET['cat_id'])) {
             unset($_SESSION['buildpc'][$_GET['cat_id']]);
         }
-        header("Location: buildpc.php");
+        header("Location: " . BASE_URL . "buildpc.php");
+        exit();
     }
 
     public function addToCart() {
@@ -123,7 +126,7 @@ class BuildPcController {
             }
             if (!empty($stockErrors)) {
                 $_SESSION['buildpc_error'] = "⚠️ Không thể thêm vào giỏ — các món sau đã hết hàng:<br>• " . implode('<br>• ', $stockErrors);
-                header("Location: buildpc.php");
+                header("Location: " . BASE_URL . "buildpc.php");
                 exit();
             }
 
@@ -138,10 +141,11 @@ class BuildPcController {
                 }
             }
             unset($_SESSION['buildpc']);
-            header("Location: giohang.php");
+            header("Location: " . BASE_URL . "giohang.php");
             exit();
         }
-        header("Location: buildpc.php");
+        header("Location: " . BASE_URL . "buildpc.php");
+        exit();
     }
 
     public function buyNow() {
@@ -157,7 +161,7 @@ class BuildPcController {
             }
             if (!empty($stockErrors)) {
                 $_SESSION['buildpc_error'] = "⚠️ Không thể mua ngay — các món sau đã hết hàng:<br>• " . implode('<br>• ', $stockErrors);
-                header("Location: buildpc.php");
+                header("Location: " . BASE_URL . "buildpc.php");
                 exit();
             }
 
@@ -172,10 +176,11 @@ class BuildPcController {
                 }
             }
             unset($_SESSION['buildpc']);
-            header("Location: thanhtoan.php");
+            header("Location: " . BASE_URL . "thanhtoan.php");
             exit();
         }
-        header("Location: buildpc.php");
+        header("Location: " . BASE_URL . "buildpc.php");
+        exit();
     }
 }
 ?>

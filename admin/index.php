@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * ═══════════════════════════════════════════════════════════════
  * ADMIN FRONT CONTROLLER — với Middleware Pipeline
@@ -32,7 +32,7 @@ require_once __DIR__ . '/middleware/PermissionMiddleware.php';
 require_once __DIR__ . '/middleware/AuditMiddleware.php';
 
 // ── Shared instances & variables ───────────────────────────
-$db = (new Database())->connect();
+$db = Database::getInstance();
 $admin = new AdminController($db);
 $chatAdmin = new AdminChatController($db);
 

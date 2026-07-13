@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'session_check.php';
 require_once 'config.php';
 require_once 'core/Database.php';
@@ -18,6 +18,6 @@ try { CsrfHelper::verify(); } catch (Exception $e) {
     exit;
 }
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 $cartController = new CartController($db);
 $cartController->reorder();

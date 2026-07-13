@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Runner: Back-in-Stock Alert migration
  * Usage:   php _scripts/run_back_in_stock.php
@@ -11,7 +11,7 @@ require_once $projectRoot . '/core/Database.php';
 echo "🔧 Running Back-in-Stock migration...\n";
 
 try {
-    $db = (new Database())->connect();
+    $db = Database::getInstance();
     $sql = file_get_contents(__DIR__ . '/migration_back_in_stock.sql');
 
     $statements = explode(';', $sql);

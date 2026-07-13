@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Email Queue Worker
  * ==================
@@ -34,7 +34,7 @@ define('RUNNING_AS_CLI', true);
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/core/Database.php';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 // ── Cấu hình SMTP từ shop_settings ──
 function getSmtpConfig($db) {

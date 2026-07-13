@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace App\Controllers;
 
 use App\Helpers\CsrfHelper;
@@ -125,9 +125,9 @@ class UserController {
             } // end if (!error CSRF)
         } // end if (POST)
 
-        include 'app/views/header.php';
-        include 'app/views/user/taikhoan_view.php';
-        include 'app/views/footer.php';
+        include __DIR__ . '/../views/header.php';
+        include __DIR__ . '/../views/user/taikhoan_view.php';
+        include __DIR__ . '/../views/footer.php';
     }
 
     public function changePassword() {
@@ -170,8 +170,8 @@ class UserController {
             } // end if (!error)
         } // end if (POST)
 
-        include 'app/views/header.php';
-        include 'app/views/user/doimatkhau_view.php';
-        include 'app/views/footer.php';
+        include __DIR__ . '/../views/header.php';
+        include __DIR__ . '/../views/user/doimatkhau_view.php';
+        include __DIR__ . '/../views/footer.php';
     }
 }

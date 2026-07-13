@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'session_check.php';
 require_once 'config.php';
 require_once 'core/Database.php';
@@ -7,7 +7,7 @@ use App\Core\Database as Database;
 use App\Controllers\CartController;
 use App\Controllers\VoucherController;
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 $cartController    = new CartController($db);
 $voucherController = new VoucherController($db);
 

@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 // Fix missing columns from migration v4
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../core/Database.php';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 $alterStatements = [
     "ALTER TABLE `shipping_orders` ADD COLUMN `carrier_status` VARCHAR(100) DEFAULT NULL AFTER `tracking_code`",

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Patch Migration - Thêm các cột còn thiếu cho products, users và bảng mới
  * Chạy 1 lần tại: http://localhost/Ban_linh_kien/patch_migration.php
@@ -6,7 +6,7 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/core/Database.php';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 $results = [];
 
 function patch($db, $label, callable $fn) {

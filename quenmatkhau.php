@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'session_check.php';
 require_once 'config.php';
 require_once 'core/Database.php';
@@ -14,7 +14,7 @@ $success = '';
 $step = isset($_GET['token']) ? 'reset' : (isset($_GET['done']) ? 'done' : 'request');
 $token = $_GET['token'] ?? '';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try { CsrfHelper::verify(); } catch (Exception $e) { $error = $e->getMessage(); }

@@ -1,7 +1,7 @@
-<?php
+﻿<?php
 require_once 'config.php';
 require_once 'core/Database.php';
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 $added = 0;
 $errors = [];

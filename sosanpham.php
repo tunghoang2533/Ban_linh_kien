@@ -1,7 +1,7 @@
-<?php
+﻿<?php
 require_once 'config.php';
 require_once 'core/Database.php';
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 $ids = array_filter(array_map('intval', explode(',', $_GET['ids'] ?? '')));
 $ids = array_slice(array_unique(array_values($ids)), 0, 3);

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * sitemap.php — Dynamic XML Sitemap
  *
@@ -12,7 +12,7 @@
 require_once 'config.php';
 require_once 'core/Database.php';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 // Output XML header — phải trước mọi echo khác
 header('Content-Type: application/xml; charset=utf-8');

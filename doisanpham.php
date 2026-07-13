@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'session_check.php';
 require_once 'config.php';
 require_once 'core/Database.php';
@@ -6,7 +6,7 @@ require_once 'core/Database.php';
 use App\Core\Database as Database;
 use App\Models\ProductModel;
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 $productModel = new ProductModel($db);
 
 $ids = isset($_GET['ids']) ? array_map('intval', explode(',', $_GET['ids'])) : [];

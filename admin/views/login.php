@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = 'Vui lÃ²ng nháº­p Ä‘áº§y Ä‘á»§ tÃªn Ä‘Äƒng nháº­p vÃ  máº­t kháº©u.';
     } else {
         // XÃ¡c thá»±c qua database â€” khÃ´ng cÃ²n hardcode
-        $db        = (new Database())->connect();
+        $db        = Database::getInstance();
         $userModel = new UserModel($db);
         $user      = $userModel->login($username, $password);
 

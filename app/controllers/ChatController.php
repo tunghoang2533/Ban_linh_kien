@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace App\Controllers;
 
 use App\Models\ConversationModel;
@@ -32,9 +32,9 @@ class ChatController {
         // Mark admin messages as read
         $this->messageModel->markAsRead($conversation['id'], false);
 
-        include 'app/views/header.php';
-        include 'app/views/user/chat_view.php';
-        include 'app/views/footer.php';
+        include __DIR__ . '/../views/header.php';
+        include __DIR__ . '/../views/user/chat_view.php';
+        include __DIR__ . '/../views/footer.php';
     }
 
     public function sendMessage() {

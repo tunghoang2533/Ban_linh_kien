@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 require_once 'config.php';
 require_once 'core/Database.php';
 require_once 'admin/controllers/ShippingAdminController.php';
 
 header('Content-Type: application/json');
-$db   = (new Database())->connect();
+$db   = Database::getInstance();
 $ctrl = new ShippingAdminController($db);
 
 $province = trim($_POST['province'] ?? '');

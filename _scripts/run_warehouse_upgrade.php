@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Warehouse Upgrade Migration Script
  * Chạy: http://localhost/Ban_linh_kien/run_warehouse_upgrade.php
@@ -6,7 +6,7 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/core/Database.php';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $steps = [];

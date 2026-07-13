@@ -10,7 +10,21 @@ require_once __DIR__ . '/../config.php';
 class Database {
     private $conn = null;
 
-    // Hàm kết nối Database sử dụng PDO
+    /** Singleton instance — dùng chung trong cùng 1 request */
+    private static $instance = null;
+
+    /**
+     * Trả về PDO connection duy nhất cho request hiện tại.
+     * Tạo mới nếu chưa có, reuse nếu đã có.
+     */
+    public static function getInstance(): ?PDO {
+        if (self::$instance === null) {
+            self::$instance = (new self())->connect();
+        }
+        return self::$instance;
+    }
+
+    // Hàm kết nối Database sử dụng PDO — giữ nguyên để backward-compatible
     public function connect() {
         try {
             // Dùng constant từ config.php (đã đọc .env)

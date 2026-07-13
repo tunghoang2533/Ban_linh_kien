@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 // Migration script - run once
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/core/Database.php';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 $errors = [];
 $success = [];

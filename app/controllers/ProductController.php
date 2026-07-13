@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace App\Controllers;
 
 use App\Helpers\CsrfHelper;
@@ -46,9 +46,9 @@ class ProductController {
                 // Giới hạn tối đa 12 sản phẩm
                 $_SESSION['recently_viewed'] = array_slice($_SESSION['recently_viewed'], 0, 12);
 
-                include 'app/views/header.php';
-                include 'app/views/products/detail_view.php';
-                include 'app/views/footer.php';
+                include __DIR__ . '/../views/header.php';
+                include __DIR__ . '/../views/products/detail_view.php';
+                include __DIR__ . '/../views/footer.php';
             } else {
                 echo "Sản phẩm không tồn tại!";
             }

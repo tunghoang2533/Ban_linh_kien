@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace App\Controllers;
 
 use App\Helpers\CsrfHelper;
@@ -151,12 +151,14 @@ class CheckoutController {
                 unset($_SESSION['applied_voucher']);
 
                 // === GỬI THÔNG BÁO ĐẶT HÀNG THÀNH CÔNG ===
-                NotificationHelper::orderPlaced(
-                    $this->db,
-                    $_SESSION['user']['id'],
-                    $orderId,
-                    BASE_URL
-                );
+                if (!$isGuest) {
+                    NotificationHelper::orderPlaced(
+                        $this->db,
+                        $_SESSION['user']['id'],
+                        $orderId,
+                        BASE_URL
+                    );
+                }
 
                 // === INSERT EMAIL XÁC NHẬN VÀO QUEUE ===
                 $this->queueOrderConfirmEmail(
@@ -172,14 +174,16 @@ class CheckoutController {
                 );
 
                 // === TÍCH ĐIỂM LOYALTY ===
-                try {
-                    $earnTotal = $cartTotal + $shippingFee - $discountAmount;
-                    $earned    = LoyaltyHelper::earnPoints($this->db, $_SESSION['user']['id'], $orderId, $earnTotal);
-                    if ($earned > 0) {
-                        $_SESSION['order_earned_points'] = $earned;
+                if (!$isGuest) {
+                    try {
+                        $earnTotal = $cartTotal + $shippingFee - $discountAmount;
+                        $earned    = LoyaltyHelper::earnPoints($this->db, $_SESSION['user']['id'], $orderId, $earnTotal);
+                        if ($earned > 0) {
+                            $_SESSION['order_earned_points'] = $earned;
+                        }
+                    } catch (Exception $e) {
+                        error_log('Loyalty earnPoints failed: ' . $e->getMessage());
                     }
-                } catch (Exception $e) {
-                    error_log('Loyalty earnPoints failed: ' . $e->getMessage());
                 }
 
                 // Fix #8: trang thành công thân thiện (không dùng inline echo thô)
@@ -203,9 +207,9 @@ class CheckoutController {
         // Truyền voucher đã áp dụng (từ session nếu có) sang view
         $appliedVoucher = $_SESSION['applied_voucher'] ?? null;
 
-        include 'app/views/header.php';
-        include 'app/views/cart/checkout_view.php';
-        include 'app/views/footer.php';
+        include __DIR__ . '/../views/header.php';
+        include __DIR__ . '/../views/cart/checkout_view.php';
+        include __DIR__ . '/../views/footer.php';
     }
 
     /**

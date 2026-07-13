@@ -37,14 +37,13 @@ class UserModel {
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
     
     // Chèn người dùng mới
-    $sql = "INSERT INTO users (username, password, fullname, full_name, email) VALUES (:u, :p, :f, :fn, :e)";
+    $sql = "INSERT INTO users (username, password, full_name, email) VALUES (:u, :p, :fn, :e)";
     $stmt = $this->db->prepare($sql);
     $result = $stmt->execute([
-        'u' => $username,
-        'p' => $hashedPassword,
-        'f' => $fullname,
+        'u'  => $username,
+        'p'  => $hashedPassword,
         'fn' => $fullname,
-        'e' => $email
+        'e'  => $email
     ]);
 
     return $result ? true : "Lỗi đăng ký, vui lòng thử lại!";

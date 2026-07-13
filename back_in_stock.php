@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Back-in-Stock Alert — AJAX Endpoint
  * POST /back_in_stock.php
@@ -50,7 +50,7 @@ if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // ── Kết nối DB & kiểm tra sản phẩm ─────────────────────────
-$db = (new Database())->connect();
+$db = Database::getInstance();
 $productModel = new ProductModel($db);
 
 $product = $productModel->getProductById($productId);

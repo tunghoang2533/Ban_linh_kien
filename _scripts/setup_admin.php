@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * setup_admin.php — Tạo / cập nhật tài khoản Admin trong database
  *
@@ -30,7 +30,7 @@ if (!in_array($clientIp, ['127.0.0.1', '::1', 'localhost'])) {
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/core/Database.php';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 
 // Hash mật khẩu bằng bcrypt (giống UserModel::register)
 $hashedPassword = password_hash($ADMIN_PASSWORD, PASSWORD_BCRYPT);

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace App\Controllers;
 
 use App\Models\OrderModel;
@@ -18,9 +18,9 @@ class CartController {
 
     // Hiển thị trang giỏ hàng
     public function index() {
-        include 'app/views/header.php';
-        include 'app/views/cart/cart_view.php';
-        include 'app/views/footer.php';
+        include __DIR__ . '/../views/header.php';
+        include __DIR__ . '/../views/cart/cart_view.php';
+        include __DIR__ . '/../views/footer.php';
     }
 
     // Thêm sản phẩm vào giỏ

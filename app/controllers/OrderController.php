@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace App\Controllers;
 
 use App\Models\OrderModel;
@@ -31,9 +31,9 @@ class OrderController {
 
         $orders = $this->orderModel->getOrdersByUserIdPaginated($userId, $page, $perPage, $status);
 
-        include 'app/views/header.php';
-        include 'app/views/orders/history_view.php';
-        include 'app/views/footer.php';
+        include __DIR__ . '/../views/header.php';
+        include __DIR__ . '/../views/orders/history_view.php';
+        include __DIR__ . '/../views/footer.php';
     }
 
     public function detail() {
@@ -54,9 +54,9 @@ class OrderController {
 
         $orderItems = $this->orderModel->getOrderItems($orderId);
 
-        include 'app/views/header.php';
-        include 'app/views/orders/order_detail_view.php';
-        include 'app/views/footer.php';
+        include __DIR__ . '/../views/header.php';
+        include __DIR__ . '/../views/orders/order_detail_view.php';
+        include __DIR__ . '/../views/footer.php';
     }
 
     public function cancel() {

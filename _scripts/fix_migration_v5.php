@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 /**
  * Fix migration v5 — handle column existence checks for MySQL < 8.0
  */
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../core/Database.php';
 
-$db = (new Database())->connect();
+$db = Database::getInstance();
 $db->exec('SET NAMES utf8mb4');
 
 // Helper: check if column exists
