@@ -1,0 +1,25 @@
+# Environment — KHÔNG commit file này!
+.env
+
+# OS junk
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Composer
+vendor/
+composer.lock
+
+# Application logs (thư mục logs/ được track, nhưng content thì không)
+logs/*.log
+logs/*.bak
+
+# Sensitive config backup
+config.php.bak
+*.php.bak

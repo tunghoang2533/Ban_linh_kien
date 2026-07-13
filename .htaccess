@@ -1,0 +1,72 @@
+# ============================================================
+# .htaccess — Bảo vệ file nhạy cảm, ép HTTPS (production)
+# ============================================================
+
+# 1. Bật rewrite engine
+RewriteEngine On
+
+# 2. Chặn truy cập trực tiếp đến các file/thư mục quan trọng
+#    - config.php  : chứa DB credentials
+#    - core/        : Database class
+#    - app/         : controllers, models, helpers
+#    - .env         : environment variables
+#    - .git         : version control
+#    - _scripts/    : migration scripts (chỉ chạy qua CLI)
+#    - logs/        : application logs
+RewriteRule ^(config\.php|core/|app/|\.env|\.git|_scripts/|logs/) - [F,L]
+
+# 3. Chặn truy cập các file mở rộng nhạy cảm
+<FilesMatch "\.(env|sql|log|md|lock|bak|swp|swo|conf)$">
+    Require all denied
+</FilesMatch>
+
+# 4. Ngoại lệ: cho phép đọc robots.txt và sitemap.xml
+<Files "robots.txt">
+    Require all granted
+</Files>
+<Files "sitemap.xml">
+    Require all granted
+</Files>
+<Files "sitemap.php">
+    Require all granted
+</Files>
+
+# 5. Chặn truy cập file ẩn (bắt đầu bằng dấu chấm)
+# NOTE: <DirectoryMatch> không dùng được trong .htaccess
+# Dùng RewriteRule thay thế:
+RewriteRule (^|/)\. - [F,L]
+
+# 6. Bật HTTPS ở production (bỏ comment khi có SSL)
+# <IfModule mod_headers.c>
+#     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+# </IfModule>
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 7. Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# 8. Chặn list directory (không cho xem cấu trúc folder)
+Options -Indexes
+
+# 9. Ngăn PHP chạy trong thư mục upload/img
+# NOTE: <Directory> không dùng được trong .htaccess
+# Dùng RewriteRule thay thế:
+RewriteRule ^public/img/.*\.php$ - [F,L]
+
+# 10. Cache static assets 1 tuần (CSS, JS, hình ảnh)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                  "access plus 1 week"
+    ExpiresByType application/javascript    "access plus 1 week"
+    ExpiresByType image/jpeg                "access plus 1 month"
+    ExpiresByType image/png                 "access plus 1 month"
+    ExpiresByType image/webp                "access plus 1 month"
+    ExpiresByType image/svg+xml             "access plus 1 week"
+    ExpiresByType font/woff2                "access plus 1 month"
+</IfModule>

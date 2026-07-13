@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * PHPStan stub — Định nghĩa class alias để PHPStan hiểu
+ * Các alias này được tạo động trong config.php qua class_alias().
+ * 
+ * Mỗi dòng:    old_global_name => new_PSR4_name
+ */
+
+// ── Core ───────────────────────────────────────────────────
+class Database extends App\Core\Database {}
+
+// ── Helpers ────────────────────────────────────────────────
+class AssetHelper extends App\Helpers\AssetHelper {}
+class AuditHelper extends App\Helpers\AuditHelper {}
+class CacheHelper extends App\Helpers\CacheHelper {}
+class CsrfHelper extends App\Helpers\CsrfHelper {}
+class EmailHelper extends App\Helpers\EmailHelper {}
+class Logger extends App\Helpers\Logger {}
+class LoyaltyHelper extends App\Helpers\LoyaltyHelper {}
+class NotificationHelper extends App\Helpers\NotificationHelper {}
+class RateLimiter extends App\Helpers\RateLimiter {}
+class UploadHelper extends App\Helpers\UploadHelper {}
+class VNPayHelper extends App\Helpers\VNPayHelper {}
+
+// ── Models ──────────────────────────────────────────────────
+class AddressModel extends App\Models\AddressModel {}
+class ConversationModel extends App\Models\ConversationModel {}
+class MessageModel extends App\Models\MessageModel {}
+class OrderModel extends App\Models\OrderModel {}
+class PasswordResetModel extends App\Models\PasswordResetModel {}
+class ProductCommentModel extends App\Models\ProductCommentModel {}
+class ProductModel extends App\Models\ProductModel {}
+class ProductVariantModel extends App\Models\ProductVariantModel {}
+class UserModel extends App\Models\UserModel {}
+class VoucherModel extends App\Models\VoucherModel {}
+class WishlistModel extends App\Models\WishlistModel {}
+
+// ── Controllers (không alias các class trùng tên admin) ────
+class BuildPcController extends App\Controllers\BuildPcController {}
+class CartController extends App\Controllers\CartController {}
+class ChatController extends App\Controllers\ChatController {}
+class CheckoutController extends App\Controllers\CheckoutController {}
+class VoucherController extends App\Controllers\VoucherController {}
