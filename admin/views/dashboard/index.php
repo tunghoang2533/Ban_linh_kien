@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $stats      = $admin->getDashboardStats();
 $revenueData= $admin->getRevenueByMonth(6);
 $statusData = $admin->getOrdersByStatus();

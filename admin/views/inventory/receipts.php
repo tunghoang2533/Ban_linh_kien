@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Phiáº¿u Nháº­p Kho â€” Danh sÃ¡ch phiáº¿u nháº­p
  * View: admin/views/inventory/receipts.php

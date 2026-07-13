@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin SEO View
 if (!isset($settingsCtrl)) {
     require_once __DIR__ . '/../../controllers/SettingsController.php';

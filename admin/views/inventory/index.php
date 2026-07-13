@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Lấy dữ liệu — 1 query stats thay vì 3 lần gọi riêng
 $invFilter = $_GET['filter'] ?? 'all';
 $invSearch  = trim($_GET['search'] ?? '');

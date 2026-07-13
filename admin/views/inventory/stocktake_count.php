@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Kiểm kê từng sản phẩm trong 1 phiên
  * URL: ?page=inventory&action=stocktake_count&id=X

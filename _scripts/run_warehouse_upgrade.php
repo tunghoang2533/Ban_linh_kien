@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Warehouse Upgrade Migration Script
  * Chạy: http://localhost/Ban_linh_kien/run_warehouse_upgrade.php

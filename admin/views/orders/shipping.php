@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Admin: Vận đơn GHN/GHTK Mock UI
  * Available: $orderId, $orderDetail, $shippingOrder (null nếu chưa có)

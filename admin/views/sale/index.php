@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $allProducts = $admin->getAllProductsWithDiscount();
 $saleProducts = array_filter($allProducts, fn($p) => $p['discount_percent'] > 0);
 ?>

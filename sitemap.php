@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * sitemap.php — Dynamic XML Sitemap
  *

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $allVouchers = $admin->getAllVouchers();
 $voucherStats = $admin->getVoucherStats();
 $editVoucherId = isset($_GET['edit_id']) ? intval($_GET['edit_id']) : null;

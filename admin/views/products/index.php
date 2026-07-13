@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $products = $admin->getProducts();
 $editId = $editId ?? null;
 // Lấy bản đồ cảnh báo cho tất cả sản phẩm

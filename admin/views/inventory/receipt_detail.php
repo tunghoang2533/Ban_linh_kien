@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Chi tiết Phiếu Nhập Kho + Duyệt/Hủy
  * URL: ?page=inventory&action=receipt_detail&id=X

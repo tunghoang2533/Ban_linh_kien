@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin CMS View
 require_once __DIR__ . '/../../controllers/CmsController.php';
 if (!isset($cmsCtrl)) $cmsCtrl = new CmsController($db);

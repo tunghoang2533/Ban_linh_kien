@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin Settings View
 $settings = $settingsCtrl->getAllSettings();
 $s = $settings; // shorthand

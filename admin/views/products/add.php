@@ -1,4 +1,4 @@
-﻿<main class="admin-main">
+<main class="admin-main">
     <div class="page-header">
         <h1>Thêm sản phẩm</h1>
         <a href="?page=products" class="btn btn-secondary">

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin Suppliers View
 $supplierCtrl = new SupplierController($db);
 

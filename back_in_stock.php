@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Back-in-Stock Alert — AJAX Endpoint
  * POST /back_in_stock.php

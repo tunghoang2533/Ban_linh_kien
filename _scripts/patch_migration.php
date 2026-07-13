@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Patch Migration - Thêm các cột còn thiếu cho products, users và bảng mới
  * Chạy 1 lần tại: http://localhost/Ban_linh_kien/patch_migration.php

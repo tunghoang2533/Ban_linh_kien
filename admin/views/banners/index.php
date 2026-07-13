@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Trang quản lý Banner Slideshow
  * Cho phép: xem danh sách, thêm mới, sửa, xóa, bật/tắt, kéo thả thứ tự

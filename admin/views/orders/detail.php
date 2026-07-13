@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $orderDetail = isset($orderDetail) ? $orderDetail : null;
 $action      = isset($_GET['action']) ? $_GET['action'] : 'detail';
 $isEdit      = ($action === 'edit');

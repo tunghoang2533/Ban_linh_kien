@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $logType      = $_GET['type']       ?? 'all';
 $logReason    = $_GET['reason']     ?? 'all';
 $logProductId = isset($_GET['product_id']) ? intval($_GET['product_id']) : null;

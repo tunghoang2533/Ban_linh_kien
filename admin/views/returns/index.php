@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin Returns View
 $returnCtrl = new ReturnAdminController($db);
 

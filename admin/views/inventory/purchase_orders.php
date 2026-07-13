@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Danh sách Purchase Orders — Đặt hàng nhà cung cấp
  * URL: ?page=inventory&action=purchase_orders

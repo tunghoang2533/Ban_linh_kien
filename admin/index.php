@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * ═══════════════════════════════════════════════════════════════
  * ADMIN FRONT CONTROLLER — với Middleware Pipeline

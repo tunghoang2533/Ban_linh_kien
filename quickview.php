@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * quickview.php — AJAX endpoint cho Product Quick View
  * 

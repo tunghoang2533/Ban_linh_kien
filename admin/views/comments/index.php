@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $productComments      = isset($productComments) && is_array($productComments) ? $productComments : [];
 $commentStats         = isset($commentStats)     && is_array($commentStats)    ? $commentStats    : [];
 $commentFilterStatus  = $commentFilterStatus ?? 'all';

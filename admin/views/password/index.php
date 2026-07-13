@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*
  * Trang đổi mật khẩu Admin
  * URL: ?page=password

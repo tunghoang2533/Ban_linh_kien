@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Admin: Email Queue Manager
  * URL: ?page=settings&action=email_queue

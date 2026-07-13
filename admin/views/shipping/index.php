@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin Shipping View
 // Lưu ý: POST/GET handling và redirect đã được xử lý trong admin/index.php
 // trước khi HTML được render để tránh lỗi "headers already sent".

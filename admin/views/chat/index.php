@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $conversations = isset($conversations) && is_array($conversations) ? $conversations : [];
 $productComments = isset($productComments) && is_array($productComments) ? $productComments : [];
 ?>

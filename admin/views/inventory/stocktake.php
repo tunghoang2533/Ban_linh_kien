@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Quản lý Kiểm Kê Kho (Stocktake Sessions)
  * URL: ?page=inventory&action=stocktake

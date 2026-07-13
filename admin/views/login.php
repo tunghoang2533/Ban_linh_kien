@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once dirname(dirname(__FILE__)) . '/session_check.php';
 
 $projectRoot = dirname(dirname(dirname(__FILE__)));

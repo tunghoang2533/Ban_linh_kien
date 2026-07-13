@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Admin: Quản lý điểm tích lũy khách hàng
  * URL: admin/?page=loyalty

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Form tạo Phiếu Nhập Kho — có thể nhập nhiều sản phẩm cùng lúc
  * URL: ?page=inventory&action=receipt_form

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Runner: Back-in-Stock Alert migration
  * Usage:   php _scripts/run_back_in_stock.php

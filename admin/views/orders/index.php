@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // ── Lấy filter từ GET ──
 $filters = [
     'q'         => trim($_GET['q']         ?? ''),

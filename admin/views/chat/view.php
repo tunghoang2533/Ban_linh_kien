@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $userName    = isset($userName)       ? $userName       : 'User';
 $messages    = isset($messages) && is_array($messages) ? $messages : [];
 $conversationId = isset($conversationId) ? $conversationId : 0;

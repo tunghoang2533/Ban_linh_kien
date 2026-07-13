@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin Reports View - Chart.js
 $reportCtrl = new ReportController($db);
 

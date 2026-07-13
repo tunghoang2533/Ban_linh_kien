@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Lấy danh sách ảnh phụ của sản phẩm đang sửa
 $existingExtraImages = [];
 if (!empty($product['id'])) {

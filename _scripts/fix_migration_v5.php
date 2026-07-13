@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Fix migration v5 — handle column existence checks for MySQL < 8.0
  */

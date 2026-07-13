@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Form tạo Purchase Order (Đặt hàng NCC)
  * URL: ?page=inventory&action=po_form

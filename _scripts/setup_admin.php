@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * setup_admin.php — Tạo / cập nhật tài khoản Admin trong database
  *

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Admin: Quản lý Serial Number
  * Bảng: serial_numbers (id, product_id, serial, status, order_item_id, receipt_item_id, note, created_at)

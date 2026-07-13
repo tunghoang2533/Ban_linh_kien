@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin Notifications View
 $notifCtrl = new NotificationAdminController($db);
 

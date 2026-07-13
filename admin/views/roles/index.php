@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin Roles View
 $roleCtrl = new RoleController($db);
 

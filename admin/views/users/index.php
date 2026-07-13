@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $users = $admin->getUsers();
 // Đếm số user bị khoá
 $blockedCount = array_sum(array_column($users, 'is_blocked'));

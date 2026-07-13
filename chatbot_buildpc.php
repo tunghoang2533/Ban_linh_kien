@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Chatbot Build PC - Groq AI (LLaMA 3.3 70B)
  */

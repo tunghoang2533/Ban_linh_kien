@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*
  * Quản lý Danh mục & Thương hiệu
  * URL: ?page=categories
