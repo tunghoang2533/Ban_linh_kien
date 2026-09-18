@@ -389,3 +389,173 @@ hr {
     color: #fff;
 }
 .btn-danger:hover { background: #dc2626; color: #fff; }
+
+/* ── Dark Mode Theme ── */
+[data-theme="dark"] {
+    --bg-page:      #0f172a;
+    --bg-surface:   #1e293b;
+    --bg-muted:     #334155;
+    --bg-subtle:    #0f172a;
+
+    --txt-primary:   #f8fafc;
+    --txt-secondary: #cbd5e1;
+    --txt-tertiary:  #64748b;
+    --txt-link:      #3b82f6;
+
+    --border:        #334155;
+    --border-strong: #475569;
+
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md:  0 4px 16px rgba(0,0,0,0.4);
+    --shadow-lg:  0 12px 32px rgba(0,0,0,0.5);
+    --shadow-xl:  0 24px 56px rgba(0,0,0,0.6);
+}
+
+/* ── Dark Mode Class-specific Overrides ── */
+[data-theme="dark"] body {
+    background-color: var(--bg-page);
+    color: var(--txt-primary);
+}
+[data-theme="dark"] header {
+    background: var(--bg-surface) !important;
+    border-bottom-color: var(--border) !important;
+    box-shadow: 0 1px 0 var(--border), var(--shadow-md) !important;
+}
+[data-theme="dark"] .search-bar form {
+    border-color: var(--border) !important;
+    background: var(--bg-page) !important;
+}
+[data-theme="dark"] .search-bar form:focus-within {
+    border-color: var(--accent) !important;
+    background: var(--bg-surface) !important;
+}
+[data-theme="dark"] .search-bar input {
+    color: var(--txt-primary) !important;
+}
+[data-theme="dark"] .avatar-btn {
+    border-color: var(--border) !important;
+    background: var(--bg-muted) !important;
+}
+[data-theme="dark"] .avatar-btn .fa-user-circle {
+    color: var(--txt-secondary) !important;
+}
+[data-theme="dark"] .dropdown-content {
+    background: var(--bg-surface) !important;
+    border-color: var(--border) !important;
+    box-shadow: var(--shadow-xl) !important;
+}
+[data-theme="dark"] .dropdown-greeting {
+    border-bottom-color: var(--border) !important;
+}
+[data-theme="dark"] .dropdown-greeting-info small {
+    color: var(--txt-secondary) !important;
+}
+[data-theme="dark"] .dropdown-greeting-info strong {
+    color: var(--txt-primary) !important;
+}
+[data-theme="dark"] .dropdown-greeting-avatar-icon {
+    background: var(--bg-muted) !important;
+}
+[data-theme="dark"] .dropdown-greeting-avatar-icon .fa {
+    color: var(--accent) !important;
+}
+[data-theme="dark"] .dropdown-content li a {
+    color: var(--txt-secondary) !important;
+}
+[data-theme="dark"] .dropdown-content li a:hover {
+    background: var(--bg-muted) !important;
+    color: var(--txt-primary) !important;
+}
+[data-theme="dark"] .dropdown-content li a i {
+    color: var(--txt-tertiary) !important;
+}
+[data-theme="dark"] .dropdown-content li a:hover i {
+    color: var(--accent) !important;
+}
+[data-theme="dark"] .dropdown-divider {
+    background: var(--border) !important;
+}
+
+/* Page content overrides */
+[data-theme="dark"] .sanPham {
+    background: var(--bg-surface) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .sanPham .nameAndPrice * {
+    color: var(--txt-primary) !important;
+}
+[data-theme="dark"] .info_product {
+    background: var(--bg-surface) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .info_product h2 {
+    color: var(--txt-primary) !important;
+    border-bottom-color: var(--border) !important;
+    background: var(--bg-muted) !important;
+}
+[data-theme="dark"] .info li {
+    border-top-color: var(--border) !important;
+}
+[data-theme="dark"] .info li p {
+    color: var(--txt-secondary) !important;
+    background: var(--bg-muted) !important;
+    border-right-color: var(--border) !important;
+}
+[data-theme="dark"] .info li div {
+    color: var(--txt-primary) !important;
+}
+
+/* Cart / Table overrides */
+[data-theme="dark"] .listSanPham tr:nth-of-type(even) { background-color: var(--bg-page) !important; }
+[data-theme="dark"] .listSanPham tr:not(:last-child):hover { background-color: var(--bg-muted) !important; }
+[data-theme="dark"] .listSanPham tr:last-child { background-color: var(--bg-muted) !important; }
+[data-theme="dark"] .listSanPham td, [data-theme="dark"] .listSanPham th { border-color: var(--border) !important; }
+[data-theme="dark"] .listSanPham .soluong input { background-color: var(--bg-page) !important; color: var(--txt-primary) !important; }
+[data-theme="dark"] .listSanPham th { background-color: var(--accent) !important; color: white !important; }
+
+/* Additional layout overrides */
+[data-theme="dark"] .chitietSanpham {
+    background: var(--bg-surface) !important;
+    border-color: var(--border) !important;
+    color: var(--txt-primary) !important;
+}
+[data-theme="dark"] .sanpham-container {
+    background: var(--bg-surface) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+    color: var(--txt-primary) !important;
+}
+[data-theme="dark"] p, [data-theme="dark"] span:not(.badge):not(.notif-count), [data-theme="dark"] label {
+    color: var(--txt-secondary) !important;
+}
+[data-theme="dark"] strong {
+    color: var(--txt-primary) !important;
+}
+[data-theme="dark"] input:not([type="submit"]):not([type="button"]):not([type="checkbox"]), [data-theme="dark"] select, [data-theme="dark"] textarea {
+    background-color: var(--bg-page) !important;
+    color: var(--txt-primary) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .card {
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .card-body {
+    color: var(--txt-primary) !important;
+}
+[data-theme="dark"] .modal-content {
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border) !important;
+    color: var(--txt-primary) !important;
+}
+[data-theme="dark"] footer {
+    background-color: var(--bg-surface) !important;
+    border-top: 1px solid var(--border) !important;
+}
+[data-theme="dark"] footer * {
+    color: var(--txt-secondary) !important;
+}
+[data-theme="dark"] footer a:hover {
+    color: var(--accent) !important;
+}

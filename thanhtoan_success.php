@@ -30,7 +30,7 @@ include 'app/views/header.php';
     border-radius: 28px;
     box-shadow: 0 22px 80px rgba(22,163,74,.13);
     overflow: hidden;
-    max-width: 560px; width: 100%;
+    max-width: 640px; width: 100%;
     text-align: center;
 }
 .success-header {
@@ -126,13 +126,57 @@ include 'app/views/header.php';
                     <?php endif; ?>
                 </span>
             </div>
-            <?php if ($paymentMethod === 'bank'): ?>
-            <div style="background:#eff6ff;border-radius:12px;padding:14px 16px;margin:10px 0;font-size:13.5px;color:#1d4ed8;text-align:left;line-height:1.7;">
-                <strong>📋 Thông tin chuyển khoản:</strong><br>
-                Ngân hàng: <strong>Vietcombank</strong><br>
-                Số tài khoản: <strong>1234567890</strong><br>
-                Tên tài khoản: <strong>CONG TY PC STORE</strong><br>
-                Nội dung CK: <strong>DH<?php echo $orderId; ?> – <?php echo htmlspecialchars($_SESSION['user']['fullname'] ?? ''); ?></strong>
+            <?php if ($paymentMethod === 'bank'): 
+                $bankId      = getenv('BANK_ID')           ?: 'vcb';
+                $bankAccount = getenv('BANK_ACCOUNT')       ?: '1234567890';
+                $bankName    = getenv('BANK_ACCOUNT_NAME')  ?: 'CONG TY PC STORE';
+                $transferContent = 'DH' . $orderId . ' ' . preg_replace('/[^a-zA-Z0-9 ]/', '', $_SESSION['user']['fullname'] ?? 'khachhang');
+                $qrAmount    = (int)$finalTotal;
+                $qrUrl = 'https://img.vietqr.io/image/' . urlencode($bankId) . '-' . urlencode($bankAccount)
+                       . '-compact2.png'
+                       . '?amount=' . $qrAmount
+                       . '&addInfo=' . urlencode($transferContent)
+                       . '&accountName=' . urlencode($bankName);
+            ?>
+            <div style="background:#eff6ff;border-radius:16px;padding:20px;margin:12px 0;text-align:center;">
+                <p style="margin:0 0 14px;font-size:14px;font-weight:700;color:#1d4ed8;">
+                    📱 Quét mã QR để chuyển khoản ngay
+                </p>
+                <div style="display:inline-block;background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.10);">
+                    <img src="<?php echo htmlspecialchars($qrUrl); ?>"
+                         alt="QR chuyển khoản"
+                         style="display:block;width:260px;height:260px;border-radius:8px;"
+                         onerror="this.style.display='none';document.getElementById('qr-fallback').style.display='block';">
+                </div>
+                <div id="qr-fallback" style="display:none;background:#fff;border-radius:12px;padding:14px;margin-top:8px;font-size:13px;color:#475569;">
+                    ⚠️ Không tải được QR. Vui lòng chuyển khoản thủ công bên dưới.
+                </div>
+
+                <div style="margin-top:16px;background:#fff;border-radius:12px;padding:14px 18px;text-align:left;font-size:13.5px;color:#1e293b;line-height:2;border:1px solid #bfdbfe;">
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #dbeafe;padding-bottom:6px;margin-bottom:6px;">
+                        <span style="color:#64748b;">Ngân hàng</span>
+                        <strong><?php echo strtoupper(htmlspecialchars($bankId)); ?></strong>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #dbeafe;padding-bottom:6px;margin-bottom:6px;">
+                        <span style="color:#64748b;">Số tài khoản</span>
+                        <strong style="font-size:15px;letter-spacing:.05em;"><?php echo htmlspecialchars($bankAccount); ?></strong>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #dbeafe;padding-bottom:6px;margin-bottom:6px;">
+                        <span style="color:#64748b;">Tên tài khoản</span>
+                        <strong><?php echo htmlspecialchars($bankName); ?></strong>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #dbeafe;padding-bottom:6px;margin-bottom:6px;">
+                        <span style="color:#64748b;">Số tiền</span>
+                        <strong style="color:#dc2626;font-size:15px;"><?php echo number_format($finalTotal, 0, ',', '.'); ?>₫</strong>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                        <span style="color:#64748b;flex-shrink:0;margin-right:8px;">Nội dung CK</span>
+                        <strong style="color:#1d4ed8;text-align:right;"><?php echo htmlspecialchars($transferContent); ?></strong>
+                    </div>
+                </div>
+                <p style="margin:10px 0 0;font-size:12px;color:#64748b;">
+                    ⚠️ Vui lòng chuyển khoản <strong>đúng số tiền và nội dung</strong> để đơn hàng được xử lý nhanh nhất.
+                </p>
             </div>
             <?php endif; ?>
 

@@ -1,13 +1,16 @@
 <?php
 namespace App\Controllers;
 
+use App\Helpers\AbandonedCartHelper;
 use App\Models\OrderModel;
 use App\Models\ProductModel;
 
 class CartController {
-    private $productModel; // Khai báo thuộc tính để sử dụng trong toàn class
+    private $productModel;
+    private $db;
 
     public function __construct($db) {
+        $this->db = $db;
         $this->productModel = new ProductModel($db);
 
         // Khởi tạo giỏ hàng nếu chưa có
@@ -16,8 +19,24 @@ class CartController {
         }
     }
 
+    /**
+     * Ghi nhận hoạt động giỏ hàng vào bảng abandoned_carts
+     */
+    private function trackCartActivity(): void {
+        if (empty($_SESSION['cart'])) return;
+        try {
+            $helper = new AbandonedCartHelper($this->db);
+            $userId = $_SESSION['user']['id'] ?? null;
+            $sessionId = session_id();
+            $helper->track($userId, $sessionId, $_SESSION['cart']);
+        } catch (\Exception $e) {
+            error_log('Abandoned cart tracking failed: ' . $e->getMessage());
+        }
+    }
+
     // Hiển thị trang giỏ hàng
     public function index() {
+        $this->trackCartActivity();
         include __DIR__ . '/../views/header.php';
         include __DIR__ . '/../views/cart/cart_view.php';
         include __DIR__ . '/../views/footer.php';
@@ -78,6 +97,7 @@ class CartController {
             unset($_SESSION['buy_now_id']);
         }
 
+        $this->trackCartActivity();
         header("Location: " . BASE_URL . "giohang.php");
         exit();
     }
@@ -87,6 +107,7 @@ class CartController {
         if (isset($_GET['id'])) {
             unset($_SESSION['cart'][$_GET['id']]);
         }
+        $this->trackCartActivity();
         header("Location: " . BASE_URL . "giohang.php");
         exit();
     }
@@ -120,7 +141,20 @@ class CartController {
         $price    = (float)$_SESSION['cart'][$id]['price'];
         $subtotal = $price * $qty;
 
+        // Track sau khi cập nhật
+        $this->trackCartActivity();
+
         echo json_encode(['ok' => true, 'qty' => $qty, 'subtotal' => $subtotal]);
+        exit();
+    }
+
+    /**
+     * Lightweight tracking endpoint — gọi từ JS beacon, không render full page
+     */
+    public function trackCart(): void {
+        header('Content-Type: application/json');
+        $this->trackCartActivity();
+        echo json_encode(['ok' => true, 't' => time()]);
         exit();
     }
 

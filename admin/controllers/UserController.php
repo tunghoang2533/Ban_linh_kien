@@ -61,5 +61,12 @@ class UserController {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
+
+    /** Cập nhật địa chỉ người dùng (từ users table) */
+    public function updateUserAddress($id, $addressText) {
+        $sql = "UPDATE users SET address = :addr WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':addr' => $addressText, ':id' => $id]);
+    }
 }
 ?>

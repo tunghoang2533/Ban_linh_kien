@@ -96,6 +96,7 @@ $handlerMap = [
     'flash_sale'   => 'other.php',
     'abandoned_carts' => 'other.php',
     'shipping_carriers' => 'other.php',
+    'combos'       => 'combos.php',
 ];
 
 if (isset($handlerMap[$page])) {

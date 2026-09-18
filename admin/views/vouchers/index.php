@@ -8,7 +8,7 @@ $allUsers = $admin->getAllUsers();
 $GLOBALS['allUsers'] = $allUsers;
 $filterPersonal = isset($_GET['personal']) ? intval($_GET['personal']) : 0;
 
-// Lá»c theo personal náº¿u cáº§n
+// Lọc theo personal nếu cần
 if ($filterPersonal) {
     $vouchers = array_filter($allVouchers, fn($v) => !empty($v['user_id']));
 } else {

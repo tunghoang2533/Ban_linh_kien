@@ -209,6 +209,17 @@ $totalRevenue = array_sum(array_column(
             <h1>Quản lý đơn hàng</h1>
             <p>Tìm kiếm, lọc và xử lý tất cả đơn hàng</p>
         </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <a href="?page=export&type=orders_excel&<?php echo http_build_query(array_filter([
+                'q' => $filters['q'],
+                'status' => $filters['status'] !== 'all' ? $filters['status'] : '',
+                'date_from' => $filters['date_from'],
+                'date_to' => $filters['date_to'],
+            ])); ?>"
+               class="btn btn-success" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
+                <i class="fas fa-file-excel"></i> Xuất Excel
+            </a>
+        </div>
     </div>
 
     <?php if (!empty($successMessage)): ?>

@@ -18,18 +18,18 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Vui lòng nhập mã voucher và tên.';
     } else {
         if ($admin->createVoucher($_POST)) {
-            // Náº¿u lÃ  voucher cÃ¡ nhÃ¢n, gá»­i thÃ´ng bÃ¡o
+            // Nếu là voucher cá nhân, gửi thông báo
             if (!empty($_POST['user_id'])) {
                 try {
                     $personalUserId = intval($_POST['user_id']);
                     $voucherCode = strtoupper(trim($_POST['code']));
                     $userInfo = $db->prepare("SELECT full_name FROM users WHERE id=?");
                     $userInfo->execute([$personalUserId]);
-                    $userName = $userInfo->fetchColumn() ?: 'NgÆ°á»i dÃ¹ng';
-                    // Gá»­i thÃ´ng bÃ¡o trong app
+                    $userName = $userInfo->fetchColumn() ?: 'Người dùng';
+                    // Gửi thông báo trong app
                     NotificationHelper::send($db, $personalUserId,
-                        'ðŸŽ‰ Báº¡n nháº­n Ä‘Æ°á»£c voucher Ä‘áº·c quyá»n!',
-                        'MÃ£ ' . $voucherCode . ' - ' . htmlspecialchars(trim($_POST['name'])) . '. HÃ£y sá»­ dá»¥ng ngay!',
+                        '🎉 Bạn nhận được voucher đặc quyền!',
+                        'Mã ' . $voucherCode . ' - ' . htmlspecialchars(trim($_POST['name'])) . '. Hãy sử dụng ngay!',
                         'promotion',
                         BASE_URL . 'giohang.php?voucher=' . $voucherCode
                     );

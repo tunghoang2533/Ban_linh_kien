@@ -34,6 +34,22 @@ class CsrfHelper {
     }
 
     /**
+     * Trả về CSRF token hiện tại dạng string thuần (tạo mới nếu chưa có)
+     */
+    public static function getToken(): string {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (empty($_SESSION['csrf_token']) || empty($_SESSION['csrf_time'])) {
+            self::regenerate();
+        }
+        if (time() - $_SESSION['csrf_time'] > 3600) {
+            self::regenerate();
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    /**
      * Xác thực token gửi lên
      *
      * @throws Exception nếu token không hợp lệ

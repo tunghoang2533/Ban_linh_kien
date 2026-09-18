@@ -466,4 +466,105 @@ class ProductModel {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         });
     }
+
+    // ==========================================
+    // GỢI Ý SẢN PHẨM: "CÓ THỂ BẠN CŨNG THÍCH"
+    // ==========================================
+    public function getRecommendedProducts($limit = 8, $userId = null, array $recentlyViewedIds = []) {
+        $db = $this->db;
+        $recentlyViewedIds = array_filter(array_map('intval', $recentlyViewedIds));
+        $userId = $userId ? (int)$userId : null;
+        $limit = max(1, (int)$limit);
+
+        $preferredCatIds = [];
+        $preferredBrandIds = [];
+
+        // 1. Phân tích danh mục & thương hiệu từ sản phẩm đã xem gần đây
+        if (!empty($recentlyViewedIds)) {
+            $placeholders = implode(',', array_fill(0, count($recentlyViewedIds), '?'));
+            $stmt = $db->prepare("SELECT DISTINCT category_id, brand_id FROM products WHERE id IN ($placeholders)");
+            $stmt->execute($recentlyViewedIds);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $r) {
+                if (!empty($r['category_id'])) $preferredCatIds[] = (int)$r['category_id'];
+                if (!empty($r['brand_id'])) $preferredBrandIds[] = (int)$r['brand_id'];
+            }
+        }
+
+        // 2. Phân tích từ lịch sử mua hàng của user (nếu đã đăng nhập)
+        if ($userId) {
+            try {
+                $stmt = $db->prepare("
+                    SELECT DISTINCT p.category_id, p.brand_id
+                    FROM orders o
+                    JOIN order_items oi ON o.id = oi.order_id
+                    JOIN products p ON oi.product_id = p.id
+                    WHERE o.user_id = ?
+                    ORDER BY o.id DESC
+                    LIMIT 10
+                ");
+                $stmt->execute([$userId]);
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($rows as $r) {
+                    if (!empty($r['category_id'])) $preferredCatIds[] = (int)$r['category_id'];
+                    if (!empty($r['brand_id'])) $preferredBrandIds[] = (int)$r['brand_id'];
+                }
+            } catch (\Exception $e) {
+                // Bỏ qua nếu cấu trúc orders khác
+            }
+        }
+
+        $preferredCatIds = array_values(array_unique(array_filter($preferredCatIds)));
+        $preferredBrandIds = array_values(array_unique(array_filter($preferredBrandIds)));
+
+        $excludeIds = !empty($recentlyViewedIds) ? $recentlyViewedIds : [0];
+        $excludePlaceholders = implode(',', array_fill(0, count($excludeIds), '?'));
+
+        $recommended = [];
+
+        // 3. Ưu tiên lấy sản phẩm cùng danh mục/thương hiệu ưa thích (loại trừ đã xem)
+        if (!empty($preferredCatIds)) {
+            $catPlaceholders = implode(',', array_fill(0, count($preferredCatIds), '?'));
+            $sql = "SELECT p.*, c.name as category_name,
+                           ROUND(p.price * (1 - p.discount_percent/100)) as sale_price,
+                           COALESCE(SUM(oi.quantity), 0) as total_sold
+                    FROM products p
+                    LEFT JOIN categories c ON p.category_id = c.id
+                    LEFT JOIN order_items oi ON p.id = oi.product_id
+                    WHERE p.is_active = 1
+                      AND p.id NOT IN ($excludePlaceholders)
+                      AND p.category_id IN ($catPlaceholders)
+                    GROUP BY p.id
+                    ORDER BY total_sold DESC, p.is_featured DESC, p.created_at DESC
+                    LIMIT $limit";
+            $params = array_merge($excludeIds, $preferredCatIds);
+            $stmt = $db->prepare($sql);
+            $stmt->execute($params);
+            $recommended = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // 4. Nếu chưa đủ $limit, bổ sung thêm sản phẩm nổi bật / bán chạy
+        if (count($recommended) < $limit) {
+            $currentIds = array_merge($excludeIds, array_column($recommended, 'id'));
+            $currPlaceholders = implode(',', array_fill(0, count($currentIds), '?'));
+            $needed = $limit - count($recommended);
+            $sql = "SELECT p.*, c.name as category_name,
+                           ROUND(p.price * (1 - p.discount_percent/100)) as sale_price,
+                           COALESCE(SUM(oi.quantity), 0) as total_sold
+                    FROM products p
+                    LEFT JOIN categories c ON p.category_id = c.id
+                    LEFT JOIN order_items oi ON p.id = oi.product_id
+                    WHERE p.is_active = 1
+                      AND p.id NOT IN ($currPlaceholders)
+                    GROUP BY p.id
+                    ORDER BY p.is_featured DESC, total_sold DESC, p.created_at DESC
+                    LIMIT $needed";
+            $stmt = $db->prepare($sql);
+            $stmt->execute($currentIds);
+            $fallback = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $recommended = array_merge($recommended, $fallback);
+        }
+
+        return $recommended;
+    }
 }

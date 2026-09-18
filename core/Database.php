@@ -28,7 +28,7 @@ class Database {
     public function connect() {
         try {
             // Dùng constant từ config.php (đã đọc .env)
-            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8";
+            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
 
             $this->conn = new PDO($dsn, DB_USER, DB_PASS);
 

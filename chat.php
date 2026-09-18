@@ -5,20 +5,17 @@ require_once 'core/Database.php';
 
 use App\Core\Database as Database;
 use App\Controllers\ChatController;
-use App\Helpers\CsrfHelper;
 
 $db = Database::getInstance();
 $chatController = new ChatController($db);
 
-// Handle AJAX requests
+// Handle AJAX POST requests (protected by session check in session_check.php)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    try { CsrfHelper::verify(); } catch (Exception $e) {
-        header('Content-Type: application/json');
-        echo json_encode(['error' => $e->getMessage()]);
-        exit;
-    }
+    header('Content-Type: application/json');
     if ($_POST['action'] === 'send') {
         $chatController->sendMessage();
+    } else {
+        echo json_encode(['error' => 'Action không hợp lệ']);
     }
     exit;
 }

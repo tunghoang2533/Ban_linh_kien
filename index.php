@@ -47,6 +47,10 @@ if ($categoryId > 0) {
             $pageTitle    = '🏷️ Đang giảm giá';
             $listProducts = $productModel->getOnSale(100);
             break;
+        case 'recommended':
+            $pageTitle    = '✨ Có thể bạn cũng thích';
+            $listProducts = $productModel->getRecommendedProducts(100, $_SESSION['user_id'] ?? null, $_SESSION['recently_viewed'] ?? []);
+            break;
         default:
             $listProducts = $productModel->getLatestProducts(8);
     }
@@ -55,6 +59,7 @@ if ($categoryId > 0) {
     $topSelling   = $productModel->getTopSelling(10);
     $featured     = $productModel->getFeatured(10);
     $onSale       = $productModel->getOnSale(10);
+    $recommendedProducts = $productModel->getRecommendedProducts(10, $_SESSION['user_id'] ?? null, $_SESSION['recently_viewed'] ?? []);
 }
 
 include 'app/views/header.php'; 
@@ -701,6 +706,11 @@ include 'app/views/header.php';
         </script>
 
         <?php
+        // Hiển thị gợi ý "Có thể bạn cũng thích" (ngay bên trên dòng "Đã xem gần đây")
+        if (!empty($recommendedProducts)) {
+            renderSection('Có thể bạn cũng thích', '✨', '#0284c7', 'recommended', $recommendedProducts, null);
+        }
+
         // Hiển thị section Đã xem gần đây (ưu tiên lên đầu nếu có)
         if (!empty($recentlyViewed)) {
             renderSection('Đã xem gần đây', '👁️', '#8b5cf6', '', $recentlyViewed, null);

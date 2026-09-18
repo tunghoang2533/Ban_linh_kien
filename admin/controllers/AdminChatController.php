@@ -31,12 +31,14 @@ class AdminChatController {
     }
 
     public function sendMessage() {
-        if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1 || !isset($_POST['conversation_id']) || !isset($_POST['message'])) {
-            echo json_encode(['success' => false]);
+        header('Content-Type: application/json');
+
+        if (!isset($_SESSION['user_id']) || !isset($_POST['conversation_id'])) {
+            echo json_encode(['success' => false, 'error' => 'Thiếu thông tin']);
             exit();
         }
 
-        $message = trim($_POST['message']);
+        $message = trim($_POST['message'] ?? '');
 
         // Gắn thông tin sản phẩm gợi ý vào đầu tin nhắn nếu có
         if (!empty($_POST['product_ref'])) {
@@ -51,6 +53,11 @@ class AdminChatController {
                 ];
                 $message = '[PRODUCT_REF:' . json_encode($cleanRef, JSON_UNESCAPED_UNICODE) . "]\n" . $message;
             }
+        }
+
+        if ($message === '' && empty($_POST['product_ref'])) {
+            echo json_encode(['success' => false, 'error' => 'Tin nhắn không được rỗng']);
+            exit();
         }
 
         $messageId = $this->messageModel->sendMessage($_POST['conversation_id'], $_SESSION['user_id'], $message, true);
@@ -108,6 +115,7 @@ class AdminChatController {
         }
         $messages = $this->messageModel->getMessages($conversationId);
         if ($echoJson) {
+            header('Content-Type: application/json');
             echo json_encode(['success' => true, 'messages' => $messages]);
             return;
         }

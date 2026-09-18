@@ -99,7 +99,46 @@ switch ($page):
 
     // ═══════════════════════════════════════════════════
     case 'export':
+        require_once $projectRoot . '/app/helpers/ExportHelper.php';
         $type = $_GET['type'] ?? 'orders';
+        
+        if ($type === 'orders_excel') {
+            // Export Excel với bộ lọc hiện tại
+            $filters = [
+                'q'         => trim($_GET['q']         ?? ''),
+                'status'    => trim($_GET['status']    ?? 'all'),
+                'date_from' => trim($_GET['date_from'] ?? ''),
+                'date_to'   => trim($_GET['date_to']   ?? ''),
+            ];
+            ExportHelper::orders($db, $filters);
+            exit;
+        }
+        
+        if ($type === 'products_excel') {
+            ExportHelper::products($db);
+            exit;
+        }
+        
+        if ($type === 'users_excel') {
+            ExportHelper::users($db);
+            exit;
+        }
+        
+        if ($type === 'report_revenue' || $type === 'report_profit') {
+            require_once __DIR__ . '/../controllers/ReportController.php';
+            if ($type === 'report_revenue') {
+                $from = $_GET['from'] ?? date('Y-m-d', strtotime('-30 days'));
+                $to   = $_GET['to']   ?? date('Y-m-d');
+                ExportHelper::reportRevenue($db, $from, $to);
+            } else {
+                $pfrom = $_GET['pfrom'] ?? date('Y-m-d', strtotime('-30 days'));
+                $pto   = $_GET['pto']   ?? date('Y-m-d');
+                ExportHelper::reportProfit($db, $pfrom, $pto);
+            }
+            exit;
+        }
+        
+        // ── Legacy CSV export (giữ lại tương thích) ──
         header('Content-Type: text/csv; charset=UTF-8');
         header('Content-Disposition: attachment; filename="' . $type . '_' . date('Y-m-d') . '.csv"');
         echo "\xEF\xBB\xBF";
@@ -278,6 +317,49 @@ switch ($page):
     // ═══════════════════════════════════════════════════
     case 'roles':
         require_once __DIR__ . '/../controllers/RoleController.php';
+        $roleCtrl      = new RoleController($db);
+        $currentUserId = (int)($_SESSION['user_id'] ?? 0);
+
+        // ── Xử lý POST trước khi output bất kỳ HTML nào ──────────
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['assign_role'])) {
+                $roleCtrl->assignRole(intval($_POST['user_id']), intval($_POST['role_id']) ?: null);
+                header('Location: ' . BASE_URL . 'admin/?page=roles&success=assigned&tab=staff'); exit;
+            }
+            if (isset($_POST['create_admin'])) {
+                $result = $roleCtrl->createAdminUser($_POST);
+                if ($result['ok']) {
+                    header('Location: ' . BASE_URL . 'admin/?page=roles&success=admin_created&tab=staff'); exit;
+                }
+                $_SESSION['admin_form_error'] = $result['error'];
+                header('Location: ' . BASE_URL . 'admin/?page=roles&tab=staff'); exit;
+            }
+            if (isset($_POST['delete_admin'])) {
+                $result = $roleCtrl->deleteAdminUser(intval($_POST['admin_id']), $currentUserId);
+                if ($result['ok']) {
+                    header('Location: ' . BASE_URL . 'admin/?page=roles&success=admin_deleted&tab=staff'); exit;
+                }
+                $_SESSION['admin_form_error'] = $result['error'];
+                header('Location: ' . BASE_URL . 'admin/?page=roles&tab=staff'); exit;
+            }
+            if (isset($_POST['reset_password'])) {
+                $result = $roleCtrl->resetAdminPassword(intval($_POST['admin_id']), $_POST['new_password'] ?? '');
+                if ($result['ok']) {
+                    header('Location: ' . BASE_URL . 'admin/?page=roles&success=password_reset&tab=staff'); exit;
+                }
+                $_SESSION['admin_form_error'] = $result['error'];
+                header('Location: ' . BASE_URL . 'admin/?page=roles&tab=staff'); exit;
+            }
+            if (isset($_POST['create_role'])) {
+                $roleCtrl->createRole($_POST);
+                header('Location: ' . BASE_URL . 'admin/?page=roles&success=role_created&tab=roles'); exit;
+            }
+            if (isset($_POST['delete_role'])) {
+                $roleCtrl->deleteRole(intval($_POST['role_id']));
+                header('Location: ' . BASE_URL . 'admin/?page=roles&success=role_deleted&tab=roles'); exit;
+            }
+        }
+
         include __DIR__ . '/../views/layout/header.php';
         include __DIR__ . '/../views/layout/sidebar.php';
         include __DIR__ . '/../views/roles/index.php';
@@ -333,7 +415,7 @@ switch ($page):
                    c.name AS carrier_name, c.tracking_url AS carrier_url
             FROM shipping_orders so
             LEFT JOIN orders o ON so.order_id = o.id
-            LEFT JOIN shipping_carriers c ON so.carrier = c.code
+            LEFT JOIN shipping_carriers c ON so.carrier COLLATE utf8mb4_unicode_ci = c.code
             WHERE so.tracking_code IS NOT NULL AND so.tracking_code != ''
             ORDER BY so.created_at DESC LIMIT 30
         ")->fetchAll(PDO::FETCH_ASSOC);

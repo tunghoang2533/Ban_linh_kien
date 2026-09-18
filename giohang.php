@@ -30,6 +30,10 @@ switch ($action) {
     case 'update_qty':
         $cartController->updateQty();
         break;
+    case 'track_cart':
+        // Lightweight tracking endpoint — không render full page
+        $cartController->trackCart();
+        break;
     case 'index':
     default:
         $cartController->index();

@@ -5,7 +5,7 @@ $statusData = $admin->getOrdersByStatus();
 $topProducts= $admin->getTopProducts(8);
 $monthComp  = $admin->getMonthComparison();
 
-// TÃ­nh % tÄƒng trÆ°á»Ÿng doanh thu
+// Tính % tăng trưởng doanh thu
 $thisMonth  = (float)($monthComp['this_month']       ?? 0);
 $lastMonth  = (float)($monthComp['last_month']        ?? 0);
 $thisOrders = (int)  ($monthComp['orders_this_month'] ?? 0);
@@ -13,7 +13,7 @@ $lastOrders = (int)  ($monthComp['orders_last_month'] ?? 0);
 $revGrowth  = $lastMonth > 0 ? round(($thisMonth - $lastMonth) / $lastMonth * 100, 1) : 0;
 $ordGrowth  = $lastOrders > 0 ? round(($thisOrders - $lastOrders) / $lastOrders * 100, 1) : 0;
 
-// Chuáº©n bá»‹ data JSON cho Chart.js
+// Chuẩn bị data JSON cho Chart.js
 $chartLabels  = array_column($revenueData, 'month_label');
 $chartRevenue = array_column($revenueData, 'revenue');
 $chartOrders  = array_column($revenueData, 'order_count');
@@ -29,11 +29,11 @@ $statusColorMap = [
     'cancelled'  => '#ef4444',
 ];
 $statusNameMap = [
-    'pending'    => 'Chá» xá»­ lÃ½',
-    'processing' => 'Äang xá»­ lÃ½',
-    'shipped'    => 'Äang giao',
-    'completed'  => 'HoÃ n thÃ nh',
-    'cancelled'  => 'ÄÃ£ há»§y',
+    'pending'    => 'Chờ xử lý',
+    'processing' => 'Đang xử lý',
+    'shipped'    => 'Đang giao',
+    'completed'  => 'Hoàn thành',
+    'cancelled'  => 'Đã hủy',
 ];
 foreach ($statusData as $s) {
     $statusLabels[] = $statusNameMap[$s['status']] ?? $s['status'];
@@ -41,18 +41,18 @@ foreach ($statusData as $s) {
     $statusColors[] = $statusColorMap[$s['status']] ?? '#71717a';
 }
 
-$topNames    = array_map(fn($p) => mb_strimwidth($p['name'], 0, 30, 'â€¦'), $topProducts);
+$topNames    = array_map(fn($p) => mb_strimwidth($p['name'], 0, 30, '…'), $topProducts);
 $topSold     = array_column($topProducts, 'total_sold');
 
 // ── Dashboard Widget Preferences ──
 $adminId = $_SESSION['user_id'] ?? 0;
 $dashWidgets = [];
 $allWidgets = [
-    'stats_cards'   => ['title' => 'Thá»‘ng kÃª nhanh', 'icon' => 'fas fa-chart-bar', 'default' => true],
-    'revenue_chart' => ['title' => 'Doanh thu 6 thÃ¡ng', 'icon' => 'fas fa-chart-line', 'default' => true],
-    'status_chart'  => ['title' => 'Tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng', 'icon' => 'fas fa-circle-half-stroke', 'default' => true],
-    'top_products'  => ['title' => 'Top sáº£n pháº©m bÃ¡n cháº¡y', 'icon' => 'fas fa-fire', 'default' => true],
-    'recent_orders' => ['title' => 'ÄÆ¡n hÃ ng gáº§n Ä‘Ã¢y', 'icon' => 'fas fa-clock', 'default' => true],
+    'stats_cards'   => ['title' => 'Thống kê nhanh', 'icon' => 'fas fa-chart-bar', 'default' => true],
+    'revenue_chart' => ['title' => 'Doanh thu 6 tháng', 'icon' => 'fas fa-chart-line', 'default' => true],
+    'status_chart'  => ['title' => 'Trạng thái đơn hàng', 'icon' => 'fas fa-circle-half-stroke', 'default' => true],
+    'top_products'  => ['title' => 'Top sản phẩm bán chạy', 'icon' => 'fas fa-fire', 'default' => true],
+    'recent_orders' => ['title' => 'Đơn hàng gần đây', 'icon' => 'fas fa-clock', 'default' => true],
 ];
 try {
     $dwStmt = $db->prepare("SELECT widget_key, enabled, sort_order FROM dashboard_widgets WHERE user_id = ? ORDER BY sort_order ASC");
@@ -64,7 +64,7 @@ try {
         Logger::warning('Failed to load dashboard widget preferences', ['error' => $e->getMessage()]);
     }
 
-// Xá»­ lÃ½ lÆ°u config
+// Xử lý lưu config
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_dashboard'])) {
     $order = isset($_POST['widget_order']) ? explode(',', $_POST['widget_order']) : [];
     try {
@@ -78,13 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_dashboard'])) {
             $insStmt->execute([$adminId, $wk, $title, $enabled, $i]);
             $dashWidgets[$wk] = ['widget_key' => $wk, 'enabled' => $enabled, 'sort_order' => $i];
         }
-        // KhÃ´ng redirect Ä‘á»ƒ trÃ¡nh reload máº¥t hiá»‡u á»©ng
+        // Không redirect để tránh reload mất hiệu ứng
     } catch (Exception $e) {
         Logger::warning('Failed to save dashboard widget preferences', ['error' => $e->getMessage()]);
     }
 }
 
-// HÃ m helper kiá»ƒm tra widget cÃ³ enabled khÃ´ng
+// Hàm helper kiểm tra widget có enabled không
 function dwEnabled($key, $dashWidgets, $allWidgets) {
     if (isset($dashWidgets[$key])) return (bool)$dashWidgets[$key]['enabled'];
     return !empty($allWidgets[$key]['default']);
@@ -103,10 +103,10 @@ if (!empty($dashWidgets)) {
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
 <style>
-/* â”€â”€ Dashboard layout â”€â”€ */
+/* ── Dashboard layout ── */
 .dash-wrap { display: flex; flex-direction: column; gap: 20px; }
 
-/* Stat cards v2 â€” dark bento style */
+/* Stat cards v2 — dark bento style */
 .stats-grid-v2 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -217,7 +217,7 @@ if (!empty($dashWidgets)) {
 .comp-card-lbl { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; }
 .comp-card-val { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em; }
 
-/* Low-stock widget â€” dark mode */
+/* Low-stock widget — dark mode */
 .low-stock-widget {
     position: fixed; bottom: 24px; right: 24px; width: 308px;
     background: var(--bg-surface);
@@ -260,7 +260,7 @@ if (!empty($dashWidgets)) {
     <div class="page-header">
         <div class="page-header-left">
             <h1>Dashboard</h1>
-            <p>ChÃ o má»«ng quay láº¡i, <strong style="color:var(--text-primary);"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? $_SESSION['username'] ?? 'Admin'); ?></strong>! ÄÃ¢y lÃ  tá»•ng quan há»‡ thá»‘ng.</p>
+            <p>Chào mừng quay lại, <strong style="color:var(--text-primary);"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? $_SESSION['username'] ?? 'Admin'); ?></strong>! Đây là tổng quan hệ thống.</p>
         </div>
         <div style="font-size:12px;color:var(--text-muted);text-align:right;display:flex;align-items:center;gap:6px;">
             <i class="fas fa-clock" style="color:var(--accent-light);"></i>
@@ -274,25 +274,25 @@ if (!empty($dashWidgets)) {
     <div class="dash-wrap" id="dashWidgets">
 
         <?php if (dwEnabled('stats_cards', $dashWidgets, $allWidgets)): ?>
-        <!-- â”€â”€ STAT CARDS â”€â”€ -->
+        <!-- ── STAT CARDS ── -->
         <div class="stats-grid-v2" data-widget="stats_cards">
 
-            <!-- Sáº£n pháº©m -->
+            <!-- Sản phẩm -->
             <div class="stat-card-v2">
                 <div class="stat-top">
                     <div class="stat-icon-v2" style="background:rgba(99,102,241,0.15);">
                         <i class="fas fa-box" style="color:#818cf8;"></i>
                     </div>
-                    <span class="stat-badge neu"><i class="fas fa-minus"></i> á»”n Ä‘á»‹nh</span>
+                    <span class="stat-badge neu"><i class="fas fa-minus"></i> Ổn định</span>
                 </div>
                 <div>
                     <div class="stat-val-v2"><?php echo number_format($stats['total_products']); ?></div>
-                    <div class="stat-lbl-v2">Sáº£n pháº©m</div>
-                    <div class="stat-sub">Tá»•ng sá»‘ trong há»‡ thá»‘ng</div>
+                    <div class="stat-lbl-v2">Sản phẩm</div>
+                    <div class="stat-sub">Tổng số trong hệ thống</div>
                 </div>
             </div>
 
-            <!-- ÄÆ¡n hÃ ng -->
+            <!-- Đơn hàng -->
             <div class="stat-card-v2">
                 <div class="stat-top">
                     <div class="stat-icon-v2" style="background:rgba(6,182,212,0.15);">
@@ -303,28 +303,28 @@ if (!empty($dashWidgets)) {
                     <?php elseif ($ordGrowth < 0): ?>
                         <span class="stat-badge down"><i class="fas fa-arrow-down"></i> <?php echo $ordGrowth; ?>%</span>
                     <?php else: ?>
-                        <span class="stat-badge neu"><i class="fas fa-minus"></i> KhÃ´ng Ä‘á»•i</span>
+                        <span class="stat-badge neu"><i class="fas fa-minus"></i> Không đổi</span>
                     <?php endif; ?>
                 </div>
                 <div>
                     <div class="stat-val-v2"><?php echo number_format($stats['total_orders']); ?></div>
-                    <div class="stat-lbl-v2">ÄÆ¡n hÃ ng</div>
-                    <div class="stat-sub">ThÃ¡ng nÃ y: <?php echo $thisOrders; ?> / TrÆ°á»›c: <?php echo $lastOrders; ?></div>
+                    <div class="stat-lbl-v2">Đơn hàng</div>
+                    <div class="stat-sub">Tháng này: <?php echo $thisOrders; ?> / Trước: <?php echo $lastOrders; ?></div>
                 </div>
             </div>
 
-            <!-- NgÆ°á»i dÃ¹ng -->
+            <!-- Người dùng -->
             <div class="stat-card-v2">
                 <div class="stat-top">
                     <div class="stat-icon-v2" style="background:rgba(34,197,94,0.15);">
                         <i class="fas fa-users" style="color:#4ade80;"></i>
                     </div>
-                    <span class="stat-badge up"><i class="fas fa-arrow-up"></i> TÄƒng trÆ°á»Ÿng</span>
+                    <span class="stat-badge up"><i class="fas fa-arrow-up"></i> Tăng trưởng</span>
                 </div>
                 <div>
                     <div class="stat-val-v2"><?php echo number_format($stats['total_users']); ?></div>
-                    <div class="stat-lbl-v2">NgÆ°á»i dÃ¹ng</div>
-                    <div class="stat-sub">Tá»•ng tÃ i khoáº£n Ä‘Ã£ Ä‘Äƒng kÃ½</div>
+                    <div class="stat-lbl-v2">Người dùng</div>
+                    <div class="stat-sub">Tổng tài khoản đã đăng ký</div>
                 </div>
             </div>
 
@@ -339,14 +339,14 @@ if (!empty($dashWidgets)) {
                     <?php elseif ($revGrowth < 0): ?>
                         <span class="stat-badge down"><i class="fas fa-arrow-down"></i> <?php echo $revGrowth; ?>%</span>
                     <?php else: ?>
-                        <span class="stat-badge neu"><i class="fas fa-minus"></i> KhÃ´ng Ä‘á»•i</span>
+                        <span class="stat-badge neu"><i class="fas fa-minus"></i> Không đổi</span>
                     <?php endif; ?>
                 </div>
                 <div>
-                    <div class="stat-val-v2" style="font-size:18px;"><?php echo number_format($stats['total_revenue'], 0, ',', '.'); ?> â‚«</div>
+                    <div class="stat-val-v2" style="font-size:18px;"><?php echo number_format($stats['total_revenue'], 0, ',', '.'); ?> ₫</div>
                     <div class="stat-lbl-v2">Doanh thu</div>
                     <div class="stat-sub">
-                        ThÃ¡ng nÃ y: <?php echo number_format($thisMonth, 0, ',', '.'); ?> â‚«
+                        Tháng này: <?php echo number_format($thisMonth, 0, ',', '.'); ?> ₫
                     </div>
                 </div>
             </div>
@@ -354,19 +354,19 @@ if (!empty($dashWidgets)) {
         <?php endif; ?>
 
         <?php if (dwEnabled('revenue_chart', $dashWidgets, $allWidgets) || dwEnabled('status_chart', $dashWidgets, $allWidgets)): ?>
-        <!-- â”€â”€ CHARTS ROW 1: Revenue line + Donut â”€â”€ -->
+        <!-- ── CHARTS ROW 1: Revenue line + Donut ── -->
         <div class="charts-row">
 
             <?php if (dwEnabled('revenue_chart', $dashWidgets, $allWidgets)): ?>
-            <!-- Biá»ƒu Ä‘á»“ doanh thu theo thÃ¡ng -->
+            <!-- Biểu đồ doanh thu theo tháng -->
             <div class="chart-card" data-widget="revenue_chart">
                 <div class="chart-card-header">
                     <div>
                         <div class="chart-card-title">
                             <i class="fas fa-chart-line" style="color:#818cf8;"></i>
-                            Doanh thu 6 thÃ¡ng gáº§n nháº¥t
+                            Doanh thu 6 tháng gần nhất
                         </div>
-                        <div class="chart-card-sub">Chá»‰ tÃ­nh Ä‘Æ¡n hÃ ng Ä‘Ã£ hoÃ n thÃ nh</div>
+                        <div class="chart-card-sub">Chỉ tính đơn hàng đã hoàn thành</div>
                     </div>
                 </div>
                 <div class="chart-card-body">
@@ -375,15 +375,15 @@ if (!empty($dashWidgets)) {
             </div>
 
             <?php if (dwEnabled('status_chart', $dashWidgets, $allWidgets)): ?>
-            <!-- Biá»ƒu Ä‘á»“ trÃ²n tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng -->
+            <!-- Biểu đồ tròn trạng thái đơn hàng -->
             <div class="chart-card" data-widget="status_chart">
                 <div class="chart-card-header">
                     <div>
                         <div class="chart-card-title">
                             <i class="fas fa-circle-half-stroke" style="color:#22d3ee;"></i>
-                            Tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng
+                            Trạng thái đơn hàng
                         </div>
-                        <div class="chart-card-sub">PhÃ¢n bá»• táº¥t cáº£ <?php echo $stats['total_orders']; ?> Ä‘Æ¡n</div>
+                        <div class="chart-card-sub">Phân bổ tất cả <?php echo $stats['total_orders']; ?> đơn</div>
                     </div>
                 </div>
                 <div class="chart-card-body" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
@@ -408,26 +408,26 @@ if (!empty($dashWidgets)) {
         <?php endif; ?>
 
         <?php if (dwEnabled('top_products', $dashWidgets, $allWidgets) || dwEnabled('recent_orders', $dashWidgets, $allWidgets)): ?>
-        <!-- â”€â”€ CHARTS ROW 2: Top products bar + Recent orders â”€â”€ -->
+        <!-- ── CHARTS ROW 2: Top products bar + Recent orders ── -->
         <div class="bottom-row">
 
             <?php if (dwEnabled('top_products', $dashWidgets, $allWidgets)): ?>
-            <!-- Top sáº£n pháº©m bÃ¡n cháº¡y -->
+            <!-- Top sản phẩm bán chạy -->
             <div class="chart-card" data-widget="top_products">
                 <div class="chart-card-header">
                     <div>
                         <div class="chart-card-title">
                             <i class="fas fa-fire" style="color:#f97316;"></i>
-                            Top sáº£n pháº©m bÃ¡n cháº¡y
+                            Top sản phẩm bán chạy
                         </div>
-                        <div class="chart-card-sub">Dá»±a trÃªn sá»‘ lÆ°á»£ng Ä‘Ã£ bÃ¡n (Ä‘Æ¡n hoÃ n thÃ nh)</div>
+                        <div class="chart-card-sub">Dựa trên số lượng đã bán (đơn hoàn thành)</div>
                     </div>
                 </div>
                 <div class="chart-card-body">
                     <?php if (empty($topProducts)): ?>
                         <div style="text-align:center;padding:32px;color:var(--text-muted);">
                             <i class="fas fa-box-open" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3;"></i>
-                            ChÆ°a cÃ³ dá»¯ liá»‡u bÃ¡n hÃ ng
+                            Chưa có dữ liệu bán hàng
                         </div>
                     <?php else: ?>
                         <canvas id="topProductsChart" height="<?php echo max(120, count($topProducts) * 28); ?>"></canvas>
@@ -436,38 +436,38 @@ if (!empty($dashWidgets)) {
             </div>
 
             <?php if (dwEnabled('recent_orders', $dashWidgets, $allWidgets)): ?>
-            <!-- ÄÆ¡n hÃ ng gáº§n Ä‘Ã¢y -->
+            <!-- Đơn hàng gần đây -->
             <div class="chart-card" data-widget="recent_orders">
                 <div class="chart-card-header" style="padding-bottom:12px;">
                     <div>
                         <div class="chart-card-title">
                             <i class="fas fa-clock" style="color:#818cf8;"></i>
-                            ÄÆ¡n hÃ ng gáº§n Ä‘Ã¢y
+                            Đơn hàng gần đây
                         </div>
                     </div>
                     <a href="?page=orders" class="btn btn-sm btn-primary">
-                        <i class="fas fa-arrow-right"></i> Xem táº¥t cáº£
+                        <i class="fas fa-arrow-right"></i> Xem tất cả
                     </a>
                 </div>
                 <div style="overflow-x:auto;">
                     <table class="dash-table">
                         <thead>
                             <tr>
-                                <th>MÃ£ ÄH</th>
-                                <th>KhÃ¡ch hÃ ng</th>
-                                <th>Tá»•ng tiá»n</th>
-                                <th>Tráº¡ng thÃ¡i</th>
+                                <th>Mã ĐH</th>
+                                <th>Khách hàng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
                             $smStatusMap = [
-                                'pending'    => ['label'=>'Chá» xá»­ lÃ½', 'color'=>'#f59e0b'],
-                                'processing' => ['label'=>'Äang xá»­ lÃ½','color'=>'#818cf8'],
-                                'shipped'    => ['label'=>'Äang giao', 'color'=>'#22d3ee'],
-                                'completed'  => ['label'=>'HoÃ n thÃ nh','color'=>'#4ade80'],
-                                'cancelled'  => ['label'=>'ÄÃ£ há»§y',   'color'=>'#f87171'],
+                                'pending'    => ['label'=>'Chờ xử lý', 'color'=>'#f59e0b'],
+                                'processing' => ['label'=>'Đang xử lý','color'=>'#818cf8'],
+                                'shipped'    => ['label'=>'Đang giao', 'color'=>'#22d3ee'],
+                                'completed'  => ['label'=>'Hoàn thành','color'=>'#4ade80'],
+                                'cancelled'  => ['label'=>'Đã hủy',   'color'=>'#f87171'],
                             ];
                             foreach ($stats['recent_orders'] as $order):
                                 $st  = strtolower($order['status']);
@@ -486,7 +486,7 @@ if (!empty($dashWidgets)) {
                                     </div>
                                 </td>
                                 <td style="font-weight:600;font-size:13px;color:var(--text-primary);white-space:nowrap;font-variant-numeric:tabular-nums;">
-                                    <?php echo number_format($order['total_amount'], 0, ',', '.'); ?> â‚«
+                                    <?php echo number_format($order['total_amount'], 0, ',', '.'); ?> ₫
                                 </td>
                                 <td>
                                     <span style="display:inline-block;padding:3px 9px;border-radius:99px;font-size:10px;font-weight:600;
@@ -525,7 +525,7 @@ if (!empty($lowStockItems)):
 ?>
 <div class="low-stock-widget" id="lowStockWidget">
     <div class="lsw-header">
-        <h3><i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i>Cáº£nh BÃ¡o Kho HÃ ng</h3>
+        <h3><i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i>Cảnh Báo Kho Hàng</h3>
         <button class="lsw-close" onclick="document.getElementById('lowStockWidget').style.display='none'"><i class="fas fa-times"></i></button>
     </div>
     <div class="lsw-body">
@@ -536,22 +536,22 @@ if (!empty($lowStockItems)):
                 <div class="lsw-name" title="<?php echo htmlspecialchars($item['name']); ?>"><?php echo mb_strimwidth(htmlspecialchars($item['name']),0,30,'...'); ?></div>
                 <div class="lsw-cat"><?php echo htmlspecialchars($item['category_name']??''); ?></div>
             </div>
-            <span style="font-size:10px;padding:2px 7px;border-radius:99px;font-weight:700;white-space:nowrap;<?php echo $item['quantity']==0?'background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,.3);':'background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,.25);'; ?>"><?php echo $item['quantity']==0?'Háº¿t':'Sáº¯p háº¿t'; ?></span>
+            <span style="font-size:10px;padding:2px 7px;border-radius:99px;font-weight:700;white-space:nowrap;<?php echo $item['quantity']==0?'background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,.3);':'background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,.25);'; ?>"><?php echo $item['quantity']==0?'Hết':'Sắp hết'; ?></span>
         </div>
         <?php endforeach; ?>
     </div>
     <div class="lsw-footer">
-        <a href="?page=inventory" class="btn btn-sm btn-danger" style="width:100%;justify-content:center;"><i class="fas fa-warehouse"></i> VÃ o Quáº£n LÃ½ Kho</a>
+        <a href="?page=inventory" class="btn btn-sm btn-danger" style="width:100%;justify-content:center;"><i class="fas fa-warehouse"></i> Vào Quản Lý Kho</a>
     </div>
 </div>
 <?php endif; ?>
 
-<!-- â”€â”€ Dashboard Customization Modal â”€â”€ -->
+<!-- ── Dashboard Customization Modal ── -->
 <div id="dashCustomModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)this.style.display='none'">
     <div style="background:var(--bg-surface);border-radius:18px;padding:28px;width:100%;max-width:480px;box-shadow:0 25px 60px rgba(0,0,0,.25);">
         <h3 style="margin:0 0 20px;font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px;">
-            <i class="fas fa-sliders-h" style="color:#6366f1;"></i> TÃ¹y chá»‰nh Dashboard
-            <span style="font-size:11px;color:var(--text-faint);font-weight:500;margin-left:auto;">KÃ©o tháº£ Ä‘á»ƒ sáº¯p xáº¿p</span>
+            <i class="fas fa-sliders-h" style="color:#6366f1;"></i> Tùy chỉnh Dashboard
+            <span style="font-size:11px;color:var(--text-faint);font-weight:500;margin-left:auto;">Kéo thả để sắp xếp</span>
         </h3>
         <form method="POST" id="dashConfigForm">
             <div id="dashWidgetList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;min-height:100px;">
@@ -578,22 +578,22 @@ if (!empty($lowStockItems)):
             <input type="hidden" name="save_dashboard" value="1">
             <div style="display:flex;gap:10px;">
                 <button type="button" onclick="document.getElementById('dashCustomModal').style.display='none'" class="btn btn-secondary" style="flex:1;">
-                    <i class="fas fa-times"></i> Há»§y
+                    <i class="fas fa-times"></i> Hủy
                 </button>
                 <button type="submit" class="btn btn-primary" style="flex:2;background:linear-gradient(135deg,#6366f1,#4f46e5);">
-                    <i class="fas fa-save"></i> LÆ°u thay Ä‘á»•i
+                    <i class="fas fa-save"></i> Lưu thay đổi
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- â”€â”€ Chart.js init â”€â”€ -->
+<!-- ── Chart.js init ── -->
 <script>
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.color = '#71717a';
 
-// â”€â”€ 1. Revenue Line Chart â”€â”€
+// ── 1. Revenue Line Chart ──
 (function() {
     var labels  = <?php echo json_encode($chartLabels, JSON_UNESCAPED_UNICODE); ?>;
     var revenue = <?php echo json_encode($chartRevenue); ?>;
@@ -601,7 +601,7 @@ Chart.defaults.color = '#71717a';
 
     var ctx = document.getElementById('revenueChart').getContext('2d');
 
-    // Gradient fill â€” dark mode friendly
+    // Gradient fill — dark mode friendly
     var grad = ctx.createLinearGradient(0, 0, 0, 260);
     grad.addColorStop(0,   'rgba(99,102,241,0.30)');
     grad.addColorStop(1,   'rgba(99,102,241,0.00)');
@@ -612,7 +612,7 @@ Chart.defaults.color = '#71717a';
             labels: labels,
             datasets: [
                 {
-                    label: 'Doanh thu (â‚«)',
+                    label: 'Doanh thu (₫)',
                     data: revenue,
                     borderColor: '#6366f1',
                     backgroundColor: grad,
@@ -627,7 +627,7 @@ Chart.defaults.color = '#71717a';
                     yAxisID: 'yRevenue',
                 },
                 {
-                    label: 'Sá»‘ Ä‘Æ¡n',
+                    label: 'Số đơn',
                     data: orders,
                     borderColor: '#22c55e',
                     backgroundColor: 'transparent',
@@ -658,9 +658,9 @@ Chart.defaults.color = '#71717a';
                     callbacks: {
                         label: function(ctx) {
                             if (ctx.datasetIndex === 0) {
-                                return ' ' + Number(ctx.raw).toLocaleString('vi-VN') + ' â‚«';
+                                return ' ' + Number(ctx.raw).toLocaleString('vi-VN') + ' ₫';
                             }
-                            return ' ' + ctx.raw + ' Ä‘Æ¡n';
+                            return ' ' + ctx.raw + ' đơn';
                         }
                     }
                 }
@@ -690,7 +690,7 @@ Chart.defaults.color = '#71717a';
     });
 })();
 
-// â”€â”€ 2. Status Donut Chart â”€â”€
+// ── 2. Status Donut Chart ──
 (function() {
     var ctx = document.getElementById('statusChart');
     if (!ctx) return;
@@ -723,7 +723,7 @@ Chart.defaults.color = '#71717a';
                         label: function(ctx) {
                             var total = ctx.dataset.data.reduce((a,b) => a+b, 0);
                             var pct   = total > 0 ? Math.round(ctx.raw / total * 100) : 0;
-                            return ' ' + ctx.raw + ' Ä‘Æ¡n (' + pct + '%)';
+                            return ' ' + ctx.raw + ' đơn (' + pct + '%)';
                         }
                     }
                 }
@@ -732,7 +732,7 @@ Chart.defaults.color = '#71717a';
     });
 })();
 
-// â”€â”€ 3. Top Products Horizontal Bar â”€â”€
+// ── 3. Top Products Horizontal Bar ──
 (function() {
     var el = document.getElementById('topProductsChart');
     if (!el) return;
@@ -749,7 +749,7 @@ Chart.defaults.color = '#71717a';
         data: {
             labels: names,
             datasets: [{
-                label: 'ÄÃ£ bÃ¡n',
+                label: 'Đã bán',
                 data: sold,
                 backgroundColor: colors,
                 borderRadius: 5,
@@ -770,7 +770,7 @@ Chart.defaults.color = '#71717a';
                     padding: 10,
                     cornerRadius: 10,
                     callbacks: {
-                        label: function(ctx) { return ' ' + ctx.raw + ' sáº£n pháº©m'; }
+                        label: function(ctx) { return ' ' + ctx.raw + ' sản phẩm'; }
                     }
                 }
             },

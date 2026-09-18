@@ -5,6 +5,7 @@ use App\Helpers\CsrfHelper;
 use App\Helpers\NotificationHelper;
 use App\Helpers\LoyaltyHelper;
 use App\Helpers\VNPayHelper;
+use App\Models\AddressModel;
 use App\Models\OrderModel;
 use App\Models\VoucherModel;
 use App\Models\ProductModel;
@@ -101,12 +102,51 @@ class CheckoutController {
                 $discountAmount = $result['discount'];
             }
 
+            // Build full address: ưu tiên saved_address_id → cascading dropdown → legacy textarea
+            $fullAddress = '';
+            $savedAddressId = (int)($_POST['saved_address_id'] ?? 0);
+
+            if ($savedAddressId > 0 && !$isGuest) {
+                // Đọc địa chỉ đã lưu từ DB
+                $addressModel = new AddressModel($this->db);
+                $savedAddr = $addressModel->getById($savedAddressId, $userId);
+                if ($savedAddr) {
+                    $parts = array_filter([
+                        trim($savedAddr['address_detail'] ?? ''),
+                        trim($savedAddr['ward']           ?? ''),
+                        trim($savedAddr['district']       ?? ''),
+                        trim($savedAddr['province']       ?? ''),
+                    ]);
+                    $fullAddress = implode(', ', $parts);
+                    // Dùng tên & phone từ địa chỉ đã lưu nếu form trống
+                    if (empty(trim($_POST['fullname'] ?? ''))) {
+                        $_POST['fullname'] = $savedAddr['full_name'] ?? '';
+                    }
+                    if (empty(trim($_POST['phone'] ?? ''))) {
+                        $_POST['phone'] = $savedAddr['phone'] ?? '';
+                    }
+                }
+            }
+
+            if (empty($fullAddress)) {
+                $fullAddress = trim($_POST['address'] ?? '');
+            }
+            if (empty($fullAddress)) {
+                $parts = array_filter([
+                    trim($_POST['address_detail'] ?? ''),
+                    trim($_POST['ward']           ?? ''),
+                    trim($_POST['district']       ?? ''),
+                    trim($_POST['province']       ?? ''),
+                ]);
+                $fullAddress = implode(', ', $parts);
+            }
+
             $orderId = $this->orderModel->createOrder(
                 $userId,                // null nếu là guest
                 $_POST['fullname'],
                 $_POST['email'],
                 $_POST['phone'],
-                $_POST['address'],
+                $fullAddress,
                 $cartTotal,
                 $cartItems,
                 $voucherCode,
@@ -173,6 +213,41 @@ class CheckoutController {
                     $paymentMethod
                 );
 
+                // === LƯU ĐỊA CHỈ GIAO HÀNG NẾU NGƯỜI DÙNG YÊU CẦU ===
+                if (!$isGuest && !empty($_POST['save_address'])) {
+                    try {
+                        $addressModel = new AddressModel($this->db);
+                        // Use structured fields from cascading dropdowns if available
+                        $provinceName = trim($_POST['province'] ?? '');
+                        $districtName = trim($_POST['district'] ?? '');
+                        $wardName     = trim($_POST['ward'] ?? '');
+                        $addrDetail   = trim($_POST['address_detail'] ?? '');
+
+                        // Fallback: parse from full address string (legacy textarea)
+                        if (empty($provinceName) && empty($districtName) && !empty($_POST['address'])) {
+                            $fullAddr = trim($_POST['address']);
+                            $parts = array_pad(array_map('trim', explode(',', $fullAddr)), 4, '');
+                            $addrDetail   = $parts[0];
+                            $wardName     = $parts[1];
+                            $districtName = $parts[2];
+                            $provinceName = $parts[3];
+                        }
+
+                        $addressData = [
+                            'full_name'      => trim($_POST['fullname'] ?? ''),
+                            'phone'          => trim($_POST['phone'] ?? ''),
+                            'province'       => $provinceName,
+                            'district'       => $districtName,
+                            'ward'           => $wardName,
+                            'address_detail' => $addrDetail,
+                            'is_default'     => 0,
+                        ];
+                        $addressModel->create($userId, $addressData);
+                    } catch (Exception $e) {
+                        error_log('Save address after checkout failed: ' . $e->getMessage());
+                    }
+                }
+
                 // === TÍCH ĐIỂM LOYALTY ===
                 if (!$isGuest) {
                     try {
@@ -206,6 +281,13 @@ class CheckoutController {
 
         // Truyền voucher đã áp dụng (từ session nếu có) sang view
         $appliedVoucher = $_SESSION['applied_voucher'] ?? null;
+
+        // Lấy danh sách địa chỉ đã lưu của user (nếu đã đăng nhập)
+        $savedAddresses = [];
+        if (!$isGuest) {
+            $addressModel = new AddressModel($this->db);
+            $savedAddresses = $addressModel->getByUser($userId);
+        }
 
         include __DIR__ . '/../views/header.php';
         include __DIR__ . '/../views/cart/checkout_view.php';

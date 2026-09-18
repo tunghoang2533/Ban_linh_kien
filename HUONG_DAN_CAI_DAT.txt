@@ -1,0 +1,127 @@
+﻿================================================================================
+           HƯỚNG DẪN CÀI ĐẶT & SỬ DỤNG DỰ ÁN BAN LINH KIEN (PC STORE)
+================================================================================
+
+1. GIỚI THIỆU DỰ ÁN
+--------------------------------------------------------------------------------
+- Dự án: Website Bán Linh Kiện Máy Tính & Thiết Bị Công Nghệ (PC Store)
+- Ngôn ngữ & Công nghệ: PHP 8.0+ thuần (Custom MVC, PSR-4), MySQL 8.0+, Apache/Nginx
+- Thư viện đi kèm: Đã có sẵn toàn bộ mã nguồn và thư viện tại thư mục 'vendor/',
+  người dùng KHÔNG CẦN phải cài đặt Composer.
+- File cơ sở dữ liệu: 'database.sql' nằm ngay tại thư mục gốc của dự án.
+
+
+2. TÀI KHOẢN ĐĂNG NHẬP SẴN CÓ
+--------------------------------------------------------------------------------
+[1] TÀI KHOẢN QUẢN TRỊ VIÊN (ADMIN):
+    - Đường dẫn đăng nhập: http://localhost/Ban_linh_kien/admin/
+      (hoặc http://localhost:8082/admin/ nếu chạy bằng PHP Server)
+    - Tên đăng nhập (Username): admin
+    - Mật khẩu (Password): admin123
+    - Quyền hạn: Quản lý sản phẩm, đơn hàng, kho hàng, bảo hành serial number,
+      thống kê doanh thu, người dùng, chatbot, mã giảm giá...
+
+[2] TÀI KHOẢN KHÁCH HÀNG / THÀNH VIÊN (DEMO):
+    - Tên đăng nhập: test2  (hoặc email: tung5249m@gmail.com)
+    - Mật khẩu: 12345678
+    (Hoặc bạn có thể bấm Đăng ký tài khoản mới trực tiếp trên giao diện website)
+
+
+3. HƯỚNG DẪN CÀI ĐẶT & CHẠY
+--------------------------------------------------------------------------------
+CÁCH 1: SỬ DỤNG LARAGON (KHUYÊN DÙNG - ĐƠN GIẢN VÀ NHANH NHẤT)
+-------------------------------------------------------------
+Bước 1: Giải nén thư mục dự án 'Ban_linh_kien' vào thư mục web của Laragon:
+        Đường dẫn: C:\laragon\www\Ban_linh_kien
+
+Bước 2: Bật Laragon và nhấn nút "Start All" để khởi động Apache và MySQL.
+
+Bước 3: Nhập cơ sở dữ liệu:
+        - Mở phpMyAdmin: Truy cập http://localhost/phpmyadmin/ 
+          (hoặc nhấn nút "Database" trên bảng điều khiển Laragon mở HeidiSQL)
+        - Chọn tab "Import" (Nhập) -> Nhấn "Choose File" (Chọn tệp) và chọn file:
+          C:\laragon\www\Ban_linh_kien\database.sql
+        - Nhấn "Import" (Thực hiện).
+        * File database.sql đã có sẵn lệnh tự tạo CSDL 'db_ban_linh_kien' tự động.
+
+Bước 4: Cấu hình file .env:
+        - Mở file '.env' ở thư mục gốc 'Ban_linh_kien'.
+        - Nếu MySQL của Laragon không đặt mật khẩu (mặc định của Laragon), cấu hình như sau:
+            DB_HOST=localhost
+            DB_NAME=db_ban_linh_kien
+            DB_USER=root
+            DB_PASS=
+        - Nếu MySQL của bạn có mật khẩu, hãy điền mật khẩu của bạn vào sau 'DB_PASS='.
+
+Bước 5: Mở trình duyệt và trải nghiệm:
+        - Trang chủ khách hàng: http://localhost/Ban_linh_kien/
+          (hoặc tên miền ảo tự tạo của Laragon: http://Ban_linh_kien.test/)
+        - Trang quản trị Admin: http://localhost/Ban_linh_kien/admin/
+
+
+CÁCH 2: SỬ DỤNG XAMPP
+-------------------------------------------------------------
+Bước 1: Giải nén thư mục 'Ban_linh_kien' vào thư mục htdocs của XAMPP:
+        Đường dẫn: C:\xampp\htdocs\Ban_linh_kien
+
+Bước 2: Mở XAMPP Control Panel và nhấn "Start" cho cả 2 module Apache và MySQL.
+
+Bước 3: Nhập cơ sở dữ liệu:
+        - Truy cập http://localhost/phpmyadmin/ trên trình duyệt.
+        - Chọn tab "Import" -> Chọn file 'database.sql' từ thư mục 'Ban_linh_kien'.
+        - Nhấn "Import" (hoặc "Go").
+
+Bước 4: Kiểm tra file .env:
+        - Đảm bảo DB_USER=root, DB_PASS= (để trống mật khẩu nếu dùng mặc định của XAMPP).
+
+Bước 5: Truy cập:
+        - Khách hàng: http://localhost/Ban_linh_kien/
+        - Quản trị: http://localhost/Ban_linh_kien/admin/
+
+
+CÁCH 3: CHẠY BẰNG LỆNH PHP BUILT-IN SERVER (KHÔNG CẦN CÀI APACHE)
+-------------------------------------------------------------
+Bước 1: Đảm bảo dịch vụ MySQL đang chạy (qua Laragon, XAMPP hoặc MySQL Service)
+        và đã import file 'database.sql'.
+Bước 2: Mở PowerShell hoặc Command Prompt tại thư mục dự án 'Ban_linh_kien'.
+Bước 3: Chạy lệnh sau:
+        php -S localhost:8082 router.php
+Bước 4: Truy cập trên trình duyệt:
+        - Trang chủ khách hàng: http://localhost:8082/
+        - Trang quản trị Admin: http://localhost:8082/admin/
+
+
+4. CÁC TÍNH NĂNG NỔI BẬT TRONG HỆ THỐNG
+--------------------------------------------------------------------------------
+- Phía Khách hàng:
+  + Xem danh mục sản phẩm, tìm kiếm thông minh, lọc nâng cao theo giá và thương hiệu.
+  + Đặt hàng, giỏ hàng, thanh toán COD / Chuyển khoản QR ngân hàng (VietQR).
+  + Kiểm tra trạng thái đơn hàng và tra cứu lịch sử mua sắm.
+  + Tính năng Xây dựng cấu hình máy tính (PC Builder) tương thích linh kiện.
+  + Trợ lý ảo AI Chatbot tư vấn linh kiện PC.
+  + Tích lũy điểm thưởng thành viên (Loyalty Points), áp dụng mã giảm giá (Voucher).
+  + Đánh giá, bình luận sản phẩm, danh sách yêu thích (Wishlist).
+
+- Phía Quản trị (Admin):
+  + Dashboard biểu đồ thống kê doanh thu, đơn hàng, khách hàng trực quan.
+  + Quản lý sản phẩm, biến thể, hình ảnh và danh mục.
+  + Quản lý kho hàng chuyên sâu, theo dõi Serial Number từng linh kiện.
+  + Quản lý và duyệt đơn hàng theo quy trình trạng thái chuẩn.
+  + Quản lý khách hàng, khoá tài khoản vi phạm.
+  + Quản lý mã giảm giá, chương trình khuyến mãi Flash Sale.
+  + Báo cáo kiểm toán Audit Log bảo mật.
+
+
+5. XỬ LÝ SỰ CỐ THƯỜNG GẶP (TROUBLESHOOTING)
+--------------------------------------------------------------------------------
+- Lỗi "Connection failed / SQLSTATE[HY000] [1045]":
+  -> Sai mật khẩu tài khoản MySQL. Bạn mở file '.env', kiểm tra dòng 'DB_PASS='
+     và chỉnh lại cho đúng mật khẩu MySQL máy của bạn (nếu không có mật khẩu thì để trống: DB_PASS=).
+
+- Lỗi 404 khi bấm vào các liên kết con trên Apache:
+  -> Hãy bật module 'rewrite_module' (mod_rewrite) trong Apache và chắc chắn
+     AllowOverride All đã được bật để file .htaccess hoạt động. (Laragon đã bật sẵn).
+
+- Yêu cầu môi trường PHP:
+  -> PHP >= 8.0 với các extension: pdo_mysql, mbstring, curl, openssl.
+================================================================================

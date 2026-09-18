@@ -309,7 +309,14 @@ $statusColor = [
                 </div>
                 <div class="ud-info-row">
                     <span class="ud-info-label"><i class="fas fa-map-marker-alt" style="color:var(--text-faint);margin-right:5px;"></i>Địa chỉ</span>
-                    <span class="ud-info-value"><?php echo htmlspecialchars($userDetail['address'] ?? '—'); ?></span>
+                    <span class="ud-info-value" id="addrDisplay">
+                        <?php echo htmlspecialchars($userDetail['address'] ?? '—'); ?>
+                        <button type="button" onclick="openAddrEdit()" style="margin-left:8px;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;border:1px solid var(--border-subtle);background:var(--bg-elevated);color:var(--text-muted);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;"
+                                onmouseover="this.style.borderColor='#6366f1';this.style.color='#6366f1';"
+                                onmouseout="this.style.borderColor='var(--border-subtle)';this.style.color='var(--text-muted)';">
+                            <i class="fas fa-pen"></i> Sửa
+                        </button>
+                    </span>
                 </div>
                 <div class="ud-info-row">
                     <span class="ud-info-label"><i class="fas fa-calendar" style="color:var(--text-faint);margin-right:5px;"></i>Ngày tạo</span>
@@ -347,7 +354,7 @@ $statusColor = [
 
         <!-- Right: order history + personal vouchers -->
         <?php
-        // Láº¥y voucher cÃ¡ nhÃ¢n cho user nÃ y
+        // Lấy voucher cá nhân cho user này
         $personalVouchers = [];
         try {
             $pvStmt = $db->prepare("SELECT * FROM vouchers WHERE user_id = ? AND is_active = 1 ORDER BY id DESC LIMIT 10");
@@ -458,6 +465,58 @@ $statusColor = [
     </div>
     <?php endif; ?>
 
+    <!-- Address Edit Card (hidden by default) -->
+    <div id="addrEditCard" style="display:none;margin-top:24px;">
+        <div class="ud-card">
+            <div class="ud-card-header">
+                <i class="fas fa-map-marker-alt" style="color:#6366f1;"></i> Chỉnh sửa địa chỉ
+                <span style="margin-left:auto;font-size:11px;color:var(--text-muted);font-weight:400;">
+                    <i class="fas fa-info-circle"></i> Chọn tỉnh/thành, quận/huyện, phường/xã
+                </span>
+            </div>
+            <div class="ud-card-body">
+                <form method="POST" action="?page=users&action=edit_address&id=<?php echo $userDetail['id'] ?? 0; ?>">
+                    <div class="addr-edit-grid">
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <label style="font-size:12px;font-weight:600;color:var(--text-secondary);">Tỉnh/Thành phố <span style="color:#ef4444;">*</span></label>
+                            <select name="province_id" id="admProvince" class="addr-select" required onchange="admLoadDistricts(this.value); admUpdateName('province', this)">
+                                <option value="">-- Chọn tỉnh/thành --</option>
+                            </select>
+                            <input type="hidden" name="province" id="admProvinceName" value="">
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <label style="font-size:12px;font-weight:600;color:var(--text-secondary);">Quận/Huyện <span style="color:#ef4444;">*</span></label>
+                            <select name="district_id" id="admDistrict" class="addr-select" required onchange="admLoadWards(this.value); admUpdateName('district', this)" disabled>
+                                <option value="">-- Chọn quận/huyện --</option>
+                            </select>
+                            <input type="hidden" name="district" id="admDistrictName" value="">
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <label style="font-size:12px;font-weight:600;color:var(--text-secondary);">Phường/Xã <span style="color:#ef4444;">*</span></label>
+                            <select name="ward_id" id="admWard" class="addr-select" required onchange="admUpdateName('ward', this)" disabled>
+                                <option value="">-- Chọn phường/xã --</option>
+                            </select>
+                            <input type="hidden" name="ward" id="admWardName" value="">
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <label style="font-size:12px;font-weight:600;color:var(--text-secondary);">Số nhà, tên đường <span style="color:#ef4444;">*</span></label>
+                            <input type="text" name="address_detail" id="admAddrDetail" class="addr-input"
+                                   placeholder="Số 123, đường ABC...">
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border-subtle);">
+                        <button type="button" onclick="closeAddrEdit()" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Huỷ
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Lưu địa chỉ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </main>
 
 <!-- Block Confirm Modal -->
@@ -490,7 +549,170 @@ $statusColor = [
     </div>
 </div>
 
+<style>
+/* Address edit select/input styling for admin */
+.addr-select {
+    padding: 9px 12px;
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 10px center;
+    outline: none;
+    transition: all .2s;
+    width: 100%;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    padding-right: 32px;
+}
+.addr-select:focus {
+    border-color: #6366f1;
+    background-color: var(--bg-surface);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+.addr-select:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    background-color: var(--bg-elevated);
+}
+.addr-input {
+    padding: 9px 12px;
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    outline: none;
+    transition: all .2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+.addr-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+.addr-edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+@media (max-width: 600px) {
+    .addr-edit-grid { grid-template-columns: 1fr; }
+}
+</style>
+
 <script>
+// ── Admin Address Cascading Dropdown ──
+var ADM_API = '<?php echo BASE_URL; ?>api_get_addresses.php';
+
+function openAddrEdit() {
+    var card = document.getElementById('addrEditCard');
+    card.style.display = 'block';
+    admLoadProvinces();
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function closeAddrEdit() {
+    document.getElementById('addrEditCard').style.display = 'none';
+}
+
+function admUpdateName(field, sel) {
+    var name = sel.options[sel.selectedIndex]?.getAttribute('data-name') || '';
+    document.getElementById('adm' + field.charAt(0).toUpperCase() + field.slice(1) + 'Name').value = name;
+}
+
+function admLoadProvinces() {
+    var sel = document.getElementById('admProvince');
+    sel.innerHTML = '<option value="">-- Đang tải... --</option>';
+    sel.disabled = true;
+    fetch(ADM_API + '?level=provinces')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            sel.innerHTML = '<option value="">-- Chọn tỉnh/thành --</option>';
+            data.forEach(function(p) {
+                var opt = document.createElement('option');
+                opt.value = p.code;
+                opt.setAttribute('data-name', p.name);
+                opt.textContent = p.type + ' ' + p.name;
+                sel.appendChild(opt);
+            });
+            sel.disabled = false;
+        })
+        .catch(function() {
+            sel.innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
+            sel.disabled = false;
+        });
+}
+
+function admLoadDistricts(provinceId) {
+    var sel = document.getElementById('admDistrict');
+    var wardSel = document.getElementById('admWard');
+    wardSel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+    wardSel.disabled = true;
+    document.getElementById('admWardName').value = '';
+    if (!provinceId) {
+        sel.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+        sel.disabled = true;
+        document.getElementById('admDistrictName').value = '';
+        return;
+    }
+    sel.innerHTML = '<option value="">-- Đang tải... --</option>';
+    sel.disabled = true;
+    document.getElementById('admDistrictName').value = '';
+    fetch(ADM_API + '?level=districts&province_id=' + encodeURIComponent(provinceId))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            sel.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+            data.forEach(function(d) {
+                var opt = document.createElement('option');
+                opt.value = d.code;
+                opt.setAttribute('data-name', d.name);
+                opt.textContent = d.type + ' ' + d.name;
+                sel.appendChild(opt);
+            });
+            sel.disabled = false;
+        })
+        .catch(function() {
+            sel.innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
+            sel.disabled = false;
+        });
+}
+
+function admLoadWards(districtId) {
+    var sel = document.getElementById('admWard');
+    if (!districtId) {
+        sel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+        sel.disabled = true;
+        document.getElementById('admWardName').value = '';
+        return;
+    }
+    sel.innerHTML = '<option value="">-- Đang tải... --</option>';
+    sel.disabled = true;
+    document.getElementById('admWardName').value = '';
+    fetch(ADM_API + '?level=wards&district_id=' + encodeURIComponent(districtId))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            sel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+            data.forEach(function(w) {
+                var opt = document.createElement('option');
+                opt.value = w.code;
+                opt.setAttribute('data-name', w.name);
+                opt.textContent = w.type + ' ' + w.name;
+                sel.appendChild(opt);
+            });
+            sel.disabled = false;
+        })
+        .catch(function() {
+            sel.innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
+            sel.disabled = false;
+        });
+}
+
 function openBlockModal() {
     document.getElementById('blockModal').classList.add('open');
     document.body.style.overflow = 'hidden';

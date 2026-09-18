@@ -482,6 +482,37 @@ window.currentProduct = {
 </div>
 <?php endif; ?>
 
+<?php if (!empty($relatedCombos)): ?>
+<div class="container" style="margin-bottom:40px;">
+<div style="background:white;border-radius:14px;padding:28px 30px;box-shadow:0 2px 16px rgba(0,0,0,.07);">
+  <h3 style="margin:0 0 20px;font-size:18px;font-weight:800;color:#1e293b;display:flex;align-items:center;gap:10px;">
+    <span style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;width:38px;height:38px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;">🎁</span>
+    Combo ưu đãi có sản phẩm này
+  </h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+  <?php foreach ($relatedCombos as $rc): 
+    $rcSavings = ($rc['original_price'] > 0 && $rc['combo_price'] > 0) ? round((1 - $rc['combo_price']/$rc['original_price'])*100) : 0;
+  ?>
+  <a href="<?php echo BASE_URL; ?>combo.php" style="text-decoration:none;display:block;background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1.5px solid #c4b5fd;border-radius:14px;padding:18px 20px;transition:all .2s;" onmouseover="this.style.borderColor='#8b5cf6';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(139,92,246,.15)'" onmouseout="this.style.borderColor='#c4b5fd';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+    <div style="font-size:15px;font-weight:800;color:#5b21b6;margin-bottom:8px;">🎁 <?php echo htmlspecialchars($rc['name']); ?></div>
+    <div style="font-size:13px;color:#6d28d9;"><?php echo (int)$rc['item_count']; ?> sản phẩm</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+      <?php if ($rc['original_price'] > 0): ?>
+      <span style="font-size:11px;color:#8b5cf6;text-decoration:line-through;"><?php echo number_format($rc['original_price'],0,',','.'); ?>₫</span>
+      <?php endif; ?>
+      <span style="font-size:16px;font-weight:800;color:#059669;"><?php echo number_format($rc['combo_price'],0,',','.'); ?>₫</span>
+      <?php if ($rcSavings > 0): ?>
+      <span style="background:#059669;color:white;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700;">-<?php echo $rcSavings; ?>%</span>
+      <?php endif; ?>
+    </div>
+    <div style="margin-top:10px;font-size:12px;font-weight:600;color:#7c3aed;">Xem chi tiết →</div>
+  </a>
+  <?php endforeach; ?>
+  </div>
+</div>
+</div>
+<?php endif; ?>
+
 <?php // ===== SO SANH ===== ?>
 <!-- Thanh so sánh sticky -->
 <div id="compare-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:3px solid #6366f1;padding:12px 20px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,.12);align-items:center;gap:12px;flex-wrap:wrap;">

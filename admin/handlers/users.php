@@ -35,10 +35,27 @@ if ($action === 'unblock' && isset($_GET['id'])) {
     exit;
 }
 
+if ($action === 'edit_address' && isset($_GET['id']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $uid        = intval($_GET['id']);
+    $province   = trim($_POST['province'] ?? '');
+    $district   = trim($_POST['district'] ?? '');
+    $ward       = trim($_POST['ward'] ?? '');
+    $addrDetail = trim($_POST['address_detail'] ?? '');
+
+    // Build full address string
+    $parts = array_filter([$addrDetail, $ward, $district, $province]);
+    $fullAddress = implode(', ', $parts);
+
+    $admin->updateUserAddress($uid, $fullAddress);
+    header('Location: ' . BASE_URL . 'admin/?page=users&action=view&id=' . $uid . '&success=address_updated');
+    exit;
+}
+
 if (isset($_GET['success'])) {
     $msgMap = [
-        'blocked'   => 'Đã khoá tài khoản người dùng.',
-        'unblocked' => 'Đã mở khoá tài khoản người dùng.',
+        'blocked'         => 'Đã khoá tài khoản người dùng.',
+        'unblocked'       => 'Đã mở khoá tài khoản người dùng.',
+        'address_updated' => 'Đã cập nhật địa chỉ người dùng.',
     ];
     $successMessage = $msgMap[$_GET['success']] ?? '';
 }

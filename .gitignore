@@ -23,3 +23,11 @@ logs/*.bak
 # Sensitive config backup
 config.php.bak
 *.php.bak
+backup_*.sql
+
+# Application Cache
+cache/*
+!cache/.gitkeep
+
+# Local AI workspace & scratch
+.agents/

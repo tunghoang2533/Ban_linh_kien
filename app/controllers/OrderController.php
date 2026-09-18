@@ -54,6 +54,27 @@ class OrderController {
 
         $orderItems = $this->orderModel->getOrderItems($orderId);
 
+        // ── Lấy timeline vận chuyển cho user ──
+        $db = $this->orderModel->getDb();
+
+        // Lịch sử trạng thái đơn hàng
+        $stmt = $db->prepare("SELECT * FROM order_status_history WHERE order_id = ? ORDER BY created_at ASC");
+        $stmt->execute([$orderId]);
+        $orderStatusHistory = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // Shipping tracking events
+        $shippingOrder = null;
+        $trackingEvents = [];
+        $soStmt = $db->prepare("SELECT * FROM shipping_orders WHERE order_id = ? ORDER BY id DESC LIMIT 1");
+        $soStmt->execute([$orderId]);
+        $shippingOrder = $soStmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($shippingOrder) {
+            $evtStmt = $db->prepare("SELECT * FROM shipping_tracking_events WHERE order_id = ? AND shipping_order_id = ? ORDER BY event_date ASC");
+            $evtStmt->execute([$orderId, $shippingOrder['id']]);
+            $trackingEvents = $evtStmt->fetchAll(\PDO::FETCH_ASSOC);
+        }
+
         include __DIR__ . '/../views/header.php';
         include __DIR__ . '/../views/orders/order_detail_view.php';
         include __DIR__ . '/../views/footer.php';

@@ -324,6 +324,9 @@
                     <a href="lichsu.php" class="quicklink-item ql-blue">
                         <i class="fa fa-history"></i> Lịch sử đơn hàng
                     </a>
+                    <a href="diachigiaohang.php" class="quicklink-item ql-blue">
+                        <i class="fa fa-location-dot"></i> Địa chỉ giao hàng
+                    </a>
                     <a href="doimatkhau.php" class="quicklink-item ql-green">
                         <i class="fa fa-lock"></i> Đổi mật khẩu
                     </a>

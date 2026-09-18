@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Helpers\CsrfHelper;
+use App\Helpers\ComboHelper;
 use App\Models\ProductModel;
 use App\Models\ProductCommentModel;
 
@@ -31,8 +32,17 @@ class ProductController {
             $totalReviews = $ratingInfo['total_reviews'] ?? 0;
 
             $fbtProducts = [];
+            $relatedCombos = [];
             if ($product) {
                 $fbtProducts = $this->productModel->getFrequentlyBoughtTogether($id, 4);
+                // Lấy combo có chứa sản phẩm này
+                try {
+                    $db = $this->productModel->getDb();
+                    $comboHelper = new ComboHelper($db);
+                    $relatedCombos = $comboHelper->getCombosByProductId($id, 3);
+                } catch (\Exception $e) {
+                    $relatedCombos = [];
+                }
             }
 
             if ($product) {

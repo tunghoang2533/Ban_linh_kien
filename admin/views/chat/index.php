@@ -492,7 +492,10 @@ $(document).ready(function() {
         var $btn = $(this).find('button[type="submit"]');
         $btn.prop('disabled', true);
 
-        var postData = { conversation_id: conversationId, message: message || '' };
+        var postData = {
+            conversation_id: conversationId,
+            message: message || ''
+        };
         if (selectedProduct) {
             postData.product_ref = JSON.stringify(selectedProduct);
         }
@@ -505,6 +508,8 @@ $(document).ready(function() {
                     $('#chatProductPreview').hide();
                     showToast('✓ Đã gửi tin nhắn');
                     loadMessages(conversationId);
+                } else if (response.error) {
+                    showToast('⚠ ' + response.error);
                 }
                 $btn.prop('disabled', false);
             }, 'json'

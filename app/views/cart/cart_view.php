@@ -1213,5 +1213,38 @@ function setQty(id, rawVal) {
         });
 }
 </script>
+
+<?php if (!empty($_SESSION['cart'])): ?>
+<!-- Abandoned Cart Tracking: ping server để ghi nhận hoạt động -->
+<script>
+(function() {
+    // Ping server sau 30s để ghi nhận user có sản phẩm trong giỏ
+    // Server tự đọc giỏ hàng từ session, không cần gửi cart_data
+    var trackingUrl = '<?php echo BASE_URL; ?>giohang.php?action=track_cart&t=' + Date.now();
+
+    // Ping server sau 30s — lightweight endpoint, không render full page
+    setTimeout(function() {
+        try {
+            navigator.sendBeacon(trackingUrl);
+        } catch(e) {}
+    }, 30000);
+
+    // Theo dõi sự kiện rời trang
+    var hasCheckedOut = false;
+    var checkoutBtn = document.getElementById('checkoutBtn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', function() { hasCheckedOut = true; });
+    }
+    window.addEventListener('beforeunload', function() {
+        var cartRows = document.querySelectorAll('.cart-row');
+        if (cartRows.length > 0 && !hasCheckedOut) {
+            try {
+                navigator.sendBeacon(trackingUrl);
+            } catch(e) {}
+        }
+    });
+})();
+</script>
+<?php endif; ?>
     </div>
 </div>

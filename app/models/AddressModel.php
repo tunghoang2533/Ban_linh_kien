@@ -13,9 +13,14 @@ class AddressModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM user_addresses WHERE id=?");
-        $stmt->execute([$id]);
+    public function getById($id, $userId = null) {
+        if ($userId !== null) {
+            $stmt = $this->db->prepare("SELECT * FROM user_addresses WHERE id=? AND user_id=?");
+            $stmt->execute([$id, $userId]);
+        } else {
+            $stmt = $this->db->prepare("SELECT * FROM user_addresses WHERE id=?");
+            $stmt->execute([$id]);
+        }
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 

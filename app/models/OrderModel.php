@@ -10,16 +10,33 @@ class OrderModel {
         $this->db = $db;
     }
 
+    /**
+     * Expose DB connection for related queries
+     */
+    public function getDb() {
+        return $this->db;
+    }
+
     public function createOrder($userId, $fullName, $email, $phone, $address, $totalMoney, $cart, $voucherCode = null, $discountAmount = 0, $shippingFee = 0, $paymentMethod = 'cod') {
         try {
             $this->db->beginTransaction();
 
-            $sql = "INSERT INTO orders (user_id, customer_name, customer_email, customer_phone, customer_address, total_amount, voucher_code, discount_amount, shipping_fee, payment_method, status) 
-                    VALUES (:u_id, :name, :email, :phone, :addr, :total, :vcode, :disc, :ship, :pmethod, 'pending')";
+            $accessToken = sprintf(
+                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0x0fff) | 0x4000,
+                mt_rand(0, 0x3fff) | 0x8000,
+                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+            );
+
+            $sql = "INSERT INTO orders (user_id, access_token, customer_name, customer_email, customer_phone, customer_address, total_amount, voucher_code, discount_amount, shipping_fee, payment_method, status) 
+                    VALUES (:u_id, :token, :name, :email, :phone, :addr, :total, :vcode, :disc, :ship, :pmethod, 'pending')";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'u_id'    => $userId,
+                'token'   => $accessToken,
                 'name'    => $fullName,
                 'email'   => $email,
                 'phone'   => $phone,
@@ -28,7 +45,7 @@ class OrderModel {
                 'vcode'   => $voucherCode,
                 'disc'    => $discountAmount,
                 'ship'    => $shippingFee,
-                'pmethod' => in_array($paymentMethod, ['cod','bank']) ? $paymentMethod : 'cod'
+                'pmethod' => in_array($paymentMethod, ['cod','bank','vnpay']) ? $paymentMethod : 'cod'
             ]);
             
             $orderId = $this->db->lastInsertId();

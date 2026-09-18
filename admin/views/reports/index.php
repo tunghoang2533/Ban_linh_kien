@@ -30,7 +30,7 @@ if (isset($_GET['export'])) {
     header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="bao-cao-' . $from . '-' . $to . '.csv"');
     echo "\xEF\xBB\xBF"; // BOM UTF-8
-    echo "NgÃ y,Sá»‘ Ä‘Æ¡n,Doanh thu\n";
+    echo "Ngày,Số đơn,Doanh thu\n";
     foreach ($revenueData as $r) echo "{$r['date']},{$r['orders']},{$r['revenue']}\n";
     exit;
 }
@@ -45,13 +45,20 @@ $statusColors = ['pending'=>'#f59e0b','confirmed'=>'#6366f1','shipping'=>'#06b6d
 
 <div class="page-header">
     <div class="page-header-left">
-        <h1><i class="fas fa-chart-bar" style="color:var(--accent-light);margin-right:8px;"></i>BÃ¡o cÃ¡o nÃ¢ng cao</h1>
-        <p>Thá»‘ng kÃª doanh thu, Ä‘Æ¡n hÃ ng vÃ  hiá»‡u suáº¥t kinh doanh</p>
+        <h1><i class="fas fa-chart-bar" style="color:var(--accent-light);margin-right:8px;"></i>Báo cáo nâng cao</h1>
+        <p>Thống kê doanh thu, đơn hàng và hiệu suất kinh doanh</p>
     </div>
-    <a href="?page=reports&period=<?php echo $period; ?>&from=<?php echo $from; ?>&to=<?php echo $to; ?>&export=1"
-       class="btn btn-success">
-        <i class="fas fa-file-csv"></i> Xuáº¥t CSV
-    </a>
+    <div style="display:flex;gap:8px;">
+        <a href="?page=export&type=report_revenue&from=<?php echo $from; ?>&to=<?php echo $to; ?>"
+           class="btn btn-success">
+            <i class="fas fa-file-excel"></i> Xuất Excel
+        </a>
+        <a href="?page=reports&period=<?php echo $period; ?>&from=<?php echo $from; ?>&to=<?php echo $to; ?>&export=1"
+           class="btn btn-sm"
+           style="background:var(--bg-elevated);color:var(--text-muted);border:1px solid var(--border-subtle);display:inline-flex;align-items:center;gap:4px;">
+            <i class="fas fa-file-csv"></i> CSV
+        </a>
+    </div>
 </div>
 
 <!-- Tabs -->
@@ -62,7 +69,7 @@ $statusColors = ['pending'=>'#f59e0b','confirmed'=>'#6366f1','shipping'=>'#06b6d
     </a>
     <a href="?page=reports&tab=profit&period=<?php echo $period; ?>"
        style="padding:10px 20px;font-size:13.5px;font-weight:600;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s;">
-        <i class="fas fa-coins" style="margin-right:6px;"></i>Lá»£i nhuáº­n
+        <i class="fas fa-coins" style="margin-right:6px;"></i>Lợi nhuận
     </a>
 </div>
 
@@ -70,7 +77,7 @@ $statusColors = ['pending'=>'#f59e0b','confirmed'=>'#6366f1','shipping'=>'#06b6d
 <div style="background:var(--bg-surface);border-radius:var(--radius-lg);border:1px solid var(--border-subtle);padding:14px 18px;margin-bottom:20px;">
     <form method="GET" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
         <input type="hidden" name="page" value="reports">
-        <?php foreach (['today'=>'HÃ´m nay','7'=>'7 ngÃ y','30'=>'30 ngÃ y','month'=>'ThÃ¡ng nÃ y','custom'=>'TÃ¹y chá»n'] as $val=>$label): ?>
+        <?php foreach (['today'=>'Hôm nay','7'=>'7 ngày','30'=>'30 ngày','month'=>'Tháng này','custom'=>'Tùy chọn'] as $val=>$label): ?>
         <a href="?page=reports&period=<?php echo $val; ?>"
            style="padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;text-decoration:none;border:1px solid;transition:all .15s;
            <?php echo $period===$val
@@ -82,21 +89,21 @@ $statusColors = ['pending'=>'#f59e0b','confirmed'=>'#6366f1','shipping'=>'#06b6d
         <input type="hidden" name="period" value="custom">
         <input type="date" name="from" value="<?php echo $customFrom ?: $from; ?>"
                class="form-control" style="width:auto;padding:7px 12px;font-size:13px;">
-        <span style="color:var(--text-muted);font-size:12px;">Ä‘áº¿n</span>
+        <span style="color:var(--text-muted);font-size:12px;">đến</span>
         <input type="date" name="to" value="<?php echo $customTo ?: $to; ?>"
                class="form-control" style="width:auto;padding:7px 12px;font-size:13px;">
-        <button type="submit" class="btn btn-primary btn-sm">Lá»c</button>
+        <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
     </form>
 </div>
 
-<!-- KPI Cards â€” Bento style -->
+<!-- KPI Cards — Bento style -->
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
 <?php
 $kpis = [
-    ['Tá»•ng doanh thu',  'fas fa-coins',        'rgba(99,102,241,0.15)',  '#818cf8', number_format($summary['total_revenue']??0,0,',','.').'Ä‘'],
-    ['Tá»•ng Ä‘Æ¡n hÃ ng',  'fas fa-shopping-cart', 'rgba(6,182,212,0.15)',   '#22d3ee', number_format($summary['total_orders']??0,0,',','.')],
-    ['ÄÆ¡n trung bÃ¬nh', 'fas fa-chart-line',    'rgba(34,197,94,0.15)',   '#4ade80', number_format($summary['avg_order']??0,0,',','.').'Ä‘'],
-    ['KhÃ¡ch hÃ ng má»›i', 'fas fa-user-plus',     'rgba(245,158,11,0.15)',  '#fbbf24', $newCustomers],
+    ['Tổng doanh thu',  'fas fa-coins',        'rgba(99,102,241,0.15)',  '#818cf8', number_format($summary['total_revenue']??0,0,',','.').'đ'],
+    ['Tổng đơn hàng',  'fas fa-shopping-cart', 'rgba(6,182,212,0.15)',   '#22d3ee', number_format($summary['total_orders']??0,0,',','.')],
+    ['Đơn trung bình', 'fas fa-chart-line',    'rgba(34,197,94,0.15)',   '#4ade80', number_format($summary['avg_order']??0,0,',','.').'đ'],
+    ['Khách hàng mới', 'fas fa-user-plus',     'rgba(245,158,11,0.15)',  '#fbbf24', $newCustomers],
 ];
 foreach ($kpis as [$label,$icon,$bg,$color,$val]):
 ?>
@@ -119,7 +126,7 @@ foreach ($kpis as [$label,$icon,$bg,$color,$val]):
     <!-- Revenue Chart -->
     <div style="background:var(--bg-surface);border-radius:var(--radius-lg);border:1px solid var(--border-subtle);padding:20px;">
         <h5 style="margin:0 0 18px;font-size:14px;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:7px;">
-            <i class="fas fa-chart-line" style="color:var(--accent-light);"></i> Doanh thu theo ngÃ y
+            <i class="fas fa-chart-line" style="color:var(--accent-light);"></i> Doanh thu theo ngày
         </h5>
         <canvas id="revenueChart" height="200"></canvas>
     </div>
@@ -127,7 +134,7 @@ foreach ($kpis as [$label,$icon,$bg,$color,$val]):
     <!-- Status Pie -->
     <div style="background:var(--bg-surface);border-radius:var(--radius-lg);border:1px solid var(--border-subtle);padding:20px;">
         <h5 style="margin:0 0 18px;font-size:14px;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:7px;">
-            <i class="fas fa-circle-half-stroke" style="color:#22d3ee;"></i> Tráº¡ng thÃ¡i Ä‘Æ¡n hÃ ng
+            <i class="fas fa-circle-half-stroke" style="color:#22d3ee;"></i> Trạng thái đơn hàng
         </h5>
         <canvas id="statusChart"></canvas>
     </div>
@@ -137,10 +144,10 @@ foreach ($kpis as [$label,$icon,$bg,$color,$val]):
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
     <div style="background:var(--bg-surface);border-radius:var(--radius-lg);border:1px solid var(--border-subtle);padding:20px;">
         <h5 style="margin:0 0 16px;font-size:14px;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:7px;">
-            <i class="fas fa-fire" style="color:#f97316;"></i> Top 10 sáº£n pháº©m bÃ¡n cháº¡y
+            <i class="fas fa-fire" style="color:#f97316;"></i> Top 10 sản phẩm bán chạy
         </h5>
         <?php if (empty($topProducts)): ?>
-        <p style="color:var(--text-muted);text-align:center;padding:20px 0;font-size:13px;">ChÆ°a cÃ³ dá»¯ liá»‡u</p>
+        <p style="color:var(--text-muted);text-align:center;padding:20px 0;font-size:13px;">Chưa có dữ liệu</p>
         <?php else: foreach ($topProducts as $i => $p): ?>
         <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-subtle);">
             <span style="width:22px;height:22px;border-radius:50%;
@@ -155,8 +162,8 @@ foreach ($kpis as [$label,$icon,$bg,$color,$val]):
                 </p>
             </div>
             <div style="text-align:right;flex-shrink:0;">
-                <p style="margin:0;font-size:12px;font-weight:600;color:var(--accent-light);"><?php echo number_format($p['sold_qty']); ?> cÃ¡i</p>
-                <p style="margin:0;font-size:11px;color:var(--text-muted);"><?php echo number_format($p['revenue'],0,',','.'); ?>Ä‘</p>
+                <p style="margin:0;font-size:12px;font-weight:600;color:var(--accent-light);"><?php echo number_format($p['sold_qty']); ?> cái</p>
+                <p style="margin:0;font-size:11px;color:var(--text-muted);"><?php echo number_format($p['revenue'],0,',','.'); ?>đ</p>
             </div>
         </div>
         <?php endforeach; endif; ?>
@@ -164,12 +171,12 @@ foreach ($kpis as [$label,$icon,$bg,$color,$val]):
 
     <div style="background:var(--bg-surface);border-radius:var(--radius-lg);border:1px solid var(--border-subtle);padding:20px;">
         <h5 style="margin:0 0 16px;font-size:14px;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:7px;">
-            <i class="fas fa-exclamation-triangle" style="color:#f87171;"></i> Tá»“n kho tháº¥p (â‰¤5)
+            <i class="fas fa-exclamation-triangle" style="color:#f87171;"></i> Tồn kho thấp (≤5)
         </h5>
         <?php if (empty($lowStock)): ?>
         <div style="text-align:center;padding:20px 0;color:var(--success);">
             <i class="fas fa-check-circle" style="font-size:28px;margin-bottom:8px;display:block;"></i>
-            <span style="font-size:13px;">Táº¥t cáº£ sáº£n pháº©m cÃ³ hÃ ng Ä‘á»§</span>
+            <span style="font-size:13px;">Tất cả sản phẩm có hàng đủ</span>
         </div>
         <?php else: foreach ($lowStock as $p): ?>
         <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-subtle);">
@@ -181,7 +188,7 @@ foreach ($kpis as [$label,$icon,$bg,$color,$val]):
                 <?php echo $p['quantity']==0
                     ?'background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,.25);'
                     :'background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,.25);'; ?>">
-                <?php echo $p['quantity']==0?'Háº¿t hÃ ng':$p['quantity'].' cÃ²n'; ?>
+                <?php echo $p['quantity']==0?'Hết hàng':$p['quantity'].' còn'; ?>
             </span>
         </div>
         <?php endforeach; endif; ?>
@@ -201,7 +208,7 @@ new Chart(document.getElementById('revenueChart'), {
     data: {
         labels: <?php echo json_encode(array_map(fn($d) => date('d/m', strtotime($d)), $revLabels)); ?>,
         datasets: [{
-            label: 'Doanh thu (Ä‘)',
+            label: 'Doanh thu (đ)',
             data: <?php echo json_encode($revValues); ?>,
             borderColor: '#6366f1',
             backgroundColor: 'rgba(99,102,241,0.12)',
@@ -225,7 +232,7 @@ new Chart(document.getElementById('revenueChart'), {
                 borderColor: 'rgba(0,0,0,0.10)',
                 borderWidth: 1,
                 cornerRadius: 10,
-                callbacks: { label: ctx => new Intl.NumberFormat('vi-VN').format(ctx.parsed.y) + 'Ä‘' }
+                callbacks: { label: ctx => new Intl.NumberFormat('vi-VN').format(ctx.parsed.y) + 'đ' }
             }
         },
         scales: {
@@ -237,7 +244,7 @@ new Chart(document.getElementById('revenueChart'), {
 
 // Status pie chart
 <?php $pieColors = array_map(fn($s) => $statusColors[$s] ?? '#71717a', $statusLabels);
-$statusLabelMap = ['pending'=>'Chá» xÃ¡c nháº­n','confirmed'=>'ÄÃ£ xÃ¡c nháº­n','shipping'=>'Äang giao','delivered'=>'ÄÃ£ giao','cancelled'=>'ÄÃ£ há»§y','completed'=>'HoÃ n thÃ nh'];
+$statusLabelMap = ['pending'=>'Chờ xác nhận','confirmed'=>'Đã xác nhận','shipping'=>'Đang giao','delivered'=>'Đã giao','cancelled'=>'Đã hủy','completed'=>'Hoàn thành'];
 $labelsMapped = array_map(fn($s) => $statusLabelMap[$s] ?? $s, $statusLabels); ?>
 new Chart(document.getElementById('statusChart'), {
     type: 'doughnut',

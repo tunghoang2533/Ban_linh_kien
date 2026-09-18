@@ -8,7 +8,7 @@
             <div class="mt-3">
                 <form id="chat-form">
                     <div class="input-group">
-                        <input type="text" id="message-input" class="form-control" placeholder="Nhập tin nhắn..." required>
+                        <input type="text" id="message-input" class="form-control" placeholder="Nhập tin nhắn...">
                         <button type="submit" class="btn btn-primary">Gửi</button>
                     </div>
                 </form>
@@ -24,14 +24,26 @@ $(document).ready(function() {
     $('#chat-form').submit(function(e) {
         e.preventDefault();
         var message = $('#message-input').val().trim();
-        if (message) {
-            $.post('<?php echo BASE_URL; ?>chat.php', { action: 'send', message: message }, function(response) {
-                if (response.success) {
-                    $('#message-input').val('');
-                    loadMessages();
-                }
-            }, 'json');
-        }
+        if (!message) return;
+
+        var $btn = $(this).find('button[type="submit"]');
+        $btn.prop('disabled', true);
+
+        $.post('<?php echo BASE_URL; ?>chat.php', {
+            action: 'send',
+            message: message
+        }, function(response) {
+            if (response.success) {
+                $('#message-input').val('');
+                loadMessages();
+            } else if (response.error) {
+                alert('Lỗi: ' + response.error);
+            }
+            $btn.prop('disabled', false);
+        }, 'json').fail(function(xhr) {
+            console.error('Lỗi gửi:', xhr.status, xhr.responseText);
+            $btn.prop('disabled', false);
+        });
     });
 
     function loadMessages() {
@@ -47,8 +59,9 @@ $(document).ready(function() {
         chatMessages.empty();
         messages.forEach(function(msg) {
             var messageClass = msg.is_admin_reply ? 'text-end' : 'text-start';
-            var sender = msg.is_admin_reply ? 'Admin' : '<?php echo isset($_SESSION['user']['fullname']) ? $_SESSION['user']['fullname'] : 'Bạn'; ?>';
-            chatMessages.append('<div class="' + messageClass + '"><strong>' + sender + ':</strong> ' + msg.message + '<br><small>' + msg.created_at + '</small></div><br>');
+            var sender = msg.is_admin_reply ? 'Admin' : '<?php echo isset($_SESSION['full_name']) ? htmlspecialchars($_SESSION['full_name'], ENT_QUOTES) : 'Bạn'; ?>';
+            var safeMsg = $('<div>').text(msg.message).html();
+            chatMessages.append('<div class="' + messageClass + '"><strong>' + sender + ':</strong> ' + safeMsg + '<br><small>' + msg.created_at + '</small></div><br>');
         });
         chatMessages.scrollTop(chatMessages[0].scrollHeight);
     }

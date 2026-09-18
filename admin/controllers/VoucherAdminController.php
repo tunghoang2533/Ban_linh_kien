@@ -83,19 +83,19 @@ class VoucherAdminController {
         return $row;
     }
 
-    /** Láº¥y voucher cÃ¡ nhÃ¢n cho 1 user */
+    /** Lấy voucher cá nhân cho 1 user */
     public function getPersonalVouchers($userId) {
         $stmt = $this->db->prepare("SELECT * FROM vouchers WHERE user_id = ? ORDER BY id DESC");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /** Láº¥y danh sÃ¡ch user cho dropdown */
+    /** Lấy danh sách user cho dropdown */
     public function getAllUsers() {
         return $this->db->query("SELECT id, full_name, email FROM users ORDER BY full_name ASC")->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /** Äáº¿m sá»‘ voucher cÃ¡ nhÃ¢n */
+    /** Đếm số voucher cá nhân */
     public function countPersonalVouchers() {
         return (int)$this->db->query("SELECT COUNT(*) FROM vouchers WHERE user_id IS NOT NULL")->fetchColumn();
     }

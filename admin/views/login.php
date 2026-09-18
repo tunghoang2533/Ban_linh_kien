@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try { CsrfHelper::verify(); } catch (Exception $e) { $error = $e->getMessage(); }
     if (!$error) {
 
-    // â”€â”€ Rate limiting â€” cháº·n brute-force admin login â”€â”€
+    // ── Rate limiting — chặn brute-force admin login ──
     $rlKey = RateLimiter::ipKey('admin_login');
     try {
         RateLimiter::check($rlKey);
@@ -25,18 +25,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = trim($_POST['password'] ?? '');
 
     if ($username === '' || $password === '') {
-        $error = 'Vui lÃ²ng nháº­p Ä‘áº§y Ä‘á»§ tÃªn Ä‘Äƒng nháº­p vÃ  máº­t kháº©u.';
+        $error = 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.';
     } else {
-        // XÃ¡c thá»±c qua database â€” khÃ´ng cÃ²n hardcode
+        // Xác thực qua database — không còn hardcode
         $db        = Database::getInstance();
         $userModel = new UserModel($db);
         $user      = $userModel->login($username, $password);
 
         if ($user && (int)($user['is_admin'] ?? 0) === 1) {
-            // ÄÄƒng nháº­p admin há»£p lá»‡ â€” xÃ³a attempt
+            // Đăng nhập admin hợp lệ — xóa attempt
             RateLimiter::reset($rlKey);
 
-            // Chá»‘ng session fixation: táº¡o session ID má»›i sau login
+            // Chống session fixation: tạo session ID mới sau login
             session_regenerate_id(true);
 
             $_SESSION['user_id']        = $user['id'];
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header('Location: ../index.php');
             exit;
         } else {
-            // Sai â€” ghi nháº­n attempt
+            // Sai — ghi nhận attempt
             try {
                 RateLimiter::record($rlKey);
             } catch (Exception $e) {
@@ -56,8 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             if (!$error) {
                 $remaining = RateLimiter::remainingAttempts($rlKey);
-                $error = 'TÃªn Ä‘Äƒng nháº­p hoáº·c máº­t kháº©u khÃ´ng chÃ­nh xÃ¡c, hoáº·c tÃ i khoáº£n khÃ´ng cÃ³ quyá»n admin.'
-                    . ($remaining > 0 ? " (cÃ²n {$remaining} láº§n thá»­)" : '');
+                $error = 'Tên đăng nhập hoặc mật khẩu không chính xác, hoặc tài khoản không có quyền admin.'
+                    . ($remaining > 0 ? " (còn {$remaining} lần thử)" : '');
             }
         }
     }
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ÄÄƒng nháº­p Admin - <?php echo SITE_NAME ?? 'Ban Linh Kiá»‡n'; ?></title>
+    <title>Đăng nhập Admin - <?php echo SITE_NAME ?? 'Ban Linh Kiện'; ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -286,7 +286,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <i class="fas fa-microchip"></i>
             </div>
             <div class="brand-title">Admin Panel</div>
-            <div class="brand-sub">Ban Linh Kiá»‡n â€” Quáº£n trá»‹ há»‡ thá»‘ng</div>
+            <div class="brand-sub">Ban Linh Kiện — Quản trị hệ thống</div>
         </div>
 
         <div class="login-card">
@@ -300,26 +300,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form method="POST">
                 <?php echo CsrfHelper::field(); ?>
                 <div class="form-group">
-                    <label class="form-label" for="username">TÃªn Ä‘Äƒng nháº­p</label>
+                    <label class="form-label" for="username">Tên đăng nhập</label>
                     <div class="input-wrap">
                         <i class="fas fa-user input-icon"></i>
                         <input type="text" id="username" name="username" class="form-input"
-                               placeholder="Nháº­p tÃªn Ä‘Äƒng nháº­p" required autofocus>
+                               placeholder="Nhập tên đăng nhập" required autofocus>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="password">Máº­t kháº©u</label>
+                    <label class="form-label" for="password">Mật khẩu</label>
                     <div class="input-wrap">
                         <i class="fas fa-lock input-icon"></i>
                         <input type="password" id="password" name="password" class="form-input"
-                               placeholder="Nháº­p máº­t kháº©u" required>
+                               placeholder="Nhập mật khẩu" required>
                     </div>
                 </div>
 
                 <button type="submit" class="btn-login">
                     <i class="fas fa-arrow-right-to-bracket"></i>
-                    ÄÄƒng nháº­p
+                    Đăng nhập
                 </button>
             </form>
 
@@ -327,7 +327,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <a href="<?php echo BASE_URL ?? '/'; ?>" class="back-link">
                 <i class="fas fa-arrow-left"></i>
-                Quay láº¡i trang chá»§
+                Quay lại trang chủ
             </a>
         </div>
     </div>

@@ -1,6 +1,24 @@
 <?php
 // AssetHelper autoloaded via PSR-4 + class_alias
+// ── Load shop settings (nếu chưa được load bởi header.php) ──────
+if (!isset($shopSettings)) {
+    $shopSettings = [];
+    try {
+        if (isset($db) && $db instanceof PDO) {
+            $shopSettings = $db->query("SELECT setting_key, setting_value FROM shop_settings")
+                               ->fetchAll(PDO::FETCH_KEY_PAIR);
+        }
+    } catch (Exception $e) { /* silent fail */ }
+}
+if (!isset($shopName))    $shopName    = htmlspecialchars($shopSettings['shop_name']    ?? 'PC Store');
+if (!isset($shopHotline)) $shopHotline = htmlspecialchars($shopSettings['shop_hotline'] ?? '1900 100x');
+if (!isset($shopEmail))   $shopEmail   = htmlspecialchars($shopSettings['shop_email']   ?? 'contact@pcstore.vn');
+if (!isset($shopAddress)) $shopAddress = htmlspecialchars($shopSettings['shop_address'] ?? '123 Đường ABC, Hà Nội');
+if (!isset($shopFb))      $shopFb      = htmlspecialchars($shopSettings['shop_facebook'] ?? '#');
+if (!isset($shopYt))      $shopYt      = htmlspecialchars($shopSettings['shop_youtube']  ?? '#');
+if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_zalo']     ?? '#');
 ?>
+
 <style>
     /* ════════════════════════════════════════════════════════════
        PRODUCT QUICK VIEW MODAL
@@ -428,13 +446,14 @@
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
 
     .footer {
-        background: #0f172a;
-        color: #94a3b8;
+        background: var(--bg-page);
+        color: var(--txt-secondary);
         padding: 64px 0 0;
         margin-top: 80px;
         font-family: 'Outfit', sans-serif;
         font-size: 14px;
         line-height: 1.7;
+        border-top: 1px solid var(--border);
     }
 
     .footer-inner {
@@ -469,7 +488,7 @@
     .footer-brand .brand-name {
         font-size: 22px;
         font-weight: 800;
-        color: #ffffff;
+        color: var(--txt-primary);
         letter-spacing: -0.03em;
         display: flex;
         align-items: center;
@@ -490,7 +509,7 @@
         flex-shrink: 0;
     }
     .footer-brand p {
-        color: #64748b;
+        color: var(--txt-secondary);
         font-size: 13.5px;
         line-height: 1.65;
         margin-bottom: 20px;
@@ -507,9 +526,9 @@
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        background: rgba(255,255,255,0.05);
-        border: 1.5px solid rgba(255,255,255,0.1);
-        color: #94a3b8;
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border);
+        color: var(--txt-secondary);
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -518,15 +537,15 @@
         transition: all 0.18s ease;
     }
     .footer-social a:hover {
-        background: #2563eb;
-        border-color: #2563eb;
+        background: var(--accent);
+        border-color: var(--accent);
         color: #fff;
         transform: translateY(-3px);
     }
 
     /* Footer column headings */
     .footer-col h4 {
-        color: #e2e8f0;
+        color: var(--txt-primary);
         margin-bottom: 20px;
         font-size: 13px;
         font-weight: 700;
@@ -541,7 +560,7 @@
     .footer-col ul { list-style: none; padding: 0; margin: 0; }
     .footer-col ul li { margin-bottom: 10px; }
     .footer-col ul li a {
-        color: #64748b;
+        color: var(--txt-secondary);
         text-decoration: none;
         font-size: 14px;
         font-weight: 400;
@@ -550,18 +569,18 @@
         align-items: center;
         gap: 6px;
     }
-    .footer-col ul li a:hover { color: #e2e8f0; }
+    .footer-col ul li a:hover { color: var(--accent); }
     .footer-col ul li a::before {
         content: '';
         display: inline-block;
         width: 4px;
         height: 4px;
         border-radius: 50%;
-        background: #334155;
+        background: var(--border-strong);
         flex-shrink: 0;
         transition: background 0.18s ease;
     }
-    .footer-col ul li a:hover::before { background: #2563eb; }
+    .footer-col ul li a:hover::before { background: var(--accent); }
 
     /* Contact info */
     .footer-contact li {
@@ -569,7 +588,7 @@
         align-items: flex-start;
         gap: 10px;
         margin-bottom: 12px;
-        color: #64748b;
+        color: var(--txt-secondary);
         font-size: 13.5px;
     }
     .footer-contact li i {
@@ -583,7 +602,7 @@
     /* Divider */
     .footer-divider {
         border: none;
-        border-top: 1px solid rgba(255,255,255,0.06);
+        border-top: 1px solid var(--border);
         margin: 0;
     }
 
@@ -597,7 +616,7 @@
         flex-wrap: wrap;
     }
     .footer-bottom .copyright {
-        color: #475569;
+        color: var(--txt-tertiary);
         font-size: 13px;
     }
     .footer-bottom .footer-bottom-links {
@@ -606,21 +625,21 @@
         flex-wrap: wrap;
     }
     .footer-bottom .footer-bottom-links a {
-        color: #475569;
+        color: var(--txt-tertiary);
         font-size: 13px;
         text-decoration: none;
         transition: color 0.18s ease;
     }
-    .footer-bottom .footer-bottom-links a:hover { color: #e2e8f0; }
+    .footer-bottom .footer-bottom-links a:hover { color: var(--accent); }
 
     /* Back to top button */
     #goto-top-page {
         position: fixed;
         right: 24px;
         bottom: 24px;
-        background: #1e293b;
-        border: 1.5px solid rgba(255,255,255,0.1);
-        color: #94a3b8;
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border);
+        color: var(--txt-secondary);
         width: 44px;
         height: 44px;
         display: inline-flex;
@@ -629,14 +648,14 @@
         border-radius: 12px;
         cursor: pointer;
         font-size: 16px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+        box-shadow: var(--shadow-md);
         transition: all 0.18s ease;
         z-index: 100;
         text-decoration: none;
     }
     #goto-top-page:hover {
-        background: #2563eb;
-        border-color: #2563eb;
+        background: var(--accent);
+        border-color: var(--accent);
         color: #fff;
         transform: translateY(-3px);
     }
@@ -649,13 +668,20 @@
             <div class="footer-col footer-brand">
                 <a href="<?php echo BASE_URL; ?>index.php" class="brand-name">
                     <span class="brand-icon"><i class="fa fa-microchip"></i></span>
-                    PC Store
+                    <?php echo $shopName; ?>
                 </a>
                 <p>Chuyên cung cấp linh kiện máy tính chính hãng. Giao hàng toàn quốc, bảo hành tận nơi.</p>
                 <div class="footer-social">
-                    <a href="#" title="Facebook" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
-                    <a href="#" title="YouTube" aria-label="YouTube"><i class="fa fa-youtube"></i></a>
-                    <a href="#" title="Zalo" aria-label="Zalo"><i class="fa fa-comment"></i></a>
+                    <a href="<?php echo $shopFb !== '#' ? $shopFb : '#'; ?>" title="Facebook" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
+                    <a href="<?php echo $shopYt !== '#' ? $shopYt : '#'; ?>" title="YouTube" aria-label="YouTube"><i class="fa fa-youtube"></i></a>
+                    <?php
+                    $zaloHref = '#';
+                    if (!empty($shopSettings['shop_zalo']) && $shopSettings['shop_zalo'] !== '#') {
+                        $zaloNum = preg_replace('/[^0-9]/', '', $shopSettings['shop_zalo']);
+                        $zaloHref = $zaloNum ? 'https://zalo.me/' . $zaloNum : '#';
+                    }
+                    ?>
+                    <a href="<?php echo $zaloHref; ?>" title="Zalo" aria-label="Zalo"><i class="fa fa-comment"></i></a>
                 </div>
             </div>
 
@@ -687,15 +713,15 @@
                 <ul class="footer-contact">
                     <li>
                         <i class="fa fa-map-marker"></i>
-                        <span>123 Đường ABC, Hà Nội</span>
+                        <span><?php echo $shopAddress; ?></span>
                     </li>
                     <li>
                         <i class="fa fa-phone"></i>
-                        <span>Hotline: <strong style="color:#e2e8f0;">1900 100x</strong></span>
+                        <span>Hotline: <strong style="color:var(--txt-primary);"><?php echo $shopHotline; ?></strong></span>
                     </li>
                     <li>
                         <i class="fa fa-envelope-o"></i>
-                        <span>contact@pcstore.vn</span>
+                        <span><?php echo $shopEmail; ?></span>
                     </li>
                     <li>
                         <i class="fa fa-clock-o"></i>
@@ -710,7 +736,7 @@
 
     <div class="footer-inner">
         <div class="footer-bottom">
-            <p class="copyright">&copy; 2026 PC Store &mdash; Đồ án tốt nghiệp CNTT</p>
+            <p class="copyright">&copy; <?php echo date('Y'); ?> <?php echo $shopName; ?> &mdash; Đồ án tốt nghiệp CNTT</p>
             <div class="footer-bottom-links">
                 <a href="<?php echo BASE_URL; ?>dieukhoan.php">Điều khoản</a>
                 <a href="<?php echo BASE_URL; ?>chinh_sach.php#privacy">Bảo mật</a>
@@ -719,6 +745,7 @@
         </div>
     </div>
 </footer>
+
 
 <a class="fa fa-arrow-up" id="goto-top-page" onclick="window.scrollTo({top:0,behavior:'smooth'});" href="#" aria-label="Lên đầu trang"></a>
 

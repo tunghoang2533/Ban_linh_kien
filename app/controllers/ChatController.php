@@ -38,26 +38,30 @@ class ChatController {
     }
 
     public function sendMessage() {
-        if (!isset($_SESSION['user_id']) || !isset($_POST['message'])) {
-            echo json_encode(['success' => false]);
+        header('Content-Type: application/json');
+
+        if (!isset($_SESSION['user_id'])) {
+            echo json_encode(['success' => false, 'error' => 'Chưa đăng nhập']);
+            exit();
+        }
+
+        $message = trim($_POST['message'] ?? '');
+        if ($message === '') {
+            echo json_encode(['success' => false, 'error' => 'Tin nhắn không được rỗng']);
             exit();
         }
 
         $conversation = $this->conversationModel->getOrCreateConversation($_SESSION['user_id']);
         if (!$conversation) {
-            echo json_encode(['success' => false]);
+            echo json_encode(['success' => false, 'error' => 'Không tìm thấy cuộc trò chuyện']);
             exit();
         }
-
-        $message = trim($_POST['message']);
 
         // Gắn thông tin sản phẩm vào đầu tin nhắn nếu có
         if (!empty($_POST['product_ref'])) {
             $refJson = $_POST['product_ref'];
-            // Validate JSON hợp lệ
             $refData = json_decode($refJson, true);
             if (is_array($refData) && !empty($refData['id']) && !empty($refData['name'])) {
-                // Sanitize dữ liệu
                 $cleanRef = [
                     'id'    => intval($refData['id']),
                     'name'  => mb_substr(strip_tags($refData['name']), 0, 200),
@@ -70,24 +74,24 @@ class ChatController {
         }
 
         $messageId = $this->messageModel->sendMessage($conversation['id'], $_SESSION['user_id'], $message, false);
-
         echo json_encode(['success' => true, 'message_id' => $messageId]);
     }
 
     public function getMessages() {
+        header('Content-Type: application/json');
+
         if (!isset($_SESSION['user_id'])) {
-            echo json_encode(['success' => false]);
+            echo json_encode(['success' => false, 'error' => 'Chưa đăng nhập']);
             exit();
         }
 
         $conversation = $this->conversationModel->getOrCreateConversation($_SESSION['user_id']);
         if (!$conversation) {
-            echo json_encode(['success' => false]);
+            echo json_encode(['success' => false, 'error' => 'Không tìm thấy cuộc trò chuyện']);
             exit();
         }
         
         $messages = $this->messageModel->getMessages($conversation['id']);
-
         echo json_encode(['success' => true, 'messages' => $messages]);
     }
 }

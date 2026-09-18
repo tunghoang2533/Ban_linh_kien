@@ -145,7 +145,7 @@ $catColors = ['#6366f1','#f59e0b','#22c55e','#ef4444','#06b6d4','#ec4899','#8b5c
         </a>
         <?php endforeach; ?>
     </div>
-    <a href="?page=reports&tab=profit&period=<?php echo $profitPeriod; ?>&export_excel=1"
+    <a href="?page=export&type=report_profit&pfrom=<?php echo $pfrom; ?>&pto=<?php echo $pto; ?>"
        class="btn btn-success btn-sm" style="gap:6px;">
         <i class="fas fa-file-excel"></i> Xuất Excel
     </a>

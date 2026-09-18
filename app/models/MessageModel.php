@@ -27,10 +27,12 @@ class MessageModel {
             'is_admin_reply' => $isAdminReply ? 1 : 0
         ]);
 
+        $messageId = $this->db->lastInsertId();
+
         $conversationModel = new ConversationModel($this->db);
         $conversationModel->updateLastMessage($conversationId, $message);
 
-        return $this->db->lastInsertId();
+        return $messageId;
     }
 
     public function markAsRead($conversationId, $isAdmin = false) {

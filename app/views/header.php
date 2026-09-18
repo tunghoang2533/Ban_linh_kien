@@ -1,20 +1,48 @@
 <?php
 // AssetHelper autoloaded via PSR-4 + class_alias
+
+// ── Load shop settings từ DB (cache trong request) ──────────────
+if (!isset($shopSettings)) {
+    $shopSettings = [];
+    try {
+        if (isset($db) && $db instanceof PDO) {
+            $shopSettings = $db->query("SELECT setting_key, setting_value FROM shop_settings")
+                               ->fetchAll(PDO::FETCH_KEY_PAIR);
+        }
+    } catch (Exception $e) { /* silent fail */ }
+}
+$shopName    = htmlspecialchars($shopSettings['shop_name']    ?? 'PC Store');
+$shopHotline = htmlspecialchars($shopSettings['shop_hotline'] ?? '1800 6975');
+$shopEmail   = htmlspecialchars($shopSettings['shop_email']   ?? 'contact@pcstore.vn');
+$shopAddress = htmlspecialchars($shopSettings['shop_address'] ?? '123 Đường ABC, Hà Nội');
+$shopLogo    = $shopSettings['shop_logo'] ?? '';
+$shopFb      = htmlspecialchars($shopSettings['shop_facebook'] ?? '#');
+$shopYt      = htmlspecialchars($shopSettings['shop_youtube']  ?? '#');
+$shopZalo    = htmlspecialchars($shopSettings['shop_zalo']     ?? '#');
+$seoMetaTitle = htmlspecialchars($shopSettings['meta_title_home'] ?? '');
+$seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <?php
     // ── Dynamic SEO Meta Tags ──────────────────────────────────
     // Các trang có thể override: $pageTitle, $pageDescription, $pageImage, $pageCanonical
-    $seoTitle       = !empty($pageTitle)       ? $pageTitle . ' | PC Store'       : 'PC Store - Linh kiện máy tính chuyên nghiệp';
-    $seoDescription = !empty($pageDescription) ? $pageDescription                 : 'Mua linh kiện máy tính chính hãng: CPU, GPU, RAM, SSD, mainboard giá tốt. Giao hàng nhanh, bảo hành chính hãng.';
-    $seoImage       = !empty($pageImage)       ? $pageImage                       : BASE_URL . 'public/img/og-default.jpg';
-    $seoCanonical   = !empty($pageCanonical)   ? $pageCanonical                   : BASE_URL . ltrim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '', '/');
+    $seoTitle       = !empty($pageTitle)       ? $pageTitle . ' | ' . $shopName       : ($seoMetaTitle ?: $shopName . ' - Linh kiện máy tính chuyên nghiệp');
+    $seoDescription = !empty($pageDescription) ? $pageDescription                      : ($seoMetaDesc ?: 'Mua linh kiện máy tính chính hãng: CPU, GPU, RAM, SSD, mainboard giá tốt. Giao hàng nhanh, bảo hành chính hãng.');
+    $seoImage       = !empty($pageImage)       ? $pageImage                            : BASE_URL . 'public/img/og-default.jpg';
+    $seoCanonical   = !empty($pageCanonical)   ? $pageCanonical                        : BASE_URL . ltrim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '', '/');
     ?>
+
 
     <title><?php echo htmlspecialchars($seoTitle); ?></title>
     <meta name="description" content="<?php echo htmlspecialchars($seoDescription); ?>">
@@ -28,7 +56,8 @@
     <meta property="og:image"       content="<?php echo htmlspecialchars($seoImage); ?>">
     <meta property="og:url"         content="<?php echo htmlspecialchars($seoCanonical); ?>">
     <meta property="og:locale"      content="vi_VN">
-    <meta property="og:site_name"   content="PC Store">
+    <meta property="og:site_name"   content="<?php echo $shopName; ?>">
+
 
     <!-- Twitter Card -->
     <meta name="twitter:card"        content="summary_large_image">
@@ -61,7 +90,7 @@
         body {
             margin: 0;
             font-family: 'Outfit', 'Segoe UI', Arial, sans-serif;
-            background-color: #f8fafc;
+            background-color: var(--bg-page);
             -webkit-font-smoothing: antialiased;
         }
         .container {
@@ -74,9 +103,9 @@
            TOP BAR
            ================================================================ */
         .top-nav {
-            background: #0f172a;
+            background: var(--bg-muted);
             padding: 0;
-            border-bottom: none;
+            border-bottom: 1px solid var(--border);
         }
         .top-nav .container {
             display: flex;
@@ -86,21 +115,21 @@
             gap: 0;
         }
         .top-nav .top-nav-left {
-            color: #64748b;
+            color: var(--txt-secondary);
             font-size: 12px;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
-        .top-nav .top-nav-left strong { color: #93c5fd; }
-        .top-nav .top-nav-left i { color: #3b82f6; font-size: 11px; }
+        .top-nav .top-nav-left strong { color: var(--accent); }
+        .top-nav .top-nav-left i { color: var(--accent); font-size: 11px; }
         .top-nav .top-nav-right {
             display: flex;
             align-items: center;
         }
         .top-nav a {
-            color: #64748b;
+            color: var(--txt-secondary);
             text-decoration: none;
             font-size: 12px;
             font-weight: 500;
@@ -109,19 +138,19 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            border-left: 1px solid rgba(255,255,255,0.06);
+            border-left: 1px solid var(--border);
             transition: color .16s, background .16s;
         }
         .top-nav a:first-child { border-left: none; }
-        .top-nav a:hover { color: #e2e8f0; background: rgba(255,255,255,0.04); }
+        .top-nav a:hover { color: var(--txt-primary); background: var(--bg-page); }
 
         /* ================================================================
            MAIN HEADER
            ================================================================ */
         header {
-            background: #ffffff;
+            background: var(--bg-surface);
             padding: 0;
-            border-bottom: 1px solid #e8eef4;
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -987,8 +1016,11 @@
 
 
 
+    <script>var BASE_URL = '<?php echo BASE_URL; ?>';</script>
+
     <?php if (isset($_SESSION['user'])): ?>
     <!-- VAPID public key cho Web Push Notifications -->
+
     <script>window.VAPID_PUBLIC_KEY = <?php echo json_encode(VAPID_PUBLIC_KEY); ?>;</script>
     <script>
     (function() {
@@ -1130,9 +1162,11 @@
         <div class="container">
             <span class="top-nav-left">
                 <i class="fa fa-phone"></i>
-                Hotline: <strong>1800 6975</strong>
+                Hotline: <strong><?php echo $shopHotline; ?></strong>
             </span>
+
             <div class="top-nav-right">
+                <a href="<?php echo BASE_URL; ?>combo.php"><i class="fa fa-gift"></i> Combo</a>
                 <a href="<?php echo BASE_URL; ?>tintuc.php"><i class="fa fa-newspaper-o"></i> Tin tức</a>
                 <a href="<?php echo BASE_URL; ?>lienhe.php"><i class="fa fa-envelope-o"></i> Liên hệ</a>
                 <a href="<?php echo BASE_URL; ?>gioithieu.php"><i class="fa fa-info-circle"></i> Giới thiệu</a>
@@ -1144,10 +1178,16 @@
         <div class="container header-inner">
             <div class="logo">
                 <a href="<?php echo BASE_URL; ?>index.php">
+                    <?php if (!empty($shopLogo)): ?>
+                    <img src="<?php echo BASE_URL; ?>public/img/<?php echo htmlspecialchars($shopLogo); ?>"
+                         alt="<?php echo $shopName; ?>" style="height:38px;width:auto;object-fit:contain;">
+                    <?php else: ?>
                     <span class="logo-icon"><i class="fa fa-microchip"></i></span>
-                    <span class="logo-text">PC<span>Store</span></span>
+                    <span class="logo-text"><?php echo $shopName; ?></span>
+                    <?php endif; ?>
                 </a>
             </div>
+
 
             <!-- Main Nav -->
             <?php
@@ -1173,8 +1213,8 @@
                 <a href="<?php echo BASE_URL; ?>lienhe.php" class="<?php echo $currentPage === 'lienhe.php' ? 'active' : ''; ?>">
                     <i class="fa fa-headphones"></i> Hỗ trợ
                 </a>
-                <a href="<?php echo BASE_URL; ?>buildpc_modal.php"
-                   class="nav-buildpc-btn <?php echo ($currentPage === 'buildpc_modal.php' || $currentPage === 'buildpc.php') ? 'active' : ''; ?>"
+                <a href="<?php echo BASE_URL; ?>buildpc.php"
+                   class="nav-buildpc-btn <?php echo ($currentPage === 'buildpc.php') ? 'active' : ''; ?>"
                    id="navBuildPcBtn"
                    title="Tự build cấu hình PC theo ý bạn">
                     <i class="fa fa-microchip"></i>
@@ -1287,13 +1327,26 @@
                                 </div>
                             </li>
                             <li><a href="<?php echo BASE_URL; ?>thongtin.php"><i class="fa fa-user"></i> Thông tin cá nhân</a></li>
+                            <li><a href="<?php echo BASE_URL; ?>diachigiaohang.php"><i class="fa fa-location-dot"></i> Địa chỉ giao hàng</a></li>
                             <li><a href="<?php echo BASE_URL; ?>lichsu.php"><i class="fa fa-history"></i> Lịch sử đơn hàng</a></li>
+                            <li><a href="<?php echo BASE_URL; ?>combo.php"><i class="fa fa-gift" style="color:#f59e0b;"></i> Combo ưu đãi</a></li>
                             <li><a href="<?php echo BASE_URL; ?>loyalty.php"><i class="fa fa-star" style="color:#f59e0b;"></i> Điểm tích lũy</a></li>
                             <li><a href="<?php echo BASE_URL; ?>doimatkhau.php"><i class="fa fa-lock"></i> Đổi mật khẩu</a></li>
+                            <li>
+                                <a href="javascript:void(0);" id="theme-toggle-btn" onclick="toggleTheme(event)">
+                                    <i class="fa fa-moon-o" id="theme-toggle-icon"></i> <span id="theme-toggle-text">Chế độ tối</span>
+                                </a>
+                            </li>
                             <div class="dropdown-divider"></div>
                             <li><a href="<?php echo BASE_URL; ?>dangxuat.php" class="logout-link"><i class="fa fa-sign-out"></i> Đăng xuất</a></li>
                         <?php else: ?>
                             <li><a href="<?php echo BASE_URL; ?>taikhoan.php"><i class="fa fa-sign-in"></i> Đăng nhập / Đăng ký</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li>
+                                <a href="javascript:void(0);" id="theme-toggle-btn" onclick="toggleTheme(event)">
+                                    <i class="fa fa-moon-o" id="theme-toggle-icon"></i> <span id="theme-toggle-text">Chế độ tối</span>
+                                </a>
+                            </li>
                         <?php endif; ?>
                     </ul>
                 </div>
@@ -1315,7 +1368,7 @@
             <?php $currentPage = $currentPage ?? basename($_SERVER['PHP_SELF']); ?>
             <a href="<?php echo BASE_URL; ?>index.php"><i class="fa fa-home"></i> Trang ch&#7911;</a>
             <a href="<?php echo BASE_URL; ?>lienhe.php"><i class="fa fa-headphones"></i> H&#7895; tr&#7907;</a>
-            <a href="<?php echo BASE_URL; ?>buildpc_modal.php" class="mobile-buildpc"><i class="fa fa-microchip"></i> Build PC</a>
+            <a href="<?php echo BASE_URL; ?>buildpc.php" class="mobile-buildpc"><i class="fa fa-microchip"></i> Build PC</a>
             <?php if (!empty($navCategories)): ?>
             <div class="mobile-nav-cat-label">Danh m&#7909;c</div>
             <?php foreach ($navCategories as $cat): ?>
@@ -1325,6 +1378,7 @@
             <?php endforeach; endif; ?>
             <?php if (isset($_SESSION['user'])): ?>
             <div class="mobile-nav-cat-label">T&#224;i kho&#7843;n</div>
+            <a href="<?php echo BASE_URL; ?>combo.php"><i class="fa fa-gift"></i> Combo</a>
             <a href="<?php echo BASE_URL; ?>thongtin.php"><i class="fa fa-user"></i> H&#7891; s&#417;</a>
             <a href="<?php echo BASE_URL; ?>lichsu.php"><i class="fa fa-history"></i> &#272;&#417;n h&#224;ng</a>
             <a href="<?php echo BASE_URL; ?>dangxuat.php" style="color:#ef4444;"><i class="fa fa-sign-out" style="color:#ef4444;"></i> &#272;&#259;ng xu&#7845;t</a>
@@ -1683,5 +1737,42 @@
                     widget.style.display = 'none';
                 });
             }
+        });
+    </script>
+
+    <script>
+        function toggleTheme(event) {
+            if (event) event.preventDefault();
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeToggleUI(newTheme);
+        }
+
+        function updateThemeToggleUI(theme) {
+            const icons = document.querySelectorAll('[id="theme-toggle-icon"]');
+            const texts = document.querySelectorAll('[id="theme-toggle-text"]');
+            
+            icons.forEach(function(icon) {
+                if (theme === 'dark') {
+                    icon.className = 'fa fa-sun-o';
+                } else {
+                    icon.className = 'fa fa-moon-o';
+                }
+            });
+            
+            texts.forEach(function(text) {
+                if (theme === 'dark') {
+                    text.textContent = 'Chế độ sáng';
+                } else {
+                    text.textContent = 'Chế độ tối';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            updateThemeToggleUI(currentTheme);
         });
     </script>

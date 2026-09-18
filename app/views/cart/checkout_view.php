@@ -373,20 +373,515 @@ textarea.form-control { resize: vertical; min-height: 90px; }
                 </div>
 
                 <!-- Địa chỉ giao hàng -->
-                <div class="co-card">
+                <div class="co-card" id="addressSection">
                     <div class="co-card-header">
                         <div class="icon" style="background:#fef3c7;color:#d97706;">📍</div>
                         Địa chỉ giao hàng
+                        <?php if (!empty($savedAddresses)): ?>
+                            <span style="margin-left:auto;font-size:12px;color:#64748b;">
+                                <i class="fa fa-bookmark"></i> <?php echo count($savedAddresses); ?> địa chỉ đã lưu
+                            </span>
+                        <?php endif; ?>
                     </div>
                     <div class="co-card-body">
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Địa chỉ nhận hàng <span class="req">*</span></label>
-                            <textarea name="address" class="form-control"
-                                      placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố..."
-                                      required></textarea>
+                        <?php if (!empty($savedAddresses)): ?>
+                        <!-- ── Danh sách địa chỉ đã lưu ── -->
+                        <div style="margin-bottom:16px;">
+                            <label style="font-size:13px;font-weight:600;color:#475569;margin-bottom:10px;display:block;">
+                                <i class="fa fa-bookmark"></i> Chọn địa chỉ có sẵn
+                            </label>
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                                <?php foreach ($savedAddresses as $addr): 
+                                    $isDefault = !empty($addr['is_default']);
+                                    $fullAddr = trim($addr['address_detail'] . ', ' . $addr['ward'] . ', ' . $addr['district'] . ', ' . $addr['province'], ', ');
+                                ?>
+                                <label class="address-option <?php echo $isDefault ? 'selected' : ''; ?>"
+                                       onclick="selectSavedAddress(this, <?php echo $addr['id']; ?>)"
+                                       data-id="<?php echo $addr['id']; ?>"
+                                       data-name="<?php echo htmlspecialchars($addr['full_name']); ?>"
+                                       data-phone="<?php echo htmlspecialchars($addr['phone']); ?>"
+                                       data-address="<?php echo htmlspecialchars($fullAddr); ?>">
+                                    <input type="radio" name="saved_address_id" value="<?php echo $addr['id']; ?>"
+                                           <?php echo $isDefault ? 'checked' : ''; ?>
+                                           style="display:none;"
+                                           onchange="this.closest('label').classList.toggle('selected', this.checked)">
+                                    <div class="address-radio">
+                                        <div class="address-radio-dot <?php echo $isDefault ? 'active' : ''; ?>"></div>
+                                    </div>
+                                    <div class="address-info">
+                                        <div class="address-name">
+                                            <?php echo htmlspecialchars($addr['full_name']); ?>
+                                            <?php if ($isDefault): ?>
+                                                <span class="address-default-badge">Mặc định</span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="address-phone"><i class="fa fa-phone"></i> <?php echo htmlspecialchars($addr['phone']); ?></div>
+                                        <div class="address-detail"><i class="fa fa-map-pin"></i> <?php echo htmlspecialchars($fullAddr); ?></div>
+                                    </div>
+                                    <div class="address-check">
+                                        <i class="fa fa-check-circle"></i>
+                                    </div>
+                                </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <div style="margin-top:10px;">
+                                <button type="button" class="btn-toggle-new-address" onclick="toggleNewAddressForm()">
+                                    <i class="fa fa-plus-circle"></i> Nhập địa chỉ mới
+                                </button>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- ── Form nhập địa chỉ mới (hiển thị khi không có địa chỉ lưu hoặc click 'Nhập mới') ── -->
+                        <div id="newAddressForm" style="<?php echo empty($savedAddresses) ? '' : 'display:none;'; ?>">
+                            <?php if (!empty($savedAddresses)): ?>
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+                                <button type="button" class="btn-back-address" onclick="showAddressList()">
+                                    <i class="fa fa-arrow-left"></i> Chọn địa chỉ đã lưu
+                                </button>
+                                <span style="font-size:13px;color:#64748b;">hoặc nhập địa chỉ mới</span>
+                            </div>
+                            <?php endif; ?>
+
+                            <!-- Cascading address dropdowns -->
+                            <div class="form-row" style="margin-bottom:0;">
+                                <div class="form-group">
+                                    <label>Tỉnh/Thành phố <span class="req">*</span></label>
+                                    <select name="province_id" id="coProvince" class="form-control co-select" required onchange="coLoadDistricts(this.value)">
+                                        <option value="">-- Chọn tỉnh/thành --</option>
+                                    </select>
+                                    <input type="hidden" name="province" id="coProvinceName" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label>Quận/Huyện <span class="req">*</span></label>
+                                    <select name="district_id" id="coDistrict" class="form-control co-select" required onchange="coLoadWards(this.value)" disabled>
+                                        <option value="">-- Chọn quận/huyện --</option>
+                                    </select>
+                                    <input type="hidden" name="district" id="coDistrictName" value="">
+                                </div>
+                            </div>
+                            <div class="form-row" style="margin-bottom:0;">
+                                <div class="form-group">
+                                    <label>Phường/Xã <span class="req">*</span></label>
+                                    <select name="ward_id" id="coWard" class="form-control co-select" required disabled>
+                                        <option value="">-- Chọn phường/xã --</option>
+                                    </select>
+                                    <input type="hidden" name="ward" id="coWardName" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label>Số nhà, tên đường <span class="req">*</span></label>
+                                    <input type="text" name="address_detail" class="form-control" placeholder="Số 123, đường ABC..." required>
+                                </div>
+                            </div>
+                            <input type="hidden" name="address" id="coFullAddress" value="">
+
+                            <p style="font-size:12px;color:#64748b;margin:4px 0 0;">
+                                <i class="fa fa-info-circle"></i>
+                                Tên người nhận và số điện thoại sẽ lấy từ thông tin phía trên. 
+                                Bạn có thể thay đổi ở mục <strong>Thông tin người nhận</strong>.
+                            </p>
+
+                            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#475569;cursor:pointer;margin-top:4px;">
+                                <input type="checkbox" name="save_address" value="1" style="accent-color:#2563eb;width:16px;height:16px;" <?php echo empty($savedAddresses) ? 'checked' : ''; ?>>
+                                <i class="fa fa-save"></i> Lưu địa chỉ này để dùng sau
+                            </label>
                         </div>
                     </div>
                 </div>
+
+                <style>
+                /* ── Address Option Styles ── */
+                .address-option {
+                    display: flex;
+                    align-items: center;
+                    gap: 14px;
+                    padding: 14px 16px;
+                    border: 1.5px solid #e2e8f0;
+                    border-radius: 14px;
+                    cursor: pointer;
+                    transition: all .2s ease;
+                    background: #fff;
+                    position: relative;
+                }
+                .address-option:hover {
+                    border-color: #93c5fd;
+                    background: #f8faff;
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(37,99,235,0.08);
+                }
+                .address-option.selected {
+                    border-color: #2563eb;
+                    background: #eff6ff;
+                    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+                }
+                .address-radio {
+                    flex-shrink: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .address-radio-dot {
+                    width: 22px;
+                    height: 22px;
+                    border-radius: 50%;
+                    border: 2.5px solid #cbd5e1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all .2s;
+                }
+                .address-radio-dot::after {
+                    content: '';
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: #2563eb;
+                    display: none;
+                    transition: all .2s;
+                }
+                .address-option.selected .address-radio-dot {
+                    border-color: #2563eb;
+                }
+                .address-option.selected .address-radio-dot::after {
+                    display: block;
+                }
+                .address-info {
+                    flex: 1;
+                    min-width: 0;
+                }
+                .address-name {
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: #1e293b;
+                    margin-bottom: 4px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                .address-default-badge {
+                    display: inline-block;
+                    font-size: 10px;
+                    font-weight: 700;
+                    background: #22c55e;
+                    color: #fff;
+                    padding: 2px 8px;
+                    border-radius: 20px;
+                    line-height: 1.4;
+                }
+                .address-phone {
+                    font-size: 13px;
+                    color: #475569;
+                    margin-bottom: 2px;
+                }
+                .address-phone i, .address-detail i {
+                    color: #94a3b8;
+                    width: 16px;
+                    margin-right: 4px;
+                    font-size: 12px;
+                }
+                .address-detail {
+                    font-size: 13px;
+                    color: #64748b;
+                    line-height: 1.5;
+                }
+                .address-check {
+                    flex-shrink: 0;
+                    color: #94a3b8;
+                    font-size: 20px;
+                    transition: all .2s;
+                }
+                .address-option.selected .address-check {
+                    color: #2563eb;
+                }
+                .btn-toggle-new-address {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 10px 16px;
+                    background: #f8fafc;
+                    border: 1.5px dashed #cbd5e1;
+                    border-radius: 10px;
+                    color: #64748b;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all .2s;
+                    font-family: inherit;
+                }
+                .btn-toggle-new-address:hover {
+                    border-color: #93c5fd;
+                    background: #eff6ff;
+                    color: #2563eb;
+                }
+                .btn-back-address {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 8px 14px;
+                    background: #f1f5f9;
+                    border: none;
+                    border-radius: 10px;
+                    color: #475569;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all .2s;
+                    font-family: inherit;
+                }
+                .btn-back-address:hover {
+                    background: #e2e8f0;
+                    color: #1e293b;
+                }
+                </style>
+
+                <style>
+                /* Select styling for checkout */
+                .co-select {
+                    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center !important;
+                    appearance: none !important;
+                    -webkit-appearance: none !important;
+                    -moz-appearance: none !important;
+                    padding-right: 36px !important;
+                    cursor: pointer !important;
+                }
+                .co-select:disabled {
+                    opacity: .55;
+                    cursor: not-allowed;
+                    background-color: #f8fafc !important;
+                }
+                </style>
+
+                <script>
+                // ── Cascading address dropdowns for Checkout ──
+                // Đảm bảo BASE_URL luôn có giá trị (guest không có BASE_URL JS từ header)
+                var CO_BASE_URL = (typeof BASE_URL !== 'undefined' && BASE_URL) ? BASE_URL : '<?php echo BASE_URL; ?>';
+                var CO_API = CO_BASE_URL + 'api_get_addresses.php';
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    coLoadProvinces();
+                });
+
+                function coLoadProvinces() {
+                    var sel = document.getElementById('coProvince');
+                    sel.innerHTML = '<option value="">-- Đang tải... --</option>';
+                    sel.disabled = true;
+                    fetch(CO_API + '?level=provinces')
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            sel.innerHTML = '<option value="">-- Chọn tỉnh/thành --</option>';
+                            data.forEach(function(p) {
+                                var opt = document.createElement('option');
+                                opt.value = p.code;
+                                opt.setAttribute('data-name', p.name);
+                                opt.textContent = p.name;
+                                sel.appendChild(opt);
+                            });
+                            sel.disabled = false;
+                        })
+                        .catch(function() {
+                            sel.innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
+                            sel.disabled = false;
+                        });
+                }
+
+                function coLoadDistricts(provinceId) {
+                    var sel = document.getElementById('coDistrict');
+                    var wardSel = document.getElementById('coWard');
+                    wardSel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+                    wardSel.disabled = true;
+                    document.getElementById('coWardName').value = '';
+                    if (!provinceId) {
+                        sel.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+                        sel.disabled = true;
+                        document.getElementById('coDistrictName').value = '';
+                        coUpdateFullAddress();
+                        // Set province name from selected option
+                        var provSel = document.getElementById('coProvince');
+                        document.getElementById('coProvinceName').value = provSel.options[provSel.selectedIndex]?.getAttribute('data-name') || '';
+                        return;
+                    }
+                    sel.innerHTML = '<option value="">-- Đang tải... --</option>';
+                    sel.disabled = true;
+                    // Save province name
+                    var provSel = document.getElementById('coProvince');
+                    document.getElementById('coProvinceName').value = provSel.options[provSel.selectedIndex]?.getAttribute('data-name') || '';
+                    fetch(CO_API + '?level=districts&province_id=' + encodeURIComponent(provinceId))
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            sel.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+                            data.forEach(function(d) {
+                                var opt = document.createElement('option');
+                                opt.value = d.code;
+                                opt.setAttribute('data-name', d.name);
+                                opt.textContent = d.name;
+                                sel.appendChild(opt);
+                            });
+                            sel.disabled = false;
+                        })
+                        .catch(function() {
+                            sel.innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
+                            sel.disabled = false;
+                        });
+                    coUpdateFullAddress();
+                }
+
+                function coLoadWards(districtId) {
+                    var sel = document.getElementById('coWard');
+                    if (!districtId) {
+                        sel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+                        sel.disabled = true;
+                        document.getElementById('coWardName').value = '';
+                        // Save district name
+                        var distSel = document.getElementById('coDistrict');
+                        document.getElementById('coDistrictName').value = distSel.options[distSel.selectedIndex]?.getAttribute('data-name') || '';
+                        coUpdateFullAddress();
+                        return;
+                    }
+                    sel.innerHTML = '<option value="">-- Đang tải... --</option>';
+                    sel.disabled = true;
+                    // Save district name
+                    var distSel = document.getElementById('coDistrict');
+                    document.getElementById('coDistrictName').value = distSel.options[distSel.selectedIndex]?.getAttribute('data-name') || '';
+                    fetch(CO_API + '?level=wards&district_id=' + encodeURIComponent(districtId))
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            sel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+                            data.forEach(function(w) {
+                                var opt = document.createElement('option');
+                                opt.value = w.code;
+                                opt.setAttribute('data-name', w.name);
+                                opt.textContent = w.name;
+                                sel.appendChild(opt);
+                            });
+                            sel.disabled = false;
+                        })
+                        .catch(function() {
+                            sel.innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
+                            sel.disabled = false;
+                        });
+                    coUpdateFullAddress();
+                }
+
+                // Update ward name on ward select change
+                document.addEventListener('change', function(e) {
+                    if (e.target.id === 'coWard') {
+                        var sel = e.target;
+                        document.getElementById('coWardName').value = sel.options[sel.selectedIndex]?.getAttribute('data-name') || '';
+                        coUpdateFullAddress();
+                    }
+                });
+
+                function coUpdateFullAddress() {
+                    var addrDetail = document.querySelector('input[name="address_detail"]')?.value || '';
+                    var ward = document.getElementById('coWardName').value;
+                    var district = document.getElementById('coDistrictName').value;
+                    var province = document.getElementById('coProvinceName').value;
+                    var parts = [addrDetail];
+                    if (ward) parts.push(ward);
+                    if (district) parts.push(district);
+                    if (province) parts.push(province);
+                    document.getElementById('coFullAddress').value = parts.join(', ');
+                }
+
+                // Listen for address_detail changes
+                document.addEventListener('input', function(e) {
+                    if (e.target.name === 'address_detail') {
+                        coUpdateFullAddress();
+                    }
+                });
+
+                document.addEventListener('DOMNodeInserted', function() {
+                    var addrInput = document.querySelector('input[name="address_detail"]');
+                    if (addrInput && !addrInput.dataset.listener) {
+                        addrInput.dataset.listener = '1';
+                        addrInput.addEventListener('input', coUpdateFullAddress);
+                    }
+                });
+
+                // ── Toggle required on new address fields ──
+                function setNewAddressRequired(required) {
+                    var fields = ['coProvince', 'coDistrict', 'coWard'];
+                    fields.forEach(function(id) {
+                        var el = document.getElementById(id);
+                        if (el) {
+                            if (required) el.setAttribute('required', '');
+                            else el.removeAttribute('required');
+                        }
+                    });
+                    var detail = document.querySelector('input[name="address_detail"]');
+                    if (detail) {
+                        if (required) detail.setAttribute('required', '');
+                        else detail.removeAttribute('required');
+                    }
+                }
+
+                // ── Address Selection Logic ──
+                function selectSavedAddress(el, id) {
+                    // Deselect all
+                    document.querySelectorAll('.address-option').forEach(function(opt) {
+                        opt.classList.remove('selected');
+                        opt.querySelector('input[type=radio]').checked = false;
+                        opt.querySelector('.address-radio-dot').classList.remove('active');
+                    });
+                    // Select this
+                    el.classList.add('selected');
+                    el.querySelector('input[type=radio]').checked = true;
+                    el.querySelector('.address-radio-dot').classList.add('active');
+
+                    // Auto-fill fullname & phone
+                    var fullnameInput = document.querySelector('input[name="fullname"]');
+                    var phoneInput    = document.querySelector('input[name="phone"]');
+                    if (fullnameInput && el.dataset.name) {
+                        fullnameInput.value = el.dataset.name;
+                        fullnameInput.style.borderColor = '#22c55e';
+                        setTimeout(function() { fullnameInput.style.borderColor = ''; }, 1500);
+                    }
+                    if (phoneInput && el.dataset.phone) {
+                        phoneInput.value = el.dataset.phone;
+                        phoneInput.style.borderColor = '#22c55e';
+                        setTimeout(function() { phoneInput.style.borderColor = ''; }, 1500);
+                    }
+
+                    // Hide new address form & remove required from its fields
+                    var newForm = document.getElementById('newAddressForm');
+                    if (newForm) newForm.style.display = 'none';
+                    setNewAddressRequired(false);
+                }
+
+                function toggleNewAddressForm() {
+                    var newForm = document.getElementById('newAddressForm');
+                    if (newForm) {
+                        newForm.style.display = 'block';
+                        // Deselect all saved addresses
+                        document.querySelectorAll('.address-option').forEach(function(opt) {
+                            opt.classList.remove('selected');
+                            var radio = opt.querySelector('input[type=radio]');
+                            if (radio) radio.checked = false;
+                            opt.querySelector('.address-radio-dot').classList.remove('active');
+                        });
+                        // Add required back to new address fields
+                        setNewAddressRequired(true);
+                        newForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+
+                function showAddressList() {
+                    var newForm = document.getElementById('newAddressForm');
+                    if (newForm) newForm.style.display = 'none';
+                    setNewAddressRequired(false);
+                }
+
+                // Auto-select default address on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    var defaultAddr = document.querySelector('.address-option.selected');
+                    if (defaultAddr) {
+                        selectSavedAddress(defaultAddr, defaultAddr.dataset.id);
+                    } else {
+                        // Không có địa chỉ lưu → đang dùng form mới → giữ required
+                        setNewAddressRequired(true);
+                    }
+                });
+                </script>
 
                 <!-- Phương thức thanh toán -->
                 <div class="co-card">

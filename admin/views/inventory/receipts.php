@@ -1,16 +1,16 @@
 <?php
 /**
- * Phiáº¿u Nháº­p Kho â€” Danh sÃ¡ch phiáº¿u nháº­p
+ * Phiếu Nhập Kho — Danh sách phiếu nhập
  * View: admin/views/inventory/receipts.php
  *
  * Variables available:
- *   $receipts        array  â€” Danh sÃ¡ch phiáº¿u nháº­p (tá»« $admin->getReceipts())
- *   $receiptStats    array  â€” Thá»‘ng kÃª theo tráº¡ng thÃ¡i
- *   $warehouses      array  â€” Danh sÃ¡ch kho
- *   $filterWarehouse string â€” Lá»c theo kho
- *   $filterStatus    string â€” Lá»c theo tráº¡ng thÃ¡i
- *   $successMessage  string â€” ThÃ´ng bÃ¡o thÃ nh cÃ´ng
- *   $error           string â€” ThÃ´ng bÃ¡o lá»—i
+ *   $receipts        array  — Danh sách phiếu nhập (từ $admin->getReceipts())
+ *   $receiptStats    array  — Thống kê theo trạng thái
+ *   $warehouses      array  — Danh sách kho
+ *   $filterWarehouse string — Lọc theo kho
+ *   $filterStatus    string — Lọc theo trạng thái
+ *   $successMessage  string — Thông báo thành công
+ *   $error           string — Thông báo lỗi
  */
 
 $statTotal    = (int)($receiptStats['total']     ?? 0);
@@ -25,51 +25,51 @@ $filterWarehouse = $filterWarehouse ?? 'all';
 
 <main class="admin-main">
 
-    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    <!-- ═══════════════════════════════════════════════
          PAGE HEADER
-    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    ═══════════════════════════════════════════════ -->
     <div class="page-header">
         <div class="page-header-left">
             <h1>
                 <i class="fas fa-file-import" style="color:#6366f1;margin-right:10px;"></i>
-                Phiáº¿u Nháº­p Kho
+                Phiếu Nhập Kho
             </h1>
-            <p>Quáº£n lÃ½ toÃ n bá»™ phiáº¿u nháº­p hÃ ng â€” táº¡o má»›i, theo dÃµi vÃ  phÃª duyá»‡t</p>
+            <p>Quản lý toàn bộ phiếu nhập hàng — tạo mới, theo dõi và phê duyệt</p>
         </div>
         <div class="page-header-right">
             <a href="?page=inventory" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Quay láº¡i Kho
+                <i class="fas fa-arrow-left"></i> Quay lại Kho
             </a>
             <a href="?page=inventory&action=receipt_form" class="btn btn-primary rcpt-btn-create">
-                <i class="fas fa-plus"></i> Táº¡o Phiáº¿u Nháº­p Má»›i
+                <i class="fas fa-plus"></i> Tạo Phiếu Nhập Mới
             </a>
         </div>
     </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    <!-- ═══════════════════════════════════════════════
          ALERTS
-    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    ═══════════════════════════════════════════════ -->
     <?php if (!empty($successMessage)): ?>
         <div class="rcpt-alert rcpt-alert-success">
             <i class="fas fa-check-circle"></i>
             <span><?php echo htmlspecialchars($successMessage); ?></span>
-            <button class="rcpt-alert-close" onclick="this.closest('.rcpt-alert').remove()">Ã—</button>
+            <button class="rcpt-alert-close" onclick="this.closest('.rcpt-alert').remove()">×</button>
         </div>
     <?php endif; ?>
     <?php if (!empty($error)): ?>
         <div class="rcpt-alert rcpt-alert-error">
             <i class="fas fa-exclamation-circle"></i>
             <span><?php echo htmlspecialchars($error); ?></span>
-            <button class="rcpt-alert-close" onclick="this.closest('.rcpt-alert').remove()">Ã—</button>
+            <button class="rcpt-alert-close" onclick="this.closest('.rcpt-alert').remove()">×</button>
         </div>
     <?php endif; ?>
 
-    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    <!-- ═══════════════════════════════════════════════
          STAT CARDS
-    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    ═══════════════════════════════════════════════ -->
     <div class="rcpt-stats-grid">
 
-        <!-- Tá»•ng phiáº¿u -->
+        <!-- Tổng phiếu -->
         <a href="?page=inventory&action=receipts&status=all&warehouse=<?php echo htmlspecialchars($filterWarehouse); ?>"
            class="rcpt-stat-card rcpt-stat-total <?php echo $filterStatus === 'all' ? 'active' : ''; ?>">
             <div class="rcpt-stat-glow rcpt-glow-purple"></div>
@@ -78,12 +78,12 @@ $filterWarehouse = $filterWarehouse ?? 'all';
             </div>
             <div class="rcpt-stat-body">
                 <div class="rcpt-stat-number"><?php echo number_format($statTotal); ?></div>
-                <div class="rcpt-stat-label">Tá»•ng phiáº¿u</div>
-                <div class="rcpt-stat-sub">Táº¥t cáº£ tráº¡ng thÃ¡i</div>
+                <div class="rcpt-stat-label">Tổng phiếu</div>
+                <div class="rcpt-stat-sub">Tất cả trạng thái</div>
             </div>
         </a>
 
-        <!-- NhÃ¡p -->
+        <!-- Nháp -->
         <a href="?page=inventory&action=receipts&status=draft&warehouse=<?php echo htmlspecialchars($filterWarehouse); ?>"
            class="rcpt-stat-card <?php echo $filterStatus === 'draft' ? 'active' : ''; ?>">
             <div class="rcpt-stat-glow rcpt-glow-gray"></div>
@@ -92,12 +92,12 @@ $filterWarehouse = $filterWarehouse ?? 'all';
             </div>
             <div class="rcpt-stat-body">
                 <div class="rcpt-stat-number" style="color:var(--text-muted);"><?php echo number_format($statDraft); ?></div>
-                <div class="rcpt-stat-label">NhÃ¡p</div>
-                <div class="rcpt-stat-sub">ChÆ°a gá»­i duyá»‡t</div>
+                <div class="rcpt-stat-label">Nháp</div>
+                <div class="rcpt-stat-sub">Chưa gửi duyệt</div>
             </div>
         </a>
 
-        <!-- Chá» duyá»‡t -->
+        <!-- Chờ duyệt -->
         <a href="?page=inventory&action=receipts&status=pending&warehouse=<?php echo htmlspecialchars($filterWarehouse); ?>"
            class="rcpt-stat-card <?php echo $filterStatus === 'pending' ? 'active' : ''; ?>">
             <div class="rcpt-stat-glow rcpt-glow-amber"></div>
@@ -106,15 +106,15 @@ $filterWarehouse = $filterWarehouse ?? 'all';
             </div>
             <div class="rcpt-stat-body">
                 <div class="rcpt-stat-number" style="color:#f59e0b;"><?php echo number_format($statPending); ?></div>
-                <div class="rcpt-stat-label">Chá» duyá»‡t</div>
-                <div class="rcpt-stat-sub">Äang chá» phÃª duyá»‡t</div>
+                <div class="rcpt-stat-label">Chờ duyệt</div>
+                <div class="rcpt-stat-sub">Đang chờ phê duyệt</div>
             </div>
             <?php if ($statPending > 0): ?>
                 <span class="rcpt-pulse-dot"></span>
             <?php endif; ?>
         </a>
 
-        <!-- ÄÃ£ duyá»‡t -->
+        <!-- Đã duyệt -->
         <a href="?page=inventory&action=receipts&status=approved&warehouse=<?php echo htmlspecialchars($filterWarehouse); ?>"
            class="rcpt-stat-card <?php echo $filterStatus === 'approved' ? 'active' : ''; ?>">
             <div class="rcpt-stat-glow rcpt-glow-green"></div>
@@ -123,16 +123,16 @@ $filterWarehouse = $filterWarehouse ?? 'all';
             </div>
             <div class="rcpt-stat-body">
                 <div class="rcpt-stat-number" style="color:#10b981;"><?php echo number_format($statApproved); ?></div>
-                <div class="rcpt-stat-label">ÄÃ£ duyá»‡t</div>
-                <div class="rcpt-stat-sub">Nháº­p kho thÃ nh cÃ´ng</div>
+                <div class="rcpt-stat-label">Đã duyệt</div>
+                <div class="rcpt-stat-sub">Nhập kho thành công</div>
             </div>
         </a>
 
     </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    <!-- ═══════════════════════════════════════════════
          FILTER + TABLE SECTION
-    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    ═══════════════════════════════════════════════ -->
     <div class="dashboard-section rcpt-section">
 
         <!-- Toolbar: tabs + warehouse filter -->
@@ -142,27 +142,27 @@ $filterWarehouse = $filterWarehouse ?? 'all';
             <div class="rcpt-tabs">
                 <a href="?page=inventory&action=receipts&status=all&warehouse=<?php echo htmlspecialchars($filterWarehouse); ?>"
                    class="rcpt-tab <?php echo $filterStatus === 'all' ? 'active' : ''; ?>">
-                    <i class="fas fa-list"></i> Táº¥t cáº£
+                    <i class="fas fa-list"></i> Tất cả
                     <span class="rcpt-tab-badge"><?php echo $statTotal; ?></span>
                 </a>
                 <a href="?page=inventory&action=receipts&status=draft&warehouse=<?php echo htmlspecialchars($filterWarehouse); ?>"
                    class="rcpt-tab <?php echo $filterStatus === 'draft' ? 'active' : ''; ?>">
-                    <i class="fas fa-pen-nib"></i> NhÃ¡p
+                    <i class="fas fa-pen-nib"></i> Nháp
                     <?php if ($statDraft > 0): ?><span class="rcpt-tab-badge gray"><?php echo $statDraft; ?></span><?php endif; ?>
                 </a>
                 <a href="?page=inventory&action=receipts&status=pending&warehouse=<?php echo htmlspecialchars($filterWarehouse); ?>"
                    class="rcpt-tab <?php echo $filterStatus === 'pending' ? 'active amber' : ''; ?>">
-                    <i class="fas fa-clock"></i> Chá» duyá»‡t
+                    <i class="fas fa-clock"></i> Chờ duyệt
                     <?php if ($statPending > 0): ?><span class="rcpt-tab-badge amber"><?php echo $statPending; ?></span><?php endif; ?>
                 </a>
                 <a href="?page=inventory&action=receipts&status=approved&warehouse=<?php echo htmlspecialchars($filterWarehouse); ?>"
                    class="rcpt-tab <?php echo $filterStatus === 'approved' ? 'active' : ''; ?>">
-                    <i class="fas fa-check-circle"></i> ÄÃ£ duyá»‡t
+                    <i class="fas fa-check-circle"></i> Đã duyệt
                     <?php if ($statApproved > 0): ?><span class="rcpt-tab-badge green"><?php echo $statApproved; ?></span><?php endif; ?>
                 </a>
                 <a href="?page=inventory&action=receipts&status=cancelled&warehouse=<?php echo htmlspecialchars($filterWarehouse); ?>"
                    class="rcpt-tab <?php echo $filterStatus === 'cancelled' ? 'active' : ''; ?>">
-                    <i class="fas fa-times-circle"></i> ÄÃ£ há»§y
+                    <i class="fas fa-times-circle"></i> Đã hủy
                     <?php if ($statCancelled > 0): ?><span class="rcpt-tab-badge red"><?php echo $statCancelled; ?></span><?php endif; ?>
                 </a>
             </div>
@@ -173,7 +173,7 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                     <i class="fas fa-warehouse" style="color:var(--text-faint);"></i>
                     <select onchange="window.location='?page=inventory&action=receipts&status=<?php echo htmlspecialchars($filterStatus); ?>&warehouse='+this.value"
                             class="rcpt-select-sm">
-                        <option value="all" <?php echo $filterWarehouse === 'all' ? 'selected' : ''; ?>>Táº¥t cáº£ kho</option>
+                        <option value="all" <?php echo $filterWarehouse === 'all' ? 'selected' : ''; ?>>Tất cả kho</option>
                         <?php if (!empty($warehouses)): ?>
                             <?php foreach ($warehouses as $wh): ?>
                                 <option value="<?php echo htmlspecialchars($wh['code'] ?? $wh['id']); ?>"
@@ -182,8 +182,8 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                 </option>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <option value="HN"  <?php echo $filterWarehouse === 'HN'  ? 'selected' : ''; ?>>Kho HÃ  Ná»™i</option>
-                            <option value="HCM" <?php echo $filterWarehouse === 'HCM' ? 'selected' : ''; ?>>Kho Há»“ ChÃ­ Minh</option>
+                            <option value="HN"  <?php echo $filterWarehouse === 'HN'  ? 'selected' : ''; ?>>Kho Hà Nội</option>
+                            <option value="HCM" <?php echo $filterWarehouse === 'HCM' ? 'selected' : ''; ?>>Kho Hồ Chí Minh</option>
                         <?php endif; ?>
                     </select>
                 </div>
@@ -191,21 +191,21 @@ $filterWarehouse = $filterWarehouse ?? 'all';
 
         </div>
 
-        <!-- â”€â”€â”€ TABLE â”€â”€â”€ -->
+        <!-- ─── TABLE ─── -->
         <div class="table-responsive" style="border-radius:0;box-shadow:none;border:none;">
             <table class="admin-table rcpt-table" id="receiptsTable">
                 <thead>
                     <tr>
-                        <th style="width:130px;">MÃ£ phiáº¿u</th>
+                        <th style="width:130px;">Mã phiếu</th>
                         <th>Kho</th>
-                        <th>NhÃ  cung cáº¥p</th>
-                        <th>Loáº¡i</th>
-                        <th style="text-align:center;">Tráº¡ng thÃ¡i</th>
-                        <th style="text-align:center;">Sá»‘ lÆ°á»£ng</th>
-                        <th style="text-align:right;">Tá»•ng giÃ¡ trá»‹</th>
-                        <th>NgÆ°á»i táº¡o</th>
-                        <th>NgÃ y táº¡o</th>
-                        <th style="text-align:center;min-width:160px;">HÃ nh Ä‘á»™ng</th>
+                        <th>Nhà cung cấp</th>
+                        <th>Loại</th>
+                        <th style="text-align:center;">Trạng thái</th>
+                        <th style="text-align:center;">Số lượng</th>
+                        <th style="text-align:right;">Tổng giá trị</th>
+                        <th>Người tạo</th>
+                        <th>Ngày tạo</th>
+                        <th style="text-align:center;min-width:160px;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -220,20 +220,20 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                     </div>
                                     <div class="rcpt-empty-title">
                                         <?php if ($filterStatus !== 'all' || $filterWarehouse !== 'all'): ?>
-                                            KhÃ´ng tÃ¬m tháº¥y phiáº¿u nháº­p nÃ o
+                                            Không tìm thấy phiếu nhập nào
                                         <?php else: ?>
-                                            ChÆ°a cÃ³ phiáº¿u nháº­p kho
+                                            Chưa có phiếu nhập kho
                                         <?php endif; ?>
                                     </div>
                                     <div class="rcpt-empty-sub">
                                         <?php if ($filterStatus !== 'all' || $filterWarehouse !== 'all'): ?>
-                                            Thá»­ thay Ä‘á»•i bá»™ lá»c Ä‘á»ƒ xem thÃªm phiáº¿u
+                                            Thử thay đổi bộ lọc để xem thêm phiếu
                                         <?php else: ?>
-                                            Báº¯t Ä‘áº§u báº±ng cÃ¡ch táº¡o phiáº¿u nháº­p kho Ä‘áº§u tiÃªn
+                                            Bắt đầu bằng cách tạo phiếu nhập kho đầu tiên
                                         <?php endif; ?>
                                     </div>
                                     <a href="?page=inventory&action=receipt_form" class="btn btn-primary rcpt-btn-create" style="margin-top:20px;">
-                                        <i class="fas fa-plus"></i> Táº¡o Phiáº¿u Nháº­p Má»›i
+                                        <i class="fas fa-plus"></i> Tạo Phiếu Nhập Mới
                                     </a>
                                 </div>
                             </td>
@@ -249,10 +249,10 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                             $rType    = $receipt['type'] ?? 'import';
                             $rQty     = (int)($receipt['total_quantity'] ?? $receipt['quantity'] ?? 0);
                             $rValue   = (float)($receipt['total_value'] ?? $receipt['total_amount'] ?? 0);
-                            $rCreator = $receipt['creator_name'] ?? $receipt['created_by_name'] ?? 'â€”';
+                            $rCreator = $receipt['creator_name'] ?? $receipt['created_by_name'] ?? '—';
                             $rDate    = $receipt['created_at'] ?? '';
-                            $rWarehouse = $receipt['warehouse_name'] ?? $receipt['warehouse_code'] ?? 'â€”';
-                            $rSupplier  = $receipt['supplier_name'] ?? 'â€”';
+                            $rWarehouse = $receipt['warehouse_name'] ?? $receipt['warehouse_code'] ?? '—';
+                            $rSupplier  = $receipt['supplier_name'] ?? '—';
 
                             // Status label via controller
                             if (class_exists('InventoryController') && method_exists('InventoryController', 'getReceiptStatusLabel')) {
@@ -260,10 +260,10 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                             } else {
                                 // Fallback inline
                                 $statusInfo = match($rStatus) {
-                                    'draft'     => ['label' => 'NhÃ¡p',      'color' => '#64748b', 'bg' => '#f1f5f9',   'icon' => 'fa-pen-nib'],
-                                    'pending'   => ['label' => 'Chá» duyá»‡t', 'color' => '#d97706', 'bg' => '#fef3c7',   'icon' => 'fa-clock'],
-                                    'approved'  => ['label' => 'ÄÃ£ duyá»‡t',  'color' => '#059669', 'bg' => '#d1fae5',   'icon' => 'fa-check-circle'],
-                                    'cancelled' => ['label' => 'ÄÃ£ há»§y',    'color' => '#dc2626', 'bg' => '#fee2e2',   'icon' => 'fa-times-circle'],
+                                    'draft'     => ['label' => 'Nháp',      'color' => '#64748b', 'bg' => '#f1f5f9',   'icon' => 'fa-pen-nib'],
+                                    'pending'   => ['label' => 'Chờ duyệt', 'color' => '#d97706', 'bg' => '#fef3c7',   'icon' => 'fa-clock'],
+                                    'approved'  => ['label' => 'Đã duyệt',  'color' => '#059669', 'bg' => '#d1fae5',   'icon' => 'fa-check-circle'],
+                                    'cancelled' => ['label' => 'Đã hủy',    'color' => '#dc2626', 'bg' => '#fee2e2',   'icon' => 'fa-times-circle'],
                                     default     => ['label' => ucfirst($rStatus), 'color' => '#64748b', 'bg' => '#f1f5f9', 'icon' => 'fa-circle'],
                                 };
                             }
@@ -273,26 +273,26 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                 $typeInfo = InventoryController::getReceiptTypeLabel($rType);
                             } else {
                                 $typeInfo = match($rType) {
-                                    'import'     => ['label' => 'Nháº­p mua',   'color' => '#6366f1', 'bg' => '#ede9fe', 'icon' => 'fa-arrow-down'],
-                                    'return'     => ['label' => 'HÃ ng hoÃ n',  'color' => '#ec4899', 'bg' => '#fce7f3', 'icon' => 'fa-undo-alt'],
-                                    'transfer'   => ['label' => 'Äiá»u chuyá»ƒn','color' => '#0ea5e9', 'bg' => '#e0f2fe', 'icon' => 'fa-exchange-alt'],
-                                    'adjustment' => ['label' => 'Äiá»u chá»‰nh', 'color' => '#f59e0b', 'bg' => '#fef3c7', 'icon' => 'fa-sliders-h'],
+                                    'import'     => ['label' => 'Nhập mua',   'color' => '#6366f1', 'bg' => '#ede9fe', 'icon' => 'fa-arrow-down'],
+                                    'return'     => ['label' => 'Hàng hoàn',  'color' => '#ec4899', 'bg' => '#fce7f3', 'icon' => 'fa-undo-alt'],
+                                    'transfer'   => ['label' => 'Điều chuyển','color' => '#0ea5e9', 'bg' => '#e0f2fe', 'icon' => 'fa-exchange-alt'],
+                                    'adjustment' => ['label' => 'Điều chỉnh', 'color' => '#f59e0b', 'bg' => '#fef3c7', 'icon' => 'fa-sliders-h'],
                                     default      => ['label' => ucfirst($rType), 'color' => '#64748b', 'bg' => '#f1f5f9', 'icon' => 'fa-file'],
                                 };
                             }
 
                             // Row highlight for pending
                             $rowClass = $rStatus === 'pending' ? 'rcpt-row-pending' : '';
-                            $dateFormatted = $rDate ? date('d/m/Y H:i', strtotime($rDate)) : 'â€”';
+                            $dateFormatted = $rDate ? date('d/m/Y H:i', strtotime($rDate)) : '—';
                             ?>
                             <tr class="rcpt-row <?php echo $rowClass; ?>" data-id="<?php echo $rId; ?>">
 
-                                <!-- MÃ£ phiáº¿u -->
+                                <!-- Mã phiếu -->
                                 <td>
                                     <div class="rcpt-code-cell">
                                         <span class="rcpt-code"><?php echo htmlspecialchars($rCode); ?></span>
                                         <?php if ($rStatus === 'pending'): ?>
-                                            <span class="rcpt-new-dot" title="Äang chá» duyá»‡t"></span>
+                                            <span class="rcpt-new-dot" title="Đang chờ duyệt"></span>
                                         <?php endif; ?>
                                     </div>
                                 </td>
@@ -305,7 +305,7 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                     </div>
                                 </td>
 
-                                <!-- NhÃ  cung cáº¥p -->
+                                <!-- Nhà cung cấp -->
                                 <td>
                                     <div class="rcpt-supplier-cell">
                                         <div class="rcpt-supplier-avatar">
@@ -315,7 +315,7 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                     </div>
                                 </td>
 
-                                <!-- Loáº¡i -->
+                                <!-- Loại -->
                                 <td>
                                     <span class="rcpt-type-badge"
                                           style="background:<?php echo $typeInfo['bg']; ?>;color:<?php echo $typeInfo['color']; ?>;">
@@ -324,7 +324,7 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                     </span>
                                 </td>
 
-                                <!-- Tráº¡ng thÃ¡i -->
+                                <!-- Trạng thái -->
                                 <td style="text-align:center;">
                                     <span class="rcpt-status-badge"
                                           style="background:<?php echo $statusInfo['bg']; ?>;color:<?php echo $statusInfo['color']; ?>;">
@@ -333,7 +333,7 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                     </span>
                                 </td>
 
-                                <!-- Sá»‘ lÆ°á»£ng -->
+                                <!-- Số lượng -->
                                 <td style="text-align:center;">
                                     <span class="rcpt-qty-pill">
                                         <?php echo number_format($rQty); ?>
@@ -341,18 +341,18 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                     </span>
                                 </td>
 
-                                <!-- Tá»•ng giÃ¡ trá»‹ -->
+                                <!-- Tổng giá trị -->
                                 <td style="text-align:right;">
                                     <?php if ($rValue > 0): ?>
                                         <span class="rcpt-value">
-                                            <?php echo number_format($rValue, 0, ',', '.'); ?>â‚«
+                                            <?php echo number_format($rValue, 0, ',', '.'); ?>₫
                                         </span>
                                     <?php else: ?>
-                                        <span style="color:#cbd5e1;">â€”</span>
+                                        <span style="color:#cbd5e1;">—</span>
                                     <?php endif; ?>
                                 </td>
 
-                                <!-- NgÆ°á»i táº¡o -->
+                                <!-- Người tạo -->
                                 <td>
                                     <div class="rcpt-creator">
                                         <div class="rcpt-creator-avatar">
@@ -362,7 +362,7 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                     </div>
                                 </td>
 
-                                <!-- NgÃ y táº¡o -->
+                                <!-- Ngày tạo -->
                                 <td>
                                     <div class="rcpt-date">
                                         <i class="fas fa-calendar-alt" style="color:var(--text-faint);font-size:11px;"></i>
@@ -370,34 +370,34 @@ $filterWarehouse = $filterWarehouse ?? 'all';
                                     </div>
                                 </td>
 
-                                <!-- HÃ nh Ä‘á»™ng -->
+                                <!-- Hành động -->
                                 <td style="text-align:center;">
                                     <div class="rcpt-actions">
 
-                                        <!-- Xem chi tiáº¿t -->
+                                        <!-- Xem chi tiết -->
                                         <a href="?page=inventory&action=receipt_detail&id=<?php echo $rId; ?>"
                                            class="rcpt-btn rcpt-btn-view"
-                                           title="Xem chi tiáº¿t phiáº¿u">
+                                           title="Xem chi tiết phiếu">
                                             <i class="fas fa-eye"></i>
-                                            <span>Chi tiáº¿t</span>
+                                            <span>Chi tiết</span>
                                         </a>
 
-                                        <!-- Duyá»‡t phiáº¿u (chá»‰ vá»›i pending) -->
+                                        <!-- Duyệt phiếu (chỉ với pending) -->
                                         <?php if ($rStatus === 'pending'): ?>
                                             <button type="button"
                                                     class="rcpt-btn rcpt-btn-approve"
-                                                    title="PhÃª duyá»‡t phiáº¿u nháº­p"
+                                                    title="Phê duyệt phiếu nhập"
                                                     onclick="confirmApprove(<?php echo $rId; ?>, '<?php echo addslashes(htmlspecialchars($rCode)); ?>')">
                                                 <i class="fas fa-check-double"></i>
-                                                <span>Duyá»‡t</span>
+                                                <span>Duyệt</span>
                                             </button>
                                         <?php endif; ?>
 
-                                        <!-- Há»§y phiáº¿u (draft hoáº·c pending) -->
+                                        <!-- Hủy phiếu (draft hoặc pending) -->
                                         <?php if (in_array($rStatus, ['draft', 'pending'])): ?>
                                             <button type="button"
                                                     class="rcpt-btn rcpt-btn-cancel"
-                                                    title="Há»§y phiáº¿u"
+                                                    title="Hủy phiếu"
                                                     onclick="confirmCancel(<?php echo $rId; ?>, '<?php echo addslashes(htmlspecialchars($rCode)); ?>')">
                                                 <i class="fas fa-ban"></i>
                                             </button>
@@ -420,18 +420,18 @@ $filterWarehouse = $filterWarehouse ?? 'all';
             <div class="rcpt-table-footer">
                 <span class="rcpt-result-info">
                     <i class="fas fa-info-circle"></i>
-                    Hiá»ƒn thá»‹ <strong><?php echo count($receipts); ?></strong> phiáº¿u
+                    Hiển thị <strong><?php echo count($receipts); ?></strong> phiếu
                     <?php if ($filterStatus !== 'all'): ?>
-                        Â· lá»c theo <strong><?php echo htmlspecialchars($statusInfo['label'] ?? $filterStatus); ?></strong>
+                        · lọc theo <strong><?php echo htmlspecialchars($statusInfo['label'] ?? $filterStatus); ?></strong>
                     <?php endif; ?>
                     <?php if ($filterWarehouse !== 'all'): ?>
-                        Â· kho <strong><?php echo htmlspecialchars($filterWarehouse); ?></strong>
+                        · kho <strong><?php echo htmlspecialchars($filterWarehouse); ?></strong>
                     <?php endif; ?>
                 </span>
                 <div class="rcpt-footer-actions">
                     <?php if ($filterStatus !== 'all' || $filterWarehouse !== 'all'): ?>
                         <a href="?page=inventory&action=receipts" class="rcpt-clear-filter">
-                            <i class="fas fa-times"></i> XÃ³a bá»™ lá»c
+                            <i class="fas fa-times"></i> Xóa bộ lọc
                         </a>
                     <?php endif; ?>
                 </div>
@@ -442,81 +442,81 @@ $filterWarehouse = $filterWarehouse ?? 'all';
 
 </main>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════════════
      CONFIRM APPROVE MODAL
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+═══════════════════════════════════════════════════════════ -->
 <div id="rcptApproveModal" class="rcpt-modal-overlay" onclick="if(event.target===this)closeRcptModal('rcptApproveModal')">
     <div class="rcpt-modal-box">
         <div class="rcpt-modal-header" style="background:linear-gradient(135deg,#10b981,#34d399);">
-            <h2><i class="fas fa-check-double"></i> PhÃª Duyá»‡t Phiáº¿u Nháº­p</h2>
-            <button onclick="closeRcptModal('rcptApproveModal')" class="rcpt-modal-close">Ã—</button>
+            <h2><i class="fas fa-check-double"></i> Phê Duyệt Phiếu Nhập</h2>
+            <button onclick="closeRcptModal('rcptApproveModal')" class="rcpt-modal-close">×</button>
         </div>
         <div class="rcpt-modal-body">
             <div class="rcpt-confirm-icon" style="background:rgba(34,197,94,0.12);">
                 <i class="fas fa-check-circle" style="color:#10b981;"></i>
             </div>
             <p class="rcpt-confirm-text">
-                Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n <strong>phÃª duyá»‡t</strong> phiáº¿u nháº­p<br>
+                Bạn có chắc chắn muốn <strong>phê duyệt</strong> phiếu nhập<br>
                 <span id="approveReceiptCode" class="rcpt-confirm-code"></span>?
             </p>
             <p class="rcpt-confirm-note">
                 <i class="fas fa-info-circle"></i>
-                Sau khi duyá»‡t, hÃ ng hÃ³a sáº½ Ä‘Æ°á»£c cáº­p nháº­t vÃ o kho vÃ  khÃ´ng thá»ƒ hoÃ n tÃ¡c dá»… dÃ ng.
+                Sau khi duyệt, hàng hóa sẽ được cập nhật vào kho và không thể hoàn tác dễ dàng.
             </p>
         </div>
         <form method="POST" action="?page=inventory&action=approve_receipt">
             <input type="hidden" name="receipt_id" id="approveReceiptId">
             <div class="rcpt-modal-footer">
                 <button type="button" onclick="closeRcptModal('rcptApproveModal')" class="btn btn-secondary" style="flex:1;">
-                    <i class="fas fa-times"></i> Há»§y bá»
+                    <i class="fas fa-times"></i> Hủy bỏ
                 </button>
                 <button type="submit" class="btn rcpt-btn-approve-submit" style="flex:2;">
-                    <i class="fas fa-check-double"></i> XÃ¡c Nháº­n Duyá»‡t
+                    <i class="fas fa-check-double"></i> Xác Nhận Duyệt
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════════════
      CONFIRM CANCEL MODAL
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+═══════════════════════════════════════════════════════════ -->
 <div id="rcptCancelModal" class="rcpt-modal-overlay" onclick="if(event.target===this)closeRcptModal('rcptCancelModal')">
     <div class="rcpt-modal-box">
         <div class="rcpt-modal-header" style="background:linear-gradient(135deg,#ef4444,#f87171);">
-            <h2><i class="fas fa-ban"></i> Há»§y Phiáº¿u Nháº­p</h2>
-            <button onclick="closeRcptModal('rcptCancelModal')" class="rcpt-modal-close">Ã—</button>
+            <h2><i class="fas fa-ban"></i> Hủy Phiếu Nhập</h2>
+            <button onclick="closeRcptModal('rcptCancelModal')" class="rcpt-modal-close">×</button>
         </div>
         <div class="rcpt-modal-body">
             <div class="rcpt-confirm-icon" style="background:rgba(239,68,68,0.12);">
                 <i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i>
             </div>
             <p class="rcpt-confirm-text">
-                Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n <strong>há»§y</strong> phiáº¿u nháº­p<br>
+                Bạn có chắc chắn muốn <strong>hủy</strong> phiếu nhập<br>
                 <span id="cancelReceiptCode" class="rcpt-confirm-code"></span>?
             </p>
             <p class="rcpt-confirm-note" style="background:#fff5f5;border-color:#fecaca;color:#f87171;">
                 <i class="fas fa-warning"></i>
-                Phiáº¿u Ä‘Ã£ há»§y khÃ´ng thá»ƒ khÃ´i phá»¥c láº¡i.
+                Phiếu đã hủy không thể khôi phục lại.
             </p>
         </div>
         <form method="POST" action="?page=inventory&action=cancel_receipt">
             <input type="hidden" name="receipt_id" id="cancelReceiptId">
             <div class="rcpt-modal-footer">
                 <button type="button" onclick="closeRcptModal('rcptCancelModal')" class="btn btn-secondary" style="flex:1;">
-                    <i class="fas fa-arrow-left"></i> Quay láº¡i
+                    <i class="fas fa-arrow-left"></i> Quay lại
                 </button>
                 <button type="submit" class="btn rcpt-btn-cancel-submit" style="flex:2;">
-                    <i class="fas fa-ban"></i> XÃ¡c Nháº­n Há»§y
+                    <i class="fas fa-ban"></i> Xác Nhận Hủy
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════════════
      JAVASCRIPT
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+═══════════════════════════════════════════════════════════ -->
 <script>
 function openRcptModal(id)  { document.getElementById(id).classList.add('show'); }
 function closeRcptModal(id) { document.getElementById(id).classList.remove('show'); }
@@ -552,9 +552,9 @@ document.querySelectorAll('.rcpt-row').forEach(function(row) {
 });
 </script>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-     STYLES â€” Dark Mode
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ═══════════════════════════════════════════════════════════
+     STYLES — Dark Mode
+═══════════════════════════════════════════════════════════ -->
 <style>
 /* Create button */
 .rcpt-btn-create { background: var(--accent) !important; border: none; border-radius: var(--radius-sm); padding: 10px 20px; font-weight: 600; transition: opacity .2s, transform .2s; }

@@ -11,8 +11,65 @@
                 </div>
             </div>
 
+            <?php
+            // ── Load permissions 1 lần cho sidebar ─────────────────────────
+            $sidebarUserId   = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
+            $sidebarIsSuper  = false;
+            $sidebarPerms    = [];
+
+            if ($sidebarUserId > 0) {
+                $roleCacheKey = 'admin_role_' . $sidebarUserId;
+                $permCacheKey = 'admin_permissions_' . $sidebarUserId;
+
+                // Super admin check (từ session cache của PermissionMiddleware)
+                if (isset($_SESSION[$roleCacheKey]) && !empty($_SESSION[$roleCacheKey]['is_super'])) {
+                    $sidebarIsSuper = true;
+                } elseif (!isset($_SESSION[$roleCacheKey])) {
+                    // Chưa cache (VD: page=dashboard skip PermissionMiddleware) → query trực tiếp
+                    try {
+                        $sidebarRoleStmt = $db->prepare(
+                            "SELECT u.role_id, u.is_admin, r.name as role_key, r.permissions
+                             FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.id = ?"
+                        );
+                        $sidebarRoleStmt->execute([$sidebarUserId]);
+                        $sidebarRoleRow = $sidebarRoleStmt->fetch(PDO::FETCH_ASSOC);
+                        if ($sidebarRoleRow) {
+                            if ($sidebarRoleRow['role_key'] === 'super_admin') {
+                                $sidebarIsSuper = true;
+                            } elseif (!empty($sidebarRoleRow['is_admin']) && empty($sidebarRoleRow['role_id'])) {
+                                $sidebarIsSuper = true;
+                            } else {
+                                $sidebarPerms = json_decode($sidebarRoleRow['permissions'] ?? '{}', true) ?? [];
+                            }
+                        }
+                    } catch (Exception $e) {
+                        $sidebarIsSuper = true; // Bảng chưa tồn tại → không chặn
+                    }
+                } else {
+                    // Đã cache, đọc perms từ cache
+                    if (isset($_SESSION[$permCacheKey])) {
+                        $sidebarPerms = $_SESSION[$permCacheKey];
+                    }
+                }
+
+                if (!empty($sidebarPerms['all'])) $sidebarIsSuper = true;
+            } else {
+                $sidebarIsSuper = true; // Fallback an toàn
+            }
+
+            /**
+             * Hàm check quyền cho sidebar
+             * @param string $perm  Permission key (e.g. 'products', 'orders')
+             */
+            function sidebarCan(string $perm): bool {
+                global $sidebarIsSuper, $sidebarPerms;
+                return $sidebarIsSuper || !empty($sidebarPerms[$perm]);
+            }
+            ?>
+
             <nav class="sidebar-nav">
                 <span class="nav-section-label">Menu chính</span>
+
                 <ul>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/" class="nav-link <?php echo !isset($_GET['page']) || $_GET['page'] === 'dashboard' ? 'active' : ''; ?>">
@@ -20,12 +77,15 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    <?php if (sidebarCan('products')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=products" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'products' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-box"></i></span>
                             <span>Sản phẩm</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('orders')): ?>
                     <li>
                         <?php
                         $pendingCount = 0;
@@ -43,6 +103,8 @@
                             <?php endif; ?>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('users')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=users" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'users' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-users"></i></span>
@@ -55,12 +117,16 @@
                             <span>Tích điểm KH</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('vouchers')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=vouchers" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'vouchers' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-ticket-alt"></i></span>
                             <span>Voucher</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('products')): ?>
                     <li>
                         <?php
                         $saleCount = 0;
@@ -79,7 +145,9 @@
                             <?php endif; ?>
                         </a>
                     </li>
+                    <?php endif; ?>
 
+                    <?php if (sidebarCan('inventory')): ?>
                     <li>
                         <?php
                         $lowCount = 0;
@@ -158,18 +226,24 @@
                         </ul>
                         <?php endif; ?>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('categories')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=categories" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'categories' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-layer-group"></i></span>
                             <span>Danh mục &amp; Nhãn hàng</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('banners')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=banners" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'banners' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-images"></i></span>
                             <span>Banner Slideshow</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('shipping')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=shipping" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'shipping' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-truck"></i></span>
@@ -191,16 +265,20 @@
                             <?php endif; ?>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('suppliers')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=suppliers" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'suppliers' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-industry"></i></span>
                             <span>Nhà cung cấp</span>
                         </a>
                     </li>
+                    <?php endif; ?>
                 </ul>
 
                 <span class="nav-section-label">Tiếp thị &amp; Bán hàng</span>
                 <ul>
+                    <?php if (sidebarCan('products')): ?>
                     <li>
                         <?php
                         $fsActiveCount = 0;
@@ -216,6 +294,8 @@
                             <?php endif; ?>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('orders')): ?>
                     <li>
                         <?php
                         $acCount = 0;
@@ -229,28 +309,51 @@
                             <?php endif; ?>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('products')): ?>
+                    <li>
+                        <?php
+                        $comboCount = 0;
+                        try { $comboCount = (int)$db->query("SELECT COUNT(*) FROM product_combos WHERE is_active=1")->fetchColumn(); } catch(Exception $e) {}
+                        ?>
+                        <a href="<?php echo BASE_URL; ?>admin/?page=combos" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'combos' ? 'active' : ''; ?>">
+                            <span class="nav-icon"><i class="fas fa-gift" style="color:#f59e0b;"></i></span>
+                            <span>Combo sản phẩm</span>
+                            <?php if ($comboCount > 0): ?>
+                                <span class="nav-badge" style="background:#f59e0b;color:#1a1000;"><?php echo $comboCount; ?></span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
 
                 <span class="nav-section-label">Tương tác</span>
                 <ul>
+                    <?php if (sidebarCan('notifications')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=notifications" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'notifications' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-bell" style="color:#f59e0b;"></i></span>
                             <span>Thông báo</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('chat')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=chat" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'chat' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-comments"></i></span>
                             <span>Chat</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('comments')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=comments" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'comments' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-star"></i></span>
                             <span>Bình luận</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('inventory')): ?>
                     <li>
                         <?php
                         $bisTotal = 0;
@@ -264,6 +367,8 @@
                             <?php endif; ?>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('returns')): ?>
                     <li>
                         <?php
                         $returnCount = 0;
@@ -277,38 +382,56 @@
                             <?php endif; ?>
                         </a>
                     </li>
+                    <?php endif; ?>
                 </ul>
 
                 <span class="nav-section-label">Công cụ</span>
                 <ul>
+                    <?php if (sidebarCan('reports')): ?>
                     <li>
                         <div style="padding:6px 10px;">
                             <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-                                <i class="fas fa-file-csv" style="color:#22c55e;"></i> Xuất CSV
+                                <i class="fas fa-file-excel" style="color:#22c55e;"></i> Xuất Excel
                             </div>
                             <div style="display:flex;flex-wrap:wrap;gap:5px;">
-                                <a href="<?php echo BASE_URL; ?>admin/?page=export&type=orders" class="btn btn-sm" style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);font-size:11px;padding:4px 10px;">
-                                    <i class="fas fa-download"></i> Đơn hàng
+                                <?php if (sidebarCan('orders')): ?>
+                                <a href="<?php echo BASE_URL; ?>admin/?page=export&type=orders_excel" class="btn btn-sm" style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);font-size:11px;padding:4px 10px;">
+                                    <i class="fas fa-file-excel"></i> Đơn hàng
                                 </a>
-                                <a href="<?php echo BASE_URL; ?>admin/?page=export&type=products" class="btn btn-sm" style="background:rgba(34,197,94,0.10);color:#4ade80;border:1px solid rgba(34,197,94,0.25);font-size:11px;padding:4px 10px;">
-                                    <i class="fas fa-download"></i> Sản phẩm
+                                <?php endif; ?>
+                                <?php if (sidebarCan('products')): ?>
+                                <a href="<?php echo BASE_URL; ?>admin/?page=export&type=products_excel" class="btn btn-sm" style="background:rgba(34,197,94,0.10);color:#4ade80;border:1px solid rgba(34,197,94,0.25);font-size:11px;padding:4px 10px;">
+                                    <i class="fas fa-file-excel"></i> Sản phẩm
                                 </a>
-                                <a href="<?php echo BASE_URL; ?>admin/?page=export&type=users" class="btn btn-sm" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);font-size:11px;padding:4px 10px;">
-                                    <i class="fas fa-download"></i> Khách hàng
+                                <?php endif; ?>
+                                <?php if (sidebarCan('users')): ?>
+                                <a href="<?php echo BASE_URL; ?>admin/?page=export&type=users_excel" class="btn btn-sm" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);font-size:11px;padding:4px 10px;">
+                                    <i class="fas fa-file-excel"></i> Khách hàng
+                                </a>
+                                <?php endif; ?>
+                                <a href="<?php echo BASE_URL; ?>admin/?page=export&type=report_revenue" class="btn btn-sm" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);font-size:11px;padding:4px 10px;">
+                                    <i class="fas fa-file-excel"></i> Báo cáo DT
+                                </a>
+                                <a href="<?php echo BASE_URL; ?>admin/?page=export&type=report_profit" class="btn btn-sm" style="background:rgba(22,163,74,0.12);color:#4ade80;border:1px solid rgba(22,163,74,0.25);font-size:11px;padding:4px 10px;">
+                                    <i class="fas fa-file-excel"></i> Báo cáo LN
                                 </a>
                             </div>
                         </div>
                     </li>
+                    <?php endif; ?>
                 </ul>
 
                 <li class="nav-divider"></li>
                 <ul>
+                    <?php if (sidebarCan('roles')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=roles" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'roles' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-user-shield"></i></span>
                             <span>Phân quyền Admin</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if (sidebarCan('settings')): ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=settings" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'settings' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-cog"></i></span>
@@ -332,6 +455,7 @@
                             <?php endif; ?>
                         </a>
                     </li>
+                    <?php endif; ?>
                     <li>
                         <a href="<?php echo BASE_URL; ?>admin/?page=password" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] === 'password' ? 'active' : ''; ?>">
                             <span class="nav-icon"><i class="fas fa-key"></i></span>
