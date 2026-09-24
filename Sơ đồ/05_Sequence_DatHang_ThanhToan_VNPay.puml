@@ -1,0 +1,64 @@
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - ĐẶT HÀNG & THANH TOÁN VNPAY
+
+actor "Khách hàng" as Customer
+participant "Giao diện Checkout\n(thanhtoan.php)" as UI
+participant "CheckoutController" as Ctrl
+participant "VNPayHelper" as VNHelper
+database "MySQL Database" as DB
+participant "Cổng VNPay Gateway" as VNPay
+participant "Trang Return\n(thanhtoan_success.php)" as Success
+participant "Email Worker" as Worker
+
+Customer -> UI: Điền thông tin giao hàng & chọn phương thức VNPay
+UI -> Ctrl: POST /thanhtoan.php (CSRF Token, họ tên, địa chỉ, voucher)
+activate Ctrl
+
+note over Ctrl: Kiểm tra CsrfHelper::verify()
+Ctrl -> DB: SELECT products FOR UPDATE (Khóa dòng kiểm tra tồn kho)
+Ctrl -> DB: Kiểm tra Voucher & Điểm tích lũy
+
+group Database Transaction Tạo đơn hàng
+    Ctrl -> DB: INSERT INTO orders (total, status='pending', payment_status='unpaid', access_token)
+    Ctrl -> DB: INSERT INTO order_items (order_id, product_id, price, quantity)
+    Ctrl -> DB: UPDATE products SET quantity = quantity - ? (Trừ kho)
+    Ctrl -> DB: INSERT INTO payment_transactions (gateway='vnpay', status='pending')
+end
+
+Ctrl -> VNHelper: createPaymentUrl($orderId, $totalAmount)
+note over VNHelper: Tạo TxnRef: "{orderId}_{timestamp}"\nBăm chữ ký số HMAC-SHA512
+VNHelper --> Ctrl: Trả về URL cổng thanh toán VNPay
+Ctrl --> UI: HTTP 302 Redirect sang VNPAY_URL
+deactivate Ctrl
+
+UI -> VNPay: Điều hướng tới cổng thanh toán VNPay
+activate VNPay
+Customer -> VNPay: Quét mã VietQR / Nhập thông tin thẻ ATM & OTP
+VNPay -> VNPay: Xử lý giao dịch trừ tiền
+VNPay --> UI: HTTP 302 Redirect về thanhtoan_success.php (kèm vnp_SecureHash)
+deactivate VNPay
+
+UI -> Success: GET callback (vnp_ResponseCode, vnp_TxnRef, vnp_SecureHash)
+activate Success
+Success -> VNHelper: validateSignature($_GET)
+
+alt Chữ ký hợp lệ VÀ vnp_ResponseCode == '00'
+    Success -> DB: UPDATE payment_transactions SET status='success', paid_at=NOW()
+    Success -> DB: UPDATE orders SET payment_status='paid', status='processing'
+    Success -> DB: INSERT INTO order_status_history (from_status='pending', to_status='processing')
+    Success -> DB: INSERT INTO email_queue (to_email, subject, body_html)
+    Success -> DB: INSERT INTO loyalty_points (points, type='earn')
+    Success -> Worker: Kích hoạt gửi email hóa đơn điện tử
+    Success -> Success: unset($_SESSION['cart'])
+    Success --> Customer: Hiển thị giao diện Đặt hàng thành công & Mã tra cứu
+else Giao dịch thất bại / Khách hủy
+    Success -> DB: UPDATE payment_transactions SET status='failed'
+    Success --> Customer: Báo lỗi giao dịch và cung cấp nút Thanh toán lại
+end
+deactivate Success
+@enduml

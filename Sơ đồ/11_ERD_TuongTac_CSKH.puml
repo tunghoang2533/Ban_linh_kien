@@ -1,0 +1,97 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #DB2777
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #9D174D
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM TƯƠNG TÁC & CHĂM SÓC KHÁCH HÀNG
+
+entity "users (Người dùng)" as users {
+  * id : INT <<PK>>
+  --
+  full_name : VARCHAR(100)
+  email : VARCHAR(100)
+}
+
+entity "products (Sản phẩm)" as products {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(255)
+  image : VARCHAR(255)
+}
+
+entity "conversations (Phiên hội thoại)" as conversations {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  guest_session : VARCHAR(255)
+  subject : VARCHAR(255)
+  status : ENUM('open','pending','closed')
+  channel : ENUM('web_chat','facebook','zalo')
+  last_message_at : DATETIME
+}
+
+entity "messages (Nội dung tin nhắn)" as messages {
+  * id : INT <<PK>>
+  --
+  conversation_id : INT <<FK>>
+  sender_type : ENUM('user','admin','bot')
+  sender_id : INT
+  sender_name : VARCHAR(100)
+  message : TEXT
+  attachments : TEXT
+  is_read : TINYINT(1)
+  created_at : TIMESTAMP
+}
+
+entity "product_comments (Đánh giá & Review)" as product_comments {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  user_id : INT <<FK>>
+  rating : TINYINT
+  comment : TEXT
+  images : TEXT
+  is_approved : TINYINT(1)
+  helpful_count : INT
+  created_at : TIMESTAMP
+}
+
+entity "wishlists (Sản phẩm yêu thích)" as wishlists {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  product_id : INT <<FK>>
+  created_at : TIMESTAMP
+}
+
+entity "return_requests (Yêu cầu đổi/trả)" as return_requests {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  user_id : INT <<FK>>
+  product_id : INT <<FK>>
+  quantity : INT
+  reason : TEXT
+  images : TEXT
+  status : ENUM('pending','approved','rejected','completed')
+  admin_note : TEXT
+  refund_amount : DECIMAL(15,2)
+  created_at : TIMESTAMP
+}
+
+users ||--o{ conversations : "user_id"
+conversations ||--o{ messages : "conversation_id"
+users ||--o{ product_comments : "user_id"
+products ||--o{ product_comments : "product_id"
+users ||--o{ wishlists : "user_id"
+products ||--o{ wishlists : "product_id"
+users ||--o{ return_requests : "user_id"
+products ||--o{ return_requests : "product_id"
+@enduml

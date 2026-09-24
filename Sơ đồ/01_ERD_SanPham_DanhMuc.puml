@@ -1,0 +1,105 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #3B82F6
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #1D4ED8
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM SẢN PHẨM & DANH MỤC
+
+entity "categories (Danh mục)" as categories {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  slug : VARCHAR(100)
+  parent_id : INT <<FK>>
+  description : TEXT
+  image : VARCHAR(255)
+  sort_order : INT
+  is_active : TINYINT(1)
+  created_at : TIMESTAMP
+}
+
+entity "brands (Thương hiệu)" as brands {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  slug : VARCHAR(100)
+  logo : VARCHAR(255)
+  description : TEXT
+  sort_order : INT
+  is_active : TINYINT(1)
+}
+
+entity "products (Linh kiện / Sản phẩm)" as products {
+  * id : INT <<PK>>
+  --
+  category_id : INT <<FK>>
+  brand_id : INT <<FK>>
+  name : VARCHAR(255)
+  price : DECIMAL(15,2)
+  cost_price : DECIMAL(15,2)
+  discount_percent : TINYINT
+  quantity : INT
+  image : VARCHAR(255)
+  description : TEXT
+  is_active : TINYINT(1)
+  is_featured : TINYINT(1)
+  min_stock : INT
+  socket : VARCHAR(50)
+  warehouse_id : INT
+  bin_location : VARCHAR(50)
+  created_at : TIMESTAMP
+}
+
+entity "product_images (Album ảnh)" as product_images {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  image_url : VARCHAR(255)
+  sort_order : INT
+  is_primary : TINYINT(1)
+}
+
+entity "product_specs (Thông số kỹ thuật)" as product_specs {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  spec_name : VARCHAR(100)
+  spec_value : TEXT
+  sort_order : INT
+}
+
+entity "price_history (Lịch sử biến động giá)" as price_history {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  old_price : DECIMAL(15,2)
+  new_price : DECIMAL(15,2)
+  changed_by : INT
+  created_at : TIMESTAMP
+}
+
+entity "back_in_stock_subscriptions (Báo có hàng)" as back_in_stock {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  email : VARCHAR(255)
+  user_id : INT <<FK>>
+  status : ENUM('pending','notified','cancelled')
+  created_at : DATETIME
+}
+
+categories ||--o{ categories : "parent_id"
+categories ||--o{ products : "category_id"
+brands ||--o{ products : "brand_id"
+products ||--o{ product_images : "product_id"
+products ||--o{ product_specs : "product_id"
+products ||--o{ price_history : "product_id"
+products ||--o{ back_in_stock : "product_id"
+@enduml

@@ -1,0 +1,57 @@
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam stateFontSize 12
+skinparam stateFontName "Segoe UI, Arial"
+
+title SƠ ĐỒ STATE - VÒNG ĐỜI ĐƠN HÀNG (ORDER LIFECYCLE)
+
+[*] --> Pending : Khách bấm "Đặt hàng"
+
+state Pending {
+  state "Chờ thanh toán VNPay" as Unpaid
+  state "Chờ gọi xác nhận COD" as AwaitingConfirm
+  [*] --> Unpaid : Chọn cổng VNPay
+  [*] --> AwaitingConfirm : Chọn COD
+  Unpaid --> AwaitingConfirm : Thanh toán thành công (00)
+}
+
+Pending --> Processing : Admin xác nhận đơn / Đã thanh toán
+Pending --> Cancelled : Quá 24h chưa thanh toán / Khách hủy
+
+state Processing {
+  state "Kiểm tra linh kiện" as Checking
+  state "Gán Serial Number" as PickingSerial
+  state "Đóng gói niêm phong" as Packing
+  [*] --> Checking
+  Checking --> PickingSerial
+  PickingSerial --> Packing
+}
+
+Processing --> Shipped : Đã bàn giao ĐVVC (sinh tracking_code)
+Processing --> Cancelled : Hết linh kiện kho / Sự cố đơn
+
+state Shipped {
+  state "Đang luân chuyển bưu cục" as InTransit
+  state "Shipper đang phát hàng" as OutForDelivery
+  [*] --> InTransit
+  InTransit --> OutForDelivery
+}
+
+Shipped --> Completed : Khách ký nhận thành công & Thanh toán
+Shipped --> Cancelled : Giao hàng thất bại / Khách boom hàng
+
+state Completed {
+  state "Kích hoạt bảo hành điện tử" as WarrantyActive
+  state "Yêu cầu Đổi/Trả (<= 7 ngày)" as ReturnRequested
+  [*] --> WarrantyActive
+  WarrantyActive --> ReturnRequested : Gửi đơn khiếu nại
+}
+
+ReturnRequested --> Refunded : Admin duyệt hoàn tiền
+ReturnRequested --> Completed : Đổi linh kiện mới / Bác bỏ khiếu nại
+
+Completed --> [*]
+Cancelled --> [*]
+Refunded --> [*]
+@enduml

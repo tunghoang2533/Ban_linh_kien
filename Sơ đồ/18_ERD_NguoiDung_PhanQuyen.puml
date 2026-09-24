@@ -1,0 +1,86 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #4F46E5
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #3730A3
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM NGƯỜI DÙNG & PHÂN QUYỀN (RBAC)
+
+entity "roles (Vai trò phân quyền)" as roles {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(50) <<UNIQUE>>
+  display_name : VARCHAR(100)
+  description : TEXT
+  permissions : LONGTEXT
+  created_at : TIMESTAMP
+}
+
+entity "users (Tài khoản người dùng)" as users {
+  * id : INT <<PK>>
+  --
+  role_id : INT <<FK>>
+  username : VARCHAR(100) <<UNIQUE>>
+  password : VARCHAR(255)
+  full_name : VARCHAR(100)
+  email : VARCHAR(100) <<UNIQUE>>
+  email_verified_at : TIMESTAMP
+  phone : VARCHAR(20)
+  address : TEXT
+  avatar : VARCHAR(255)
+  role : VARCHAR(50)
+  is_admin : TINYINT(1)
+  is_blocked : TINYINT(1)
+  blocked_reason : VARCHAR(255)
+  created_at : TIMESTAMP
+}
+
+entity "user_addresses (Sổ địa chỉ)" as user_addresses {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  recipient_name : VARCHAR(100)
+  phone : VARCHAR(20)
+  address_line : VARCHAR(255)
+  province_id : INT
+  district_id : INT
+  ward_id : INT
+  is_default : TINYINT(1)
+  created_at : TIMESTAMP
+}
+
+entity "password_resets (Đặt lại mật khẩu)" as password_resets {
+  * id : INT <<PK>>
+  --
+  email : VARCHAR(100)
+  token : VARCHAR(100) <<UNIQUE>>
+  expires_at : DATETIME
+  created_at : TIMESTAMP
+}
+
+entity "audit_logs (Nhật ký hành vi)" as audit_logs {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  username : VARCHAR(100)
+  action : VARCHAR(100)
+  module : VARCHAR(100)
+  target_id : INT
+  target_name : VARCHAR(255)
+  old_data : TEXT
+  new_data : TEXT
+  ip_address : VARCHAR(50)
+  user_agent : VARCHAR(500)
+  created_at : TIMESTAMP
+}
+
+roles ||--o{ users : "role_id"
+users ||--o{ user_addresses : "user_id"
+users ||--o{ audit_logs : "user_id"
+@enduml

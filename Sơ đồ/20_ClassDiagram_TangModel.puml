@@ -1,0 +1,97 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #2563EB
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #1D4ED8
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ CLASS DIAGRAM - TẦNG MODEL & CORE DATABASE (PSR-4)
+
+package "App\\Core" {
+  class Database <<Singleton>> {
+    - {static} Database instance
+    - PDO pdo
+    - __construct()
+    + {static} getInstance() : PDO
+    + {static} beginTransaction() : bool
+    + {static} commit() : bool
+    + {static} rollBack() : bool
+  }
+}
+
+package "App\\Models" {
+  class UserModel {
+    - PDO db
+    + __construct(PDO db)
+    + getUserById(int id) : array
+    + getUserByEmail(string email) : array
+    + getUserByUsername(string username) : array
+    + createUser(array data) : int
+    + updateUser(int id, array data) : bool
+    + verifyPassword(string pass, string hash) : bool
+  }
+
+  class ProductModel {
+    - PDO db
+    + __construct(PDO db)
+    + getProductById(int id) : array
+    + getProductsByCategory(int catId, int limit, int offset) : array
+    + searchProducts(string keyword, array filters) : array
+    + decrementQuantity(int id, int qty) : bool
+    + incrementQuantity(int id, int qty) : bool
+    + getProductSpecs(int productId) : array
+  }
+
+  class OrderModel {
+    - PDO db
+    + __construct(PDO db)
+    + createOrder(array orderData, array cartItems) : int
+    + getOrderById(int id) : array
+    + getOrderByAccessToken(string token) : array
+    + getOrdersByUser(int userId) : array
+    + updateOrderStatus(int id, string status, string note) : bool
+    + updatePaymentStatus(int id, string payStatus, string txn) : bool
+  }
+
+  class VoucherModel {
+    - PDO db
+    + __construct(PDO db)
+    + getVoucherByCode(string code) : array
+    + validateVoucher(string code, float total, int userId) : array
+    + recordUsage(int voucherId, int userId, int orderId, float discount) : bool
+  }
+
+  class AddressModel {
+    - PDO db
+    + __construct(PDO db)
+    + getAddressesByUser(int userId) : array
+    + addAddress(array data) : int
+    + setDefaultAddress(int userId, int addressId) : bool
+  }
+
+  class ProductCommentModel {
+    - PDO db
+    + __construct(PDO db)
+    + getByProduct(int productId) : array
+    + addComment(array data) : int
+    + approveComment(int commentId) : bool
+  }
+}
+
+Database <.. UserModel : uses
+Database <.. ProductModel : uses
+Database <.. OrderModel : uses
+Database <.. VoucherModel : uses
+Database <.. AddressModel : uses
+Database <.. ProductCommentModel : uses
+
+OrderModel ..> ProductModel : modifies stock
+OrderModel ..> VoucherModel : verifies coupon
+UserModel ..> AddressModel : manages
+ProductModel ..> ProductCommentModel : reviews
+@enduml

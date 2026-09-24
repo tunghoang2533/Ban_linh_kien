@@ -1,0 +1,48 @@
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - CHATBOT AI TƯ VẤN CẤU HÌNH (GROQ LLAMA 3.3)
+
+actor "Khách hàng" as Customer
+participant "Chatbot Widget UI\n(chatbot_buildpc.js)" as UI
+participant "Backend Endpoint\n(chatbot_buildpc.php)" as Server
+database "MySQL Database\n(products + specs)" as DB
+participant "Groq Cloud AI API\n(LLaMA 3.3 70B)" as Groq
+
+Customer -> UI: Nhập yêu cầu: "Tư vấn case máy tính 18 triệu đồ họa"
+UI -> Server: POST /chatbot_buildpc.php (JSON: message, history[])
+activate Server
+
+Server -> DB: getProductContext() - Lấy linh kiện còn hàng (quantity > 0)
+activate DB
+DB --> Server: Trả về danh sách CPU, Mainboard kèm Socket, RAM, VGA và Giá
+deactivate DB
+
+note over Server
+  Đóng gói Prompt:
+  1. System Role: Chuyên gia ráp PC Bán Linh Kiện
+  2. Bơm ngữ cảnh (Context Injection): Danh sách sản phẩm thực tế
+  3. Ràng buộc: Chỉ đề xuất linh kiện khớp Socket và đúng định dạng [ID:xxx]
+end note
+
+Server -> Groq: POST /openai/v1/chat/completions (GROQ_API_KEY, Model: llama-3.3-70b-versatile)
+activate Groq
+note over Groq: LLaMA 3.3 suy luận kiểm tra tương thích phần cứng & cân đối ngân sách
+Groq --> Server: JSON phản hồi đoạn tư vấn kèm các tag [ID:105], [ID:204],...
+deactivate Groq
+
+note over Server: Dùng Regex trích xuất danh sách ID sản phẩm: /\[ID:(\d+)\]/
+
+Server -> DB: SELECT id, name, price, image FROM products WHERE id IN (...)
+activate DB
+DB --> Server: Dữ liệu hình ảnh, giá bán thực tế của sản phẩm
+deactivate DB
+
+Server --> UI: HTTP 200 JSON {reply: "...", suggestions: [{id, name, price, image}, ...]}
+deactivate Server
+
+UI --> Customer: Hiển thị lời khuyên chuyên gia + Các card sản phẩm tương tác kèm nút "Chọn vào dàn PC"
+@enduml

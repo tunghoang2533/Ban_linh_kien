@@ -1,0 +1,1958 @@
+' ==========================================================================
+' TỔNG HỢP TOÀN BỘ 22 SƠ ĐỒ THIẾT KẾ HỆ THỐNG - PLANTUML
+' Website Thương Mại Điện Tử Bán Linh Kiện Máy Tính
+' Hướng dẫn: Mở trên https://www.planttext.com hoặc Draw.io (Chèn -> Nâng cao -> PlantUML)
+' ==========================================================================
+
+' ----------------------------------------------------------------------
+' FILE: 01_ERD_SanPham_DanhMuc.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #3B82F6
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #1D4ED8
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM SẢN PHẨM & DANH MỤC
+
+entity "categories (Danh mục)" as categories {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  slug : VARCHAR(100)
+  parent_id : INT <<FK>>
+  description : TEXT
+  image : VARCHAR(255)
+  sort_order : INT
+  is_active : TINYINT(1)
+  created_at : TIMESTAMP
+}
+
+entity "brands (Thương hiệu)" as brands {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  slug : VARCHAR(100)
+  logo : VARCHAR(255)
+  description : TEXT
+  sort_order : INT
+  is_active : TINYINT(1)
+}
+
+entity "products (Linh kiện / Sản phẩm)" as products {
+  * id : INT <<PK>>
+  --
+  category_id : INT <<FK>>
+  brand_id : INT <<FK>>
+  name : VARCHAR(255)
+  price : DECIMAL(15,2)
+  cost_price : DECIMAL(15,2)
+  discount_percent : TINYINT
+  quantity : INT
+  image : VARCHAR(255)
+  description : TEXT
+  is_active : TINYINT(1)
+  is_featured : TINYINT(1)
+  min_stock : INT
+  socket : VARCHAR(50)
+  warehouse_id : INT
+  bin_location : VARCHAR(50)
+  created_at : TIMESTAMP
+}
+
+entity "product_images (Album ảnh)" as product_images {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  image_url : VARCHAR(255)
+  sort_order : INT
+  is_primary : TINYINT(1)
+}
+
+entity "product_specs (Thông số kỹ thuật)" as product_specs {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  spec_name : VARCHAR(100)
+  spec_value : TEXT
+  sort_order : INT
+}
+
+entity "price_history (Lịch sử biến động giá)" as price_history {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  old_price : DECIMAL(15,2)
+  new_price : DECIMAL(15,2)
+  changed_by : INT
+  created_at : TIMESTAMP
+}
+
+entity "back_in_stock_subscriptions (Báo có hàng)" as back_in_stock {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  email : VARCHAR(255)
+  user_id : INT <<FK>>
+  status : ENUM('pending','notified','cancelled')
+  created_at : DATETIME
+}
+
+categories ||--o{ categories : "parent_id"
+categories ||--o{ products : "category_id"
+brands ||--o{ products : "brand_id"
+products ||--o{ product_images : "product_id"
+products ||--o{ product_specs : "product_id"
+products ||--o{ price_history : "product_id"
+products ||--o{ back_in_stock : "product_id"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 02_ERD_GioHang_DonHang_ThanhToan.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #2563EB
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #1E40AF
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM GIỎ HÀNG, ĐƠN HÀNG & THANH TOÁN
+
+entity "users (Người dùng)" as users {
+  * id : INT <<PK>>
+  --
+  username : VARCHAR(100)
+  full_name : VARCHAR(100)
+  email : VARCHAR(100)
+  phone : VARCHAR(20)
+}
+
+entity "abandoned_carts (Giỏ hàng bỏ quên)" as abandoned_carts {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  session_id : VARCHAR(255)
+  cart_data : LONGTEXT
+  cart_total : DECIMAL(12,2)
+  item_count : INT
+  status : ENUM('active','recovered','expired','contacted')
+  reminder_count : INT
+  created_at : TIMESTAMP
+}
+
+entity "orders (Đơn đặt hàng)" as orders {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  access_token : VARCHAR(36) <<UNIQUE>>
+  customer_name : VARCHAR(100)
+  customer_phone : VARCHAR(20)
+  customer_email : VARCHAR(100)
+  customer_address : TEXT
+  shipping_province : VARCHAR(100)
+  total_amount : DECIMAL(15,2)
+  status : ENUM('pending','processing','shipped','completed','cancelled')
+  voucher_code : VARCHAR(50)
+  discount_amount : DECIMAL(10,2)
+  shipping_fee : DECIMAL(10,2)
+  payment_method : ENUM('cod','bank','vnpay')
+  payment_status : ENUM('unpaid','paid','refunded')
+  tracking_code : VARCHAR(20)
+  vnpay_transaction : VARCHAR(100)
+  created_at : TIMESTAMP
+}
+
+entity "order_items (Chi tiết đơn hàng)" as order_items {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  product_id : INT <<FK>>
+  product_name : VARCHAR(255)
+  price : DECIMAL(15,2)
+  quantity : INT
+}
+
+entity "order_status_history (Nhật ký trạng thái)" as order_status_history {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  from_status : VARCHAR(50)
+  to_status : VARCHAR(50)
+  changed_by : INT
+  changer_name : VARCHAR(100)
+  note : TEXT
+  created_at : TIMESTAMP
+}
+
+entity "payment_transactions (Giao dịch cổng)" as payment_transactions {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  gateway : ENUM('vnpay','momo','bank')
+  transaction_code : VARCHAR(100)
+  amount : DECIMAL(15,2)
+  status : ENUM('pending','success','failed')
+  gateway_response : TEXT
+  paid_at : DATETIME
+}
+
+entity "vouchers (Mã giảm giá)" as vouchers {
+  * id : INT <<PK>>
+  --
+  code : VARCHAR(50) <<UNIQUE>>
+  discount_type : ENUM('percent','fixed')
+  discount_value : DECIMAL(10,2)
+  min_order_amount : DECIMAL(12,2)
+  max_discount_amount : DECIMAL(12,2)
+  usage_limit : INT
+  used_count : INT
+  start_date : DATETIME
+  end_date : DATETIME
+  is_active : TINYINT(1)
+}
+
+entity "voucher_usages (Lịch sử dùng voucher)" as voucher_usages {
+  * id : INT <<PK>>
+  --
+  voucher_id : INT <<FK>>
+  user_id : INT <<FK>>
+  order_id : INT <<FK>>
+  discount_amount : DECIMAL(10,2)
+  used_at : TIMESTAMP
+}
+
+users ||--o{ abandoned_carts : "user_id"
+users ||--o{ orders : "user_id"
+orders ||--o{ order_items : "order_id"
+orders ||--o{ order_status_history : "order_id"
+orders ||--o{ payment_transactions : "order_id"
+orders ||--o{ voucher_usages : "order_id"
+vouchers ||--o{ voucher_usages : "voucher_id"
+users ||--o{ voucher_usages : "user_id"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 03_ERD_Marketing.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #7C3AED
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #5B21B6
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM MARKETING & KHUYẾN MÃI
+
+entity "banners (Banner quảng cáo)" as banners {
+  * id : INT <<PK>>
+  --
+  title : VARCHAR(255)
+  subtitle : VARCHAR(500)
+  tag : VARCHAR(100)
+  btn_text : VARCHAR(100)
+  btn_url : VARCHAR(500)
+  image : VARCHAR(255)
+  sort_order : INT
+  is_active : TINYINT(1)
+}
+
+entity "flash_sale_campaigns (Chiến dịch Flash Sale)" as flash_sale_campaigns {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(255)
+  start_time : DATETIME
+  end_time : DATETIME
+  status : ENUM('upcoming','active','ended')
+  banner_image : VARCHAR(255)
+}
+
+entity "flash_sale_products (Sản phẩm Flash Sale)" as flash_sale_products {
+  * id : INT <<PK>>
+  --
+  campaign_id : INT <<FK>>
+  product_id : INT <<FK>>
+  flash_price : DECIMAL(15,2)
+  quantity_limit : INT
+  sold_count : INT
+  sort_order : INT
+}
+
+entity "products (Sản phẩm gốc)" as products {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(255)
+  price : DECIMAL(15,2)
+}
+
+entity "vouchers (Mã ưu đãi)" as vouchers {
+  * id : INT <<PK>>
+  --
+  code : VARCHAR(50) <<UNIQUE>>
+  discount_type : ENUM('percent','fixed')
+  discount_value : DECIMAL(10,2)
+  min_order_amount : DECIMAL(12,2)
+  max_discount_amount : DECIMAL(12,2)
+  usage_limit : INT
+  used_count : INT
+  start_date : DATETIME
+  end_date : DATETIME
+}
+
+entity "voucher_usages (Lượt áp dụng)" as voucher_usages {
+  * id : INT <<PK>>
+  --
+  voucher_id : INT <<FK>>
+  user_id : INT <<FK>>
+  order_id : INT <<FK>>
+  discount_amount : DECIMAL(10,2)
+  used_at : TIMESTAMP
+}
+
+entity "loyalty_points (Điểm thưởng thành viên)" as loyalty_points {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  order_id : INT <<FK>>
+  points : INT
+  type : ENUM('earn','redeem','bonus')
+  description : VARCHAR(255)
+  created_at : TIMESTAMP
+}
+
+entity "abandoned_carts (Cứu giỏ hàng)" as abandoned_carts {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  cart_total : DECIMAL(12,2)
+  status : ENUM('active','recovered','contacted')
+  reminder_count : INT
+  last_reminder_at : DATETIME
+}
+
+flash_sale_campaigns ||--o{ flash_sale_products : "campaign_id"
+products ||--o{ flash_sale_products : "product_id"
+vouchers ||--o{ voucher_usages : "voucher_id"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 04_Sequence_Them_BuildPC_VaoGioHang.puml
+' ----------------------------------------------------------------------
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+skinparam sequenceBoxBorderColor #CBD5E1
+
+title SƠ ĐỒ SEQUENCE - THÊM CẤU HÌNH BUILD PC VÀO GIỎ HÀNG
+
+actor "Khách hàng" as Customer
+participant "Giao diện Build PC\n(buildpc.php)" as UI
+participant "BuildPcController" as Ctrl
+participant "ProductModel" as Model
+database "MySQL Database\n(products)" as DB
+participant "Session\n($_SESSION['cart'])" as Sess
+
+Customer -> UI: Chọn CPU, Mainboard, RAM, VGA, PSU, Case
+note over UI: JavaScript kiểm tra tương thích Socket & Công suất nguồn (TDP)
+Customer -> UI: Bấm "Thêm tất cả vào giỏ hàng"
+UI -> Ctrl: POST /buildpc.php?action=add_to_cart (danh sách product_id[])
+activate Ctrl
+
+loop Duyệt từng linh kiện trong bộ máy ráp
+    Ctrl -> Model: getProductById(id)
+    activate Model
+    Model -> DB: SELECT * FROM products WHERE id=? AND is_active=1
+    DB --> Model: Trả về giá, số lượng tồn kho
+    deactivate Model
+end
+
+alt Có linh kiện hết hàng (quantity <= 0)
+    Ctrl --> UI: Redirect kèm Flash Error ("Linh kiện X đã hết hàng!")
+    UI --> Customer: Hiển thị cảnh báo màu đỏ
+else Tất cả linh kiện đều còn hàng
+    Ctrl -> Sess: Merge linh kiện vào $_SESSION['cart']
+    Ctrl -> DB: Đồng bộ dữ liệu giỏ vào bảng abandoned_carts
+    Ctrl --> UI: Header("Location: giohang.php")
+    deactivate Ctrl
+    UI --> Customer: Chuyển hướng đến giỏ hàng kèm thông báo thành công
+end
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 05_Sequence_DatHang_ThanhToan_VNPay.puml
+' ----------------------------------------------------------------------
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - ĐẶT HÀNG & THANH TOÁN VNPAY
+
+actor "Khách hàng" as Customer
+participant "Giao diện Checkout\n(thanhtoan.php)" as UI
+participant "CheckoutController" as Ctrl
+participant "VNPayHelper" as VNHelper
+database "MySQL Database" as DB
+participant "Cổng VNPay Gateway" as VNPay
+participant "Trang Return\n(thanhtoan_success.php)" as Success
+participant "Email Worker" as Worker
+
+Customer -> UI: Điền thông tin giao hàng & chọn phương thức VNPay
+UI -> Ctrl: POST /thanhtoan.php (CSRF Token, họ tên, địa chỉ, voucher)
+activate Ctrl
+
+note over Ctrl: Kiểm tra CsrfHelper::verify()
+Ctrl -> DB: SELECT products FOR UPDATE (Khóa dòng kiểm tra tồn kho)
+Ctrl -> DB: Kiểm tra Voucher & Điểm tích lũy
+
+group Database Transaction Tạo đơn hàng
+    Ctrl -> DB: INSERT INTO orders (total, status='pending', payment_status='unpaid', access_token)
+    Ctrl -> DB: INSERT INTO order_items (order_id, product_id, price, quantity)
+    Ctrl -> DB: UPDATE products SET quantity = quantity - ? (Trừ kho)
+    Ctrl -> DB: INSERT INTO payment_transactions (gateway='vnpay', status='pending')
+end
+
+Ctrl -> VNHelper: createPaymentUrl($orderId, $totalAmount)
+note over VNHelper: Tạo TxnRef: "{orderId}_{timestamp}"\nBăm chữ ký số HMAC-SHA512
+VNHelper --> Ctrl: Trả về URL cổng thanh toán VNPay
+Ctrl --> UI: HTTP 302 Redirect sang VNPAY_URL
+deactivate Ctrl
+
+UI -> VNPay: Điều hướng tới cổng thanh toán VNPay
+activate VNPay
+Customer -> VNPay: Quét mã VietQR / Nhập thông tin thẻ ATM & OTP
+VNPay -> VNPay: Xử lý giao dịch trừ tiền
+VNPay --> UI: HTTP 302 Redirect về thanhtoan_success.php (kèm vnp_SecureHash)
+deactivate VNPay
+
+UI -> Success: GET callback (vnp_ResponseCode, vnp_TxnRef, vnp_SecureHash)
+activate Success
+Success -> VNHelper: validateSignature($_GET)
+
+alt Chữ ký hợp lệ VÀ vnp_ResponseCode == '00'
+    Success -> DB: UPDATE payment_transactions SET status='success', paid_at=NOW()
+    Success -> DB: UPDATE orders SET payment_status='paid', status='processing'
+    Success -> DB: INSERT INTO order_status_history (from_status='pending', to_status='processing')
+    Success -> DB: INSERT INTO email_queue (to_email, subject, body_html)
+    Success -> DB: INSERT INTO loyalty_points (points, type='earn')
+    Success -> Worker: Kích hoạt gửi email hóa đơn điện tử
+    Success -> Success: unset($_SESSION['cart'])
+    Success --> Customer: Hiển thị giao diện Đặt hàng thành công & Mã tra cứu
+else Giao dịch thất bại / Khách hủy
+    Success -> DB: UPDATE payment_transactions SET status='failed'
+    Success --> Customer: Báo lỗi giao dịch và cung cấp nút Thanh toán lại
+end
+deactivate Success
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 06_Sequence_Chatbot_AI_TuVan.puml
+' ----------------------------------------------------------------------
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - CHATBOT AI TƯ VẤN CẤU HÌNH (GROQ LLAMA 3.3)
+
+actor "Khách hàng" as Customer
+participant "Chatbot Widget UI\n(chatbot_buildpc.js)" as UI
+participant "Backend Endpoint\n(chatbot_buildpc.php)" as Server
+database "MySQL Database\n(products + specs)" as DB
+participant "Groq Cloud AI API\n(LLaMA 3.3 70B)" as Groq
+
+Customer -> UI: Nhập yêu cầu: "Tư vấn case máy tính 18 triệu đồ họa"
+UI -> Server: POST /chatbot_buildpc.php (JSON: message, history[])
+activate Server
+
+Server -> DB: getProductContext() - Lấy linh kiện còn hàng (quantity > 0)
+activate DB
+DB --> Server: Trả về danh sách CPU, Mainboard kèm Socket, RAM, VGA và Giá
+deactivate DB
+
+note over Server
+  Đóng gói Prompt:
+  1. System Role: Chuyên gia ráp PC Bán Linh Kiện
+  2. Bơm ngữ cảnh (Context Injection): Danh sách sản phẩm thực tế
+  3. Ràng buộc: Chỉ đề xuất linh kiện khớp Socket và đúng định dạng [ID:xxx]
+end note
+
+Server -> Groq: POST /openai/v1/chat/completions (GROQ_API_KEY, Model: llama-3.3-70b-versatile)
+activate Groq
+note over Groq: LLaMA 3.3 suy luận kiểm tra tương thích phần cứng & cân đối ngân sách
+Groq --> Server: JSON phản hồi đoạn tư vấn kèm các tag [ID:105], [ID:204],...
+deactivate Groq
+
+note over Server: Dùng Regex trích xuất danh sách ID sản phẩm: /\[ID:(\d+)\]/
+
+Server -> DB: SELECT id, name, price, image FROM products WHERE id IN (...)
+activate DB
+DB --> Server: Dữ liệu hình ảnh, giá bán thực tế của sản phẩm
+deactivate DB
+
+Server --> UI: HTTP 200 JSON {reply: "...", suggestions: [{id, name, price, image}, ...]}
+deactivate Server
+
+UI --> Customer: Hiển thị lời khuyên chuyên gia + Các card sản phẩm tương tác kèm nút "Chọn vào dàn PC"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 07_Activity_QuyTrinh_XuLy_DonHang.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam conditionStyle inside
+skinparam ActivityFontSize 12
+skinparam ActivityFontName "Segoe UI, Arial"
+
+title SƠ ĐỒ ACTIVITY - QUY TRÌNH XỬ LÝ ĐƠN HÀNG (END-TO-END)
+
+|#E0F2FE|Khách hàng|
+start
+:Duyệt giỏ hàng & Bấm "Thanh toán";
+:Điền thông tin nhận hàng & Áp dụng Voucher;
+if (Chọn hình thức thanh toán?) then (VNPay / Trực tuyến)
+  |#FEF3C7|Cổng thanh toán & Hệ thống|
+  :Chuyển hướng sang VNPay Gateway;
+  :Khách quét mã QR / Nhập OTP;
+  if (Thanh toán thành công?) then (Có)
+    :Cập nhật payment_status = 'paid';
+    :Tạo đơn hàng trạng thái 'processing';
+  else (Thất bại)
+    :Báo lỗi thanh toán & Cho phép chọn lại;
+    detach
+  endif
+else (COD - Tiền mặt khi nhận)
+  |#FEF3C7|Cổng thanh toán & Hệ thống|
+  :Tạo đơn hàng trạng thái 'pending';
+  |#FCE7F3|Bộ phận Bán hàng / Admin|
+  :Gọi điện thoại xác nhận đơn;
+  if (Xác nhận hợp lệ?) then (Có)
+    :Chuyển đơn sang 'processing';
+  else (Khách hủy / Không liên lạc được)
+    :Cập nhật trạng thái 'cancelled';
+    :Hoàn trả số lượng tồn kho;
+    stop
+  endif
+endif
+
+|#DCFCE7|Bộ phận Kho hàng|
+:In phiếu xuất kho & Đóng gói linh kiện;
+:Quét & Gán mã Serial Number từng linh kiện (status = 'sold');
+:Tạo vận đơn với Đơn vị vận chuyển (sinh tracking_code);
+:Cập nhật đơn sang 'shipped' & Gửi email thông báo vận đơn;
+
+|#EDE9FE|Đơn vị vận chuyển (Logistics)|
+:Shipper giao hàng tới địa chỉ nhận;
+if (Khách nhận hàng thành công?) then (Có)
+  :Ký nhận & Thu tiền (nếu COD);
+  |#FEF3C7|Cổng thanh toán & Hệ thống|
+  :Cập nhật đơn sang 'completed' (payment_status = 'paid');
+  :Cộng điểm tích lũy thành viên (Loyalty Points);
+  |#E0F2FE|Khách hàng|
+  :Mở quyền đánh giá sản phẩm & Quyền yêu cầu đổi trả (trong 7 ngày);
+  stop
+else (Giao thất bại quá 3 lần / Khách boom)
+  |#DCFCE7|Bộ phận Kho hàng|
+  :Chuyển hoàn kiện hàng về kho;
+  :Nhập lại kho & Cập nhật đơn sang 'cancelled';
+  stop
+endif
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 08_State_VongDoi_DonHang.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam stateFontSize 12
+skinparam stateFontName "Segoe UI, Arial"
+
+title SƠ ĐỒ STATE - VÒNG ĐỜI ĐƠN HÀNG (ORDER LIFECYCLE)
+
+[*] --> Pending : Khách bấm "Đặt hàng"
+
+state Pending {
+  state "Chờ thanh toán VNPay" as Unpaid
+  state "Chờ gọi xác nhận COD" as AwaitingConfirm
+  [*] --> Unpaid : Chọn cổng VNPay
+  [*] --> AwaitingConfirm : Chọn COD
+  Unpaid --> AwaitingConfirm : Thanh toán thành công (00)
+}
+
+Pending --> Processing : Admin xác nhận đơn / Đã thanh toán
+Pending --> Cancelled : Quá 24h chưa thanh toán / Khách hủy
+
+state Processing {
+  state "Kiểm tra linh kiện" as Checking
+  state "Gán Serial Number" as PickingSerial
+  state "Đóng gói niêm phong" as Packing
+  [*] --> Checking
+  Checking --> PickingSerial
+  PickingSerial --> Packing
+}
+
+Processing --> Shipped : Đã bàn giao ĐVVC (sinh tracking_code)
+Processing --> Cancelled : Hết linh kiện kho / Sự cố đơn
+
+state Shipped {
+  state "Đang luân chuyển bưu cục" as InTransit
+  state "Shipper đang phát hàng" as OutForDelivery
+  [*] --> InTransit
+  InTransit --> OutForDelivery
+}
+
+Shipped --> Completed : Khách ký nhận thành công & Thanh toán
+Shipped --> Cancelled : Giao hàng thất bại / Khách boom hàng
+
+state Completed {
+  state "Kích hoạt bảo hành điện tử" as WarrantyActive
+  state "Yêu cầu Đổi/Trả (<= 7 ngày)" as ReturnRequested
+  [*] --> WarrantyActive
+  WarrantyActive --> ReturnRequested : Gửi đơn khiếu nại
+}
+
+ReturnRequested --> Refunded : Admin duyệt hoàn tiền
+ReturnRequested --> Completed : Đổi linh kiện mới / Bác bỏ khiếu nại
+
+Completed --> [*]
+Cancelled --> [*]
+Refunded --> [*]
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 09_ERD_KhoHang_NhapHang.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #EA580C
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #C2410C
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM KHO HÀNG & NHẬP HÀNG
+
+entity "warehouses (Kho hàng)" as warehouses {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  code : VARCHAR(50) <<UNIQUE>>
+  address : TEXT
+  manager_name : VARCHAR(100)
+  phone : VARCHAR(20)
+  is_active : TINYINT(1)
+}
+
+entity "suppliers (Nhà cung cấp)" as suppliers {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(255)
+  code : VARCHAR(50) <<UNIQUE>>
+  contact_name : VARCHAR(100)
+  phone : VARCHAR(20)
+  email : VARCHAR(100)
+  tax_code : VARCHAR(50)
+  is_active : TINYINT(1)
+}
+
+entity "purchase_orders (Đơn đặt hàng NCC)" as purchase_orders {
+  * id : INT <<PK>>
+  --
+  po_number : VARCHAR(50) <<UNIQUE>>
+  supplier_id : INT <<FK>>
+  warehouse_id : INT <<FK>>
+  total_amount : DECIMAL(15,2)
+  status : ENUM('draft','sent','partial','completed','cancelled')
+  expected_delivery : DATE
+  created_by : INT
+  created_at : TIMESTAMP
+}
+
+entity "purchase_order_items (Chi tiết đặt)" as purchase_order_items {
+  * id : INT <<PK>>
+  --
+  po_id : INT <<FK>>
+  product_id : INT <<FK>>
+  quantity : INT
+  unit_price : DECIMAL(15,2)
+  received_quantity : INT
+}
+
+entity "warehouse_receipts (Phiếu nhập kho)" as warehouse_receipts {
+  * id : INT <<PK>>
+  --
+  receipt_number : VARCHAR(50) <<UNIQUE>>
+  po_id : INT <<FK>>
+  warehouse_id : INT <<FK>>
+  supplier_id : INT <<FK>>
+  receipt_type : ENUM('purchase','return','transfer')
+  total_amount : DECIMAL(15,2)
+  status : ENUM('pending','approved','cancelled')
+  created_by : INT
+  created_at : TIMESTAMP
+}
+
+entity "warehouse_receipt_items (Chi tiết nhập)" as warehouse_receipt_items {
+  * id : INT <<PK>>
+  --
+  receipt_id : INT <<FK>>
+  product_id : INT <<FK>>
+  quantity : INT
+  unit_price : DECIMAL(15,2)
+  total_price : DECIMAL(15,2)
+}
+
+entity "serial_numbers (Serial linh kiện)" as serial_numbers {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  receipt_id : INT <<FK>>
+  serial_code : VARCHAR(100) <<UNIQUE>>
+  status : ENUM('in_stock','sold','defective','returned')
+  warranty_months : INT
+  sold_order_id : INT <<FK>>
+  sold_at : DATETIME
+}
+
+entity "warehouse_logs (Biến động kho)" as warehouse_logs {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  warehouse_id : INT <<FK>>
+  type : ENUM('in','out','adjust')
+  quantity : INT
+  before_quantity : INT
+  after_quantity : INT
+  reference_type : VARCHAR(50)
+  reference_id : INT
+  created_at : TIMESTAMP
+}
+
+suppliers ||--o{ purchase_orders : "supplier_id"
+warehouses ||--o{ purchase_orders : "warehouse_id"
+purchase_orders ||--o{ purchase_order_items : "po_id"
+purchase_orders ||--o{ warehouse_receipts : "po_id"
+warehouses ||--o{ warehouse_receipts : "warehouse_id"
+warehouse_receipts ||--o{ warehouse_receipt_items : "receipt_id"
+warehouse_receipts ||--o{ serial_numbers : "receipt_id"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 10_ERD_VanChuyen.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #16A34A
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #15803D
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM VẬN CHUYỂN & GIAO VẬN
+
+entity "shipping_carriers (Đơn vị vận chuyển)" as shipping_carriers {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  code : VARCHAR(50) <<UNIQUE>>
+  phone : VARCHAR(20)
+  api_url : VARCHAR(255)
+  api_token : VARCHAR(255)
+  is_active : TINYINT(1)
+}
+
+entity "shipping_zones (Vùng cước phí)" as shipping_zones {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  province_ids : TEXT
+  base_fee : DECIMAL(10,2)
+  fee_per_kg : DECIMAL(10,2)
+  free_threshold : DECIMAL(12,2)
+  is_active : TINYINT(1)
+}
+
+entity "orders (Đơn đặt hàng)" as orders {
+  * id : INT <<PK>>
+  --
+  tracking_code : VARCHAR(20)
+  total_amount : DECIMAL(15,2)
+}
+
+entity "shipping_orders (Vận đơn giao hàng)" as shipping_orders {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  carrier_id : INT <<FK>>
+  tracking_number : VARCHAR(100)
+  shipping_fee : DECIMAL(10,2)
+  cod_amount : DECIMAL(15,2)
+  status : ENUM('picking','shipping','delivered','failed','returned')
+  weight : DECIMAL(8,2)
+  pickup_address : TEXT
+  delivery_address : TEXT
+  created_at : TIMESTAMP
+}
+
+entity "shipping_tracking_events (Lịch trình)" as shipping_tracking_events {
+  * id : INT <<PK>>
+  --
+  shipping_order_id : INT <<FK>>
+  status : VARCHAR(50)
+  description : VARCHAR(255)
+  location : VARCHAR(255)
+  event_time : DATETIME
+}
+
+entity "vietnam_provinces (Tỉnh/Thành)" as vietnam_provinces {
+  * id : INT <<PK>>
+  --
+  code : VARCHAR(20)
+  name : VARCHAR(100)
+}
+
+entity "vietnam_districts (Quận/Huyện)" as vietnam_districts {
+  * id : INT <<PK>>
+  --
+  province_id : INT <<FK>>
+  code : VARCHAR(20)
+  name : VARCHAR(100)
+}
+
+entity "vietnam_wards (Phường/Xã)" as vietnam_wards {
+  * id : INT <<PK>>
+  --
+  district_id : INT <<FK>>
+  code : VARCHAR(20)
+  name : VARCHAR(100)
+}
+
+shipping_carriers ||--o{ shipping_orders : "carrier_id"
+orders ||--o{ shipping_orders : "order_id"
+shipping_orders ||--o{ shipping_tracking_events : "shipping_order_id"
+vietnam_provinces ||--o{ vietnam_districts : "province_id"
+vietnam_districts ||--o{ vietnam_wards : "district_id"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 11_ERD_TuongTac_CSKH.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #DB2777
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #9D174D
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM TƯƠNG TÁC & CHĂM SÓC KHÁCH HÀNG
+
+entity "users (Người dùng)" as users {
+  * id : INT <<PK>>
+  --
+  full_name : VARCHAR(100)
+  email : VARCHAR(100)
+}
+
+entity "products (Sản phẩm)" as products {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(255)
+  image : VARCHAR(255)
+}
+
+entity "conversations (Phiên hội thoại)" as conversations {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  guest_session : VARCHAR(255)
+  subject : VARCHAR(255)
+  status : ENUM('open','pending','closed')
+  channel : ENUM('web_chat','facebook','zalo')
+  last_message_at : DATETIME
+}
+
+entity "messages (Nội dung tin nhắn)" as messages {
+  * id : INT <<PK>>
+  --
+  conversation_id : INT <<FK>>
+  sender_type : ENUM('user','admin','bot')
+  sender_id : INT
+  sender_name : VARCHAR(100)
+  message : TEXT
+  attachments : TEXT
+  is_read : TINYINT(1)
+  created_at : TIMESTAMP
+}
+
+entity "product_comments (Đánh giá & Review)" as product_comments {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  user_id : INT <<FK>>
+  rating : TINYINT
+  comment : TEXT
+  images : TEXT
+  is_approved : TINYINT(1)
+  helpful_count : INT
+  created_at : TIMESTAMP
+}
+
+entity "wishlists (Sản phẩm yêu thích)" as wishlists {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  product_id : INT <<FK>>
+  created_at : TIMESTAMP
+}
+
+entity "return_requests (Yêu cầu đổi/trả)" as return_requests {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  user_id : INT <<FK>>
+  product_id : INT <<FK>>
+  quantity : INT
+  reason : TEXT
+  images : TEXT
+  status : ENUM('pending','approved','rejected','completed')
+  admin_note : TEXT
+  refund_amount : DECIMAL(15,2)
+  created_at : TIMESTAMP
+}
+
+users ||--o{ conversations : "user_id"
+conversations ||--o{ messages : "conversation_id"
+users ||--o{ product_comments : "user_id"
+products ||--o{ product_comments : "product_id"
+users ||--o{ wishlists : "user_id"
+products ||--o{ wishlists : "product_id"
+users ||--o{ return_requests : "user_id"
+products ||--o{ return_requests : "product_id"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 12_ERD_HeThong_ThongBao.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #475569
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #334155
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM HỆ THỐNG, THÔNG BÁO & AUDIT LOG
+
+entity "users (Người dùng)" as users {
+  * id : INT <<PK>>
+  --
+  username : VARCHAR(100)
+  email : VARCHAR(100)
+}
+
+entity "notifications (Thông báo cá nhân)" as notifications {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  type : VARCHAR(50)
+  title : VARCHAR(255)
+  message : TEXT
+  url : VARCHAR(255)
+  is_read : TINYINT(1)
+  created_at : TIMESTAMP
+}
+
+entity "broadcast_notifications (Thông báo chung)" as broadcast_notifications {
+  * id : INT <<PK>>
+  --
+  title : VARCHAR(255)
+  message : TEXT
+  target_role : VARCHAR(50)
+  url : VARCHAR(255)
+  expires_at : DATETIME
+  created_by : INT
+  created_at : TIMESTAMP
+}
+
+entity "notification_reads (Đã đọc broadcast)" as notification_reads {
+  * id : INT <<PK>>
+  --
+  broadcast_id : INT <<FK>>
+  user_id : INT <<FK>>
+  read_at : TIMESTAMP
+}
+
+entity "push_subscriptions (Web Push Token)" as push_subscriptions {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  endpoint : TEXT
+  p256dh : VARCHAR(255)
+  auth : VARCHAR(255)
+  created_at : TIMESTAMP
+}
+
+entity "email_queue (Hàng đợi Email)" as email_queue {
+  * id : INT <<PK>>
+  --
+  to_email : VARCHAR(255)
+  to_name : VARCHAR(100)
+  subject : VARCHAR(255)
+  body_html : LONGTEXT
+  status : ENUM('pending','sent','failed')
+  attempts : TINYINT
+  error_message : TEXT
+  scheduled_at : DATETIME
+  sent_at : DATETIME
+  created_at : TIMESTAMP
+}
+
+entity "audit_logs (Nhật ký kiểm toán)" as audit_logs {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  username : VARCHAR(100)
+  action : VARCHAR(100)
+  module : VARCHAR(100)
+  target_id : INT
+  old_data : TEXT
+  new_data : TEXT
+  ip_address : VARCHAR(50)
+  user_agent : VARCHAR(500)
+  created_at : TIMESTAMP
+}
+
+entity "shop_settings (Cấu hình hệ thống)" as shop_settings {
+  * id : INT <<PK>>
+  --
+  setting_key : VARCHAR(100) <<UNIQUE>>
+  setting_value : TEXT
+  setting_group : VARCHAR(50)
+  description : VARCHAR(255)
+  updated_at : TIMESTAMP
+}
+
+users ||--o{ notifications : "user_id"
+users ||--o{ push_subscriptions : "user_id"
+users ||--o{ audit_logs : "user_id"
+broadcast_notifications ||--o{ notification_reads : "broadcast_id"
+users ||--o{ notification_reads : "user_id"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 13_Deployment_TrienKhai_HeThong.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam nodeFontSize 12
+skinparam nodeFontName "Segoe UI, Arial"
+
+title SƠ ĐỒ DEPLOYMENT - MÔ HÌNH TRIỂN KHAI VẬT LÝ HỆ THỐNG
+
+node "Client Devices (Thiết bị đầu cuối)" as Clients {
+  artifact "Desktop Web Browser\n(Chrome, Edge, Firefox)" as Desktop
+  artifact "Mobile Web / PWA\n(Safari, Chrome Mobile)" as Mobile
+  artifact "Admin Station\n(Máy trạm Quản trị)" as AdminPC
+}
+
+node "Edge / Web Server (Laragon / Apache / Nginx)" as WebServer {
+  component "Reverse Proxy & SSL (HTTPS:443)\nLet's Encrypt TLS" as SSL
+  component "URL Rewriting Engine\n(.htaccess / Nginx router)" as Rewrite
+  folder "Static Assets Directory\n(/public/css, js, uploads)" as StaticFiles
+}
+
+node "Application Server (PHP 8.1+ Pure MVC)" as AppServer {
+  component "Core Router & Session Guard\n(session_check.php - 8h Timeout)" as Core
+  component "Admin Middleware Pipeline\n(Auth, CSRF, Permission, Audit)" as Middleware
+  component "Controllers & Domain Services\n(Checkout, BuildPC, Product, User)" as Controllers
+  component "Data Access Models & PDO\n(Database.php Singleton)" as Models
+}
+
+node "Background Workers (CLI Scheduled Tasks)" as Workers {
+  artifact "email_queue_worker.php\n(Gửi mail hóa đơn & Reset pass)" as MailWorker
+  artifact "abandoned_cart_worker.php\n(Quét cứu giỏ hàng bỏ quên)" as CartWorker
+}
+
+node "Database Server (Private Network)" as DBServer {
+  database "MySQL 8.0 Server\n(InnoDB Engine - UTF8mb4)" as MySQL
+  folder "File System Storage\n(/uploads/products, /invoices)" as FileStorage
+}
+
+cloud "External Cloud Services (Dịch vụ bên thứ ba)" as CloudServices {
+  component "VNPay Payment Gateway\n(HMAC-SHA512 API & IPN)" as VNPay
+  component "Groq AI Cloud\n(LLaMA 3.3 70B REST API)" as Groq
+  component "SMTP Mail Server\n(Google SMTP TLS Port 587)" as SMTP
+}
+
+Clients --> WebServer : HTTPS (Port 443)
+WebServer --> AppServer : FastCGI / PHP-FPM (Port 9000)
+AppServer --> DBServer : PDO Prepared Statements (Port 3306)
+AppServer --> FileStorage : Ghi file Upload ảnh
+Workers --> MySQL : Quét hàng đợi (Port 3306)
+Workers --> SMTP : TLS Port 587
+AppServer --> VNPay : Redirect & Webhook IPN
+AppServer --> Groq : HTTPS POST cURL
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 14_Sequence_DoiTraHang.puml
+' ----------------------------------------------------------------------
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - QUY TRÌNH ĐỔI / TRẢ HÀNG & BẢO HÀNH
+
+actor "Khách hàng" as Customer
+participant "Giao diện Đổi trả\n(doitra.php)" as UI
+participant "Return Handler" as Ctrl
+database "MySQL Database" as DB
+actor "Quản trị viên / Kỹ thuật" as Admin
+actor "Thủ kho tiếp nhận" as WH
+participant "Cổng VNPay / Ngân hàng" as Gateway
+
+Customer -> UI: Chọn đơn 'completed', chọn linh kiện lỗi, nhập lý do & tải ảnh
+UI -> Ctrl: POST /doitra.php (order_id, product_id, reason, images, CSRF)
+activate Ctrl
+
+Ctrl -> DB: SELECT created_at, status FROM orders WHERE id=?
+note over Ctrl: Kiểm tra điều kiện chính sách (thời gian <= 7 ngày)
+Ctrl -> DB: INSERT INTO return_requests (order_id, product_id, user_id, reason, images, status='pending')
+Ctrl --> UI: Báo gửi yêu cầu thành công
+deactivate Ctrl
+
+Admin -> DB: Xem danh sách yêu cầu đổi trả (status='pending')
+Admin -> Admin: Thẩm định hình ảnh / video bằng chứng lỗi
+
+alt Từ chối (Lỗi do người dùng làm rơi vỡ, cháy nổ)
+    Admin -> DB: UPDATE return_requests SET status='rejected', admin_note=?
+    Admin -> Customer: Gửi Email giải thích nguyên nhân từ chối
+else Chấp thuận đổi trả
+    Admin -> DB: UPDATE return_requests SET status='approved'
+    Admin -> Customer: Gửi hướng dẫn đóng gói gửi linh kiện về kho
+    
+    Customer -> WH: Gửi bưu kiện linh kiện lỗi về trung tâm bảo hành
+    activate WH
+    WH -> DB: SELECT * FROM serial_numbers WHERE serial_code=? AND sold_order_id=?
+    note over WH: Đối soát tem niêm phong và mã Serial Number gốc
+
+    alt Khách chọn Đổi linh kiện mới
+        WH -> DB: UPDATE serial_numbers SET status='defective' WHERE serial_code=?
+        WH -> DB: Xuất linh kiện mới: INSERT INTO warehouse_logs (type='out')
+        WH -> Customer: Giao sản phẩm mới thay thế
+    else Khách chọn Hoàn tiền giao dịch
+        Admin -> Gateway: Gửi lệnh hoàn tiền qua API
+        Gateway --> Admin: Xác nhận hoàn tiền thành công
+        Admin -> DB: UPDATE orders SET payment_status='refunded'
+        Admin -> DB: UPDATE return_requests SET status='completed', refund_amount=?
+        Admin -> Customer: Gửi Email biên lai hoàn tiền
+    end
+    deactivate WH
+end
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 15_Sequence_NhapKho_TaoSerialNumber.puml
+' ----------------------------------------------------------------------
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - NHẬP KHO & TẠO SERIAL NUMBER
+
+actor "Nhân viên kho" as Staff
+actor "Quản lý kho" as Manager
+participant "Giao diện Nhập kho\n(receipt_form.php)" as UI
+participant "WarehouseController" as Ctrl
+database "MySQL Database" as DB
+participant "Back in Stock Worker" as Worker
+
+Staff -> UI: Chọn NCC, Kho nhập, danh sách linh kiện và số lượng
+UI -> Ctrl: POST /admin/receipts/create (PO_id, supplier_id, warehouse_id, items[])
+activate Ctrl
+
+Ctrl -> DB: INSERT INTO warehouse_receipts (status='pending')
+Ctrl -> DB: INSERT INTO warehouse_receipt_items
+Ctrl --> UI: Tạo phiếu nhập thành công (Chờ kiểm đếm duyệt)
+deactivate Ctrl
+
+Manager -> UI: Mở phiếu nhập & Kiểm tra kiện hàng thực tế giao tới
+Manager -> UI: Nhập/Quét Barcode mã Serial Number cho từng linh kiện
+Manager -> UI: Bấm "Phê duyệt phiếu nhập kho"
+
+UI -> Ctrl: POST /admin/receipts/approve (receipt_id, serial_list[])
+activate Ctrl
+
+group Database Transaction Nhập kho
+    Ctrl -> DB: UPDATE warehouse_receipts SET status='approved' WHERE id=?
+    
+    loop Duyệt từng mã Serial Number được quét
+        Ctrl -> DB: INSERT INTO serial_numbers (product_id, receipt_id, serial_code, status='in_stock', warranty_months)
+    end
+
+    loop Duyệt từng sản phẩm trong phiếu nhập
+        Ctrl -> DB: SELECT quantity FROM products WHERE id=?
+        Ctrl -> DB: UPDATE products SET quantity = quantity + ? WHERE id=?
+        Ctrl -> DB: INSERT INTO warehouse_logs (product_id, type='in', quantity, before_qty, after_qty)
+    end
+end
+
+Ctrl -> DB: SELECT email FROM back_in_stock_subscriptions WHERE product_id=? AND status='pending'
+alt Có khách hàng đăng ký nhận thông báo có hàng
+    Ctrl -> DB: INSERT INTO email_queue (to_email, subject, body_html)
+    Ctrl -> DB: UPDATE back_in_stock_subscriptions SET status='notified', notified_at=NOW()
+    Ctrl -> Worker: Kích hoạt gửi email tự động
+end
+
+Ctrl --> UI: Thông báo "Nhập kho thành công, đã cộng tồn kho và lưu mã Serial"
+deactivate Ctrl
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 16_UseCase_KhachHang.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam packageStyle rectangle
+skinparam actorFontSize 12
+skinparam usecaseFontSize 12
+left to right direction
+
+title SƠ ĐỒ USE CASE - PHÂN HỆ KHÁCH HÀNG
+
+actor "Khách vãng lai\n(Chưa đăng nhập)" as Guest
+actor "Khách hàng thành viên\n(Đã đăng nhập)" as Member
+
+Member --|> Guest
+
+rectangle "Hệ Thống Website Bán Linh Kiện" {
+  package "Khám phá & Mua sắm" {
+    usecase "UC01: Tìm kiếm & Lọc linh kiện\n(Danh mục, Hãng, Giá, Socket)" as UC_Search
+    usecase "UC02: Xem chi tiết sản phẩm\n& Thông số kỹ thuật" as UC_Detail
+    usecase "UC03: So sánh 2 sản phẩm" as UC_Compare
+    usecase "UC04: Tự ráp máy (Build PC)\n& Check tương thích Socket" as UC_BuildPC
+    usecase "UC05: Chatbot AI tư vấn cấu hình\ntheo ngân sách" as UC_ChatAI
+  }
+
+  package "Giỏ hàng & Đặt hàng" {
+    usecase "UC06: Quản lý giỏ hàng" as UC_Cart
+    usecase "UC07: Nhập mã Voucher giảm giá" as UC_Voucher
+    usecase "UC08: Đặt hàng (Guest / Member)" as UC_Checkout
+    usecase "UC09: Thanh toán trực tuyến VNPay" as UC_PayVNPay
+    usecase "UC10: Thanh toán COD (Tiền mặt)" as UC_PayCOD
+    usecase "UC11: Tra cứu vận đơn trực tuyến" as UC_Track
+  }
+
+  package "Tính năng Hội viên" {
+    usecase "UC12: Quản lý hồ sơ & Sổ địa chỉ" as UC_Profile
+    usecase "UC13: Quản lý danh sách Yêu thích" as UC_Wishlist
+    usecase "UC14: Xem lịch sử & Chi tiết đơn hàng" as UC_History
+    usecase "UC15: Tích lũy & Dùng điểm Loyalty" as UC_Loyalty
+    usecase "UC16: Đánh giá sao & Bình luận linh kiện" as UC_Review
+    usecase "UC17: Gửi yêu cầu Đổi/Trả hàng" as UC_Return
+    usecase "UC18: Live Chat hỗ trợ khách hàng" as UC_LiveChat
+  }
+}
+
+Guest --> UC_Search
+Guest --> UC_Detail
+Guest --> UC_Compare
+Guest --> UC_BuildPC
+Guest --> UC_ChatAI
+Guest --> UC_Cart
+Guest --> UC_Checkout
+Guest --> UC_Track
+
+UC_Checkout ..> UC_Cart : <<include>>
+UC_Checkout <.. UC_Voucher : <<extend>>
+UC_Checkout --> UC_PayVNPay
+UC_Checkout --> UC_PayCOD
+
+Member --> UC_Profile
+Member --> UC_Wishlist
+Member --> UC_History
+Member --> UC_Loyalty
+Member --> UC_Review
+Member --> UC_Return
+Member --> UC_LiveChat
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 17_UseCase_QuanTriVien.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam packageStyle rectangle
+skinparam actorFontSize 12
+skinparam usecaseFontSize 12
+left to right direction
+
+title SƠ ĐỒ USE CASE - PHÂN HỆ QUẢN TRỊ VIÊN (ADMIN)
+
+actor "Super Admin\n(Toàn quyền)" as SuperAdmin
+actor "Nhân viên Bán hàng" as OrderStaff
+actor "Thủ kho" as WHStaff
+actor "Nhân viên Marketing" as MktStaff
+actor "Nhân viên CSKH" as CSStaff
+
+SuperAdmin --|> OrderStaff
+SuperAdmin --|> WHStaff
+SuperAdmin --|> MktStaff
+SuperAdmin --|> CSStaff
+
+rectangle "Cổng Quản Trị Hệ Thống (Admin Portal)" {
+  package "Quản lý Sản phẩm & Cấu hình" {
+    usecase "Thêm / Sửa / Xóa linh kiện" as UC_Prod
+    usecase "Cây danh mục & Thương hiệu" as UC_Cat
+    usecase "Cấu hình Thông số & Socket" as UC_Spec
+    usecase "Lịch sử điều chỉnh giá" as UC_Price
+  }
+
+  package "Quản lý Đơn hàng & Thanh toán" {
+    usecase "Xem, lọc & Tìm kiếm đơn hàng" as UC_Orders
+    usecase "Duyệt đơn & Đổi trạng thái" as UC_Status
+    usecase "In phiếu xuất kho & Hóa đơn" as UC_Invoice
+    usecase "Đối soát giao dịch VNPay" as UC_Trans
+  }
+
+  package "Quản lý Kho & Serial" {
+    usecase "Tạo đơn đặt hàng NCC (PO)" as UC_PO
+    usecase "Lập & Duyệt phiếu nhập kho" as UC_Receipt
+    usecase "Quét & Quản lý Serial Number" as UC_Serial
+    usecase "Kiểm kê kho định kỳ" as UC_Stocktake
+  }
+
+  package "Tiếp thị & Khuyến mãi" {
+    usecase "Quản lý Banner quảng cáo" as UC_Banner
+    usecase "Cài đặt Flash Sale" as UC_Flash
+    usecase "Tạo mã giảm giá (Voucher)" as UC_VoucherAdm
+    usecase "Cứu giỏ hàng bỏ quên" as UC_Abandon
+  }
+
+  package "Tương tác & CSKH" {
+    usecase "Trực quầy Live Chat hỗ trợ" as UC_ChatAdm
+    usecase "Kiểm duyệt Đánh giá sản phẩm" as UC_CommAdm
+    usecase "Xử lý Đổi trả / Hoàn tiền" as UC_ReturnAdm
+  }
+
+  package "Hệ thống & An ninh" {
+    usecase "Quản lý Tài khoản & Phân quyền RBAC" as UC_RBAC
+    usecase "Giám sát Audit Logs" as UC_Audit
+    usecase "Cấu hình Thông số & Email SMTP" as UC_Settings
+  }
+}
+
+OrderStaff --> UC_Orders
+OrderStaff --> UC_Status
+OrderStaff --> UC_Invoice
+OrderStaff --> UC_Trans
+
+WHStaff --> UC_Prod
+WHStaff --> UC_PO
+WHStaff --> UC_Receipt
+WHStaff --> UC_Serial
+WHStaff --> UC_Stocktake
+
+MktStaff --> UC_Banner
+MktStaff --> UC_Flash
+MktStaff --> UC_VoucherAdm
+MktStaff --> UC_Abandon
+
+CSStaff --> UC_ChatAdm
+CSStaff --> UC_CommAdm
+CSStaff --> UC_ReturnAdm
+
+SuperAdmin --> UC_RBAC
+SuperAdmin --> UC_Audit
+SuperAdmin --> UC_Settings
+SuperAdmin --> UC_Cat
+SuperAdmin --> UC_Spec
+SuperAdmin --> UC_Price
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 18_ERD_NguoiDung_PhanQuyen.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #4F46E5
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #3730A3
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM NGƯỜI DÙNG & PHÂN QUYỀN (RBAC)
+
+entity "roles (Vai trò phân quyền)" as roles {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(50) <<UNIQUE>>
+  display_name : VARCHAR(100)
+  description : TEXT
+  permissions : LONGTEXT
+  created_at : TIMESTAMP
+}
+
+entity "users (Tài khoản người dùng)" as users {
+  * id : INT <<PK>>
+  --
+  role_id : INT <<FK>>
+  username : VARCHAR(100) <<UNIQUE>>
+  password : VARCHAR(255)
+  full_name : VARCHAR(100)
+  email : VARCHAR(100) <<UNIQUE>>
+  email_verified_at : TIMESTAMP
+  phone : VARCHAR(20)
+  address : TEXT
+  avatar : VARCHAR(255)
+  role : VARCHAR(50)
+  is_admin : TINYINT(1)
+  is_blocked : TINYINT(1)
+  blocked_reason : VARCHAR(255)
+  created_at : TIMESTAMP
+}
+
+entity "user_addresses (Sổ địa chỉ)" as user_addresses {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  recipient_name : VARCHAR(100)
+  phone : VARCHAR(20)
+  address_line : VARCHAR(255)
+  province_id : INT
+  district_id : INT
+  ward_id : INT
+  is_default : TINYINT(1)
+  created_at : TIMESTAMP
+}
+
+entity "password_resets (Đặt lại mật khẩu)" as password_resets {
+  * id : INT <<PK>>
+  --
+  email : VARCHAR(100)
+  token : VARCHAR(100) <<UNIQUE>>
+  expires_at : DATETIME
+  created_at : TIMESTAMP
+}
+
+entity "audit_logs (Nhật ký hành vi)" as audit_logs {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  username : VARCHAR(100)
+  action : VARCHAR(100)
+  module : VARCHAR(100)
+  target_id : INT
+  target_name : VARCHAR(255)
+  old_data : TEXT
+  new_data : TEXT
+  ip_address : VARCHAR(50)
+  user_agent : VARCHAR(500)
+  created_at : TIMESTAMP
+}
+
+roles ||--o{ users : "role_id"
+users ||--o{ user_addresses : "user_id"
+users ||--o{ audit_logs : "user_id"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 19_ERD_TongQuat.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 11
+skinparam classFontName "Segoe UI, Arial"
+skinparam packageFontSize 13
+skinparam packageFontName "Segoe UI, Arial"
+skinparam packageFontStyle bold
+left to right direction
+
+title SƠ ĐỒ ERD TỔNG QUÁT TOÀN BỘ HỆ THỐNG (8 PHÂN HỆ)
+
+package "1. Phân hệ Người dùng & Phân quyền" as pkg_users #EEF2FF {
+  entity "roles" as roles {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(50)
+    permissions : LONGTEXT
+  }
+
+  entity "users" as users {
+    * id : INT <<PK>>
+    --
+    role_id : INT <<FK>>
+    username : VARCHAR(100)
+    full_name : VARCHAR(100)
+    email : VARCHAR(100)
+    phone : VARCHAR(20)
+    is_blocked : TINYINT(1)
+  }
+
+  entity "user_addresses" as user_addresses {
+    * id : INT <<PK>>
+    --
+    user_id : INT <<FK>>
+    address_line : VARCHAR(255)
+  }
+}
+
+package "2. Phân hệ Sản phẩm & Danh mục" as pkg_products #EFF6FF {
+  entity "categories" as categories {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(100)
+    parent_id : INT <<FK>>
+  }
+
+  entity "brands" as brands {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(100)
+  }
+
+  entity "products" as products {
+    * id : INT <<PK>>
+    --
+    category_id : INT <<FK>>
+    brand_id : INT <<FK>>
+    name : VARCHAR(255)
+    price : DECIMAL(15,2)
+    quantity : INT
+    socket : VARCHAR(50)
+  }
+
+  entity "product_specs" as product_specs {
+    * id : INT <<PK>>
+    --
+    product_id : INT <<FK>>
+    spec_name : VARCHAR(100)
+    spec_value : TEXT
+  }
+}
+
+package "3. Phân hệ Đơn hàng & Thanh toán" as pkg_orders #FEFCE8 {
+  entity "orders" as orders {
+    * id : INT <<PK>>
+    --
+    user_id : INT <<FK>>
+    access_token : VARCHAR(36)
+    total_amount : DECIMAL(15,2)
+    status : ENUM
+    payment_method : ENUM
+    payment_status : ENUM
+  }
+
+  entity "order_items" as order_items {
+    * id : INT <<PK>>
+    --
+    order_id : INT <<FK>>
+    product_id : INT <<FK>>
+    price : DECIMAL(15,2)
+    quantity : INT
+  }
+
+  entity "payment_transactions" as payment_transactions {
+    * id : INT <<PK>>
+    --
+    order_id : INT <<FK>>
+    gateway : ENUM
+    amount : DECIMAL(15,2)
+    status : ENUM
+  }
+}
+
+package "4. Phân hệ Kho hàng & Nhập hàng" as pkg_warehouse #FFF7ED {
+  entity "warehouses" as warehouses {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(100)
+    code : VARCHAR(50)
+  }
+
+  entity "suppliers" as suppliers {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(255)
+    code : VARCHAR(50)
+  }
+
+  entity "warehouse_receipts" as warehouse_receipts {
+    * id : INT <<PK>>
+    --
+    supplier_id : INT <<FK>>
+    warehouse_id : INT <<FK>>
+    status : ENUM
+  }
+
+  entity "serial_numbers" as serial_numbers {
+    * id : INT <<PK>>
+    --
+    product_id : INT <<FK>>
+    receipt_id : INT <<FK>>
+    serial_code : VARCHAR(100)
+    sold_order_id : INT <<FK>>
+    status : ENUM
+  }
+}
+
+package "5. Phân hệ Vận chuyển" as pkg_shipping #F0FDF4 {
+  entity "shipping_carriers" as shipping_carriers {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(100)
+    code : VARCHAR(50)
+  }
+
+  entity "shipping_orders" as shipping_orders {
+    * id : INT <<PK>>
+    --
+    order_id : INT <<FK>>
+    carrier_id : INT <<FK>>
+    tracking_number : VARCHAR(100)
+    status : ENUM
+  }
+}
+
+package "6. Phân hệ Marketing & Khuyến mãi" as pkg_marketing #FAF5FF {
+  entity "vouchers" as vouchers {
+    * id : INT <<PK>>
+    --
+    code : VARCHAR(50)
+    discount_value : DECIMAL(10,2)
+  }
+
+  entity "voucher_usages" as voucher_usages {
+    * id : INT <<PK>>
+    --
+    voucher_id : INT <<FK>>
+    order_id : INT <<FK>>
+    user_id : INT <<FK>>
+  }
+
+  entity "loyalty_points" as loyalty_points {
+    * id : INT <<PK>>
+    --
+    user_id : INT <<FK>>
+    order_id : INT <<FK>>
+    points : INT
+  }
+}
+
+package "7. Phân hệ Tương tác & CSKH" as pkg_cskh #FDF2F8 {
+  entity "product_comments" as product_comments {
+    * id : INT <<PK>>
+    --
+    product_id : INT <<FK>>
+    user_id : INT <<FK>>
+    rating : TINYINT
+  }
+
+  entity "return_requests" as return_requests {
+    * id : INT <<PK>>
+    --
+    order_id : INT <<FK>>
+    user_id : INT <<FK>>
+    product_id : INT <<FK>>
+    status : ENUM
+  }
+}
+
+package "8. Phân hệ Hệ thống & Audit" as pkg_system #F8FAFC {
+  entity "audit_logs" as audit_logs {
+    * id : INT <<PK>>
+    --
+    user_id : INT <<FK>>
+    action : VARCHAR(100)
+    module : VARCHAR(100)
+  }
+}
+
+roles ||--o{ users : "role_id"
+users ||--o{ user_addresses : "user_id"
+categories ||--o{ products : "category_id"
+brands ||--o{ products : "brand_id"
+products ||--o{ product_specs : "product_id"
+
+users ||--o{ orders : "user_id"
+orders ||--o{ order_items : "order_id"
+products ||--o{ order_items : "product_id"
+orders ||--o{ payment_transactions : "order_id"
+
+suppliers ||--o{ warehouse_receipts : "supplier_id"
+warehouses ||--o{ warehouse_receipts : "warehouse_id"
+products ||--o{ serial_numbers : "product_id"
+orders ||--o{ serial_numbers : "sold_order_id"
+
+orders ||--o{ shipping_orders : "order_id"
+shipping_carriers ||--o{ shipping_orders : "carrier_id"
+
+vouchers ||--o{ voucher_usages : "voucher_id"
+orders ||--o{ voucher_usages : "order_id"
+users ||--o{ loyalty_points : "user_id"
+
+users ||--o{ product_comments : "user_id"
+products ||--o{ product_comments : "product_id"
+orders ||--o{ return_requests : "order_id"
+users ||--o{ audit_logs : "user_id"
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 20_ClassDiagram_TangModel.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #2563EB
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #1D4ED8
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ CLASS DIAGRAM - TẦNG MODEL & CORE DATABASE (PSR-4)
+
+package "App\\Core" {
+  class Database <<Singleton>> {
+    - {static} Database instance
+    - PDO pdo
+    - __construct()
+    + {static} getInstance() : PDO
+    + {static} beginTransaction() : bool
+    + {static} commit() : bool
+    + {static} rollBack() : bool
+  }
+}
+
+package "App\\Models" {
+  class UserModel {
+    - PDO db
+    + __construct(PDO db)
+    + getUserById(int id) : array
+    + getUserByEmail(string email) : array
+    + getUserByUsername(string username) : array
+    + createUser(array data) : int
+    + updateUser(int id, array data) : bool
+    + verifyPassword(string pass, string hash) : bool
+  }
+
+  class ProductModel {
+    - PDO db
+    + __construct(PDO db)
+    + getProductById(int id) : array
+    + getProductsByCategory(int catId, int limit, int offset) : array
+    + searchProducts(string keyword, array filters) : array
+    + decrementQuantity(int id, int qty) : bool
+    + incrementQuantity(int id, int qty) : bool
+    + getProductSpecs(int productId) : array
+  }
+
+  class OrderModel {
+    - PDO db
+    + __construct(PDO db)
+    + createOrder(array orderData, array cartItems) : int
+    + getOrderById(int id) : array
+    + getOrderByAccessToken(string token) : array
+    + getOrdersByUser(int userId) : array
+    + updateOrderStatus(int id, string status, string note) : bool
+    + updatePaymentStatus(int id, string payStatus, string txn) : bool
+  }
+
+  class VoucherModel {
+    - PDO db
+    + __construct(PDO db)
+    + getVoucherByCode(string code) : array
+    + validateVoucher(string code, float total, int userId) : array
+    + recordUsage(int voucherId, int userId, int orderId, float discount) : bool
+  }
+
+  class AddressModel {
+    - PDO db
+    + __construct(PDO db)
+    + getAddressesByUser(int userId) : array
+    + addAddress(array data) : int
+    + setDefaultAddress(int userId, int addressId) : bool
+  }
+
+  class ProductCommentModel {
+    - PDO db
+    + __construct(PDO db)
+    + getByProduct(int productId) : array
+    + addComment(array data) : int
+    + approveComment(int commentId) : bool
+  }
+}
+
+Database <.. UserModel : uses
+Database <.. ProductModel : uses
+Database <.. OrderModel : uses
+Database <.. VoucherModel : uses
+Database <.. AddressModel : uses
+Database <.. ProductCommentModel : uses
+
+OrderModel ..> ProductModel : modifies stock
+OrderModel ..> VoucherModel : verifies coupon
+UserModel ..> AddressModel : manages
+ProductModel ..> ProductCommentModel : reviews
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 21_Component_Middleware_Pipeline_Admin.puml
+' ----------------------------------------------------------------------
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam componentStyle rectangle
+skinparam componentFontSize 12
+skinparam componentFontName "Segoe UI, Arial"
+left to right direction
+
+title SƠ ĐỒ COMPONENT - MIDDLEWARE PIPELINE (ADMIN SUB-SYSTEM)
+
+actor "Admin Browser\n(Request)" as Browser
+
+package "Admin Application Pipeline" {
+  component "MiddlewareRunner\n(Pipeline Manager)" as Runner
+
+  component "1. AuthMiddleware\n(Kiểm tra Session & Khóa)" as AuthMW
+  component "2. CsrfMiddleware\n(Xác thực Token POST/PUT)" as CsrfMW
+  component "3. PermissionMiddleware\n(Kiểm tra quyền RBAC)" as PermMW
+  component "4. AuditMiddleware\n(Ghi nhận thay đổi)" as AuditMW
+
+  component "Admin Controller Action\n(VD: ProductController::edit)" as Controller
+  component "View Renderer / JSON\n(Phản hồi kết quả)" as Response
+}
+
+database "MySQL Database\n(audit_logs & roles)" as DB
+
+Browser --> Runner : HTTP Request (/admin/?module=products&action=edit)
+Runner --> AuthMW : Bước 1
+AuthMW --> CsrfMW : Bước 2 (Nếu hợp lệ)
+CsrfMW --> PermMW : Bước 3 (Nếu CSRF khớp)
+PermMW --> AuditMW : Bước 4 (Nếu có quyền)
+AuditMW --> Controller : Bước 5 (Được phép thực thi)
+
+AuditMW ..> DB : Ghi log IP, OldData, NewData
+Controller --> Response : Trả dữ liệu giao diện
+Response --> Browser : HTTP 200 Response
+@enduml
+
+' ----------------------------------------------------------------------
+' FILE: 22_Sequence_DangNhap_SessionTimeout.puml
+' ----------------------------------------------------------------------
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - ĐĂNG NHẬP & QUẢN LÝ PHIÊN (SESSION TIMEOUT 8H)
+
+actor "Người dùng" as User
+participant "Trình duyệt Web" as Browser
+participant "session_check.php" as SessCheck
+participant "UserController" as Ctrl
+database "MySQL Database\n(users)" as DB
+participant "PHP Session Store\n($_SESSION)" as Sess
+
+== Giai đoạn 1: Đăng nhập an toàn & Khởi tạo phiên ==
+User -> Browser: Nhập username, password & Bấm Đăng nhập
+Browser -> Ctrl: POST /taikhoan.php?action=login (CSRF Token)
+activate Ctrl
+
+Ctrl -> DB: SELECT * FROM users WHERE username = ?
+activate DB
+DB --> Ctrl: Bản ghi user (password hash, is_blocked)
+deactivate DB
+
+Ctrl -> Ctrl: password_verify(password, hash)
+
+alt Mật khẩu chính xác VÀ is_blocked == 0
+    Ctrl -> Sess: session_regenerate_id(true) [Chống Session Fixation]
+    Ctrl -> Sess: $_SESSION['user_id'] = $user['id']
+    Ctrl -> Sess: $_SESSION['last_activity'] = time()
+    Ctrl --> Browser: Set-Cookie: PHPSESSID (HttpOnly, SameSite=Lax, 28800s)
+    Ctrl --> Browser: HTTP 302 Redirect về Trang chủ / Dashboard
+else Sai thông tin hoặc tài khoản bị khóa
+    Ctrl --> Browser: Flash Message thông báo lỗi đăng nhập
+end
+deactivate Ctrl
+
+== Giai đoạn 2: Tự động gia hạn hoặc Đăng xuất sau 8h không hoạt động ==
+User -> Browser: Nhấp chuột điều hướng sang trang khác (VD: giohang.php)
+Browser -> SessCheck: GET /giohang.php (Kèm Cookie PHPSESSID)
+activate SessCheck
+
+alt $_SESSION['user_id'] tồn tại
+    SessCheck -> SessCheck: $idle = time() - $_SESSION['last_activity']
+
+    alt $idle > 28800 giây (Quá 8 tiếng không hoạt động)
+        SessCheck -> Sess: $_SESSION = []; session_destroy();
+        SessCheck -> Sess: session_start(); $_SESSION['timeout_msg'] = 'Phiên hết hạn...'
+        SessCheck --> Browser: HTTP 302 Redirect sang /taikhoan.php?timeout=1
+        Browser --> User: Chuyển về màn hình đăng nhập kèm cảnh báo hết hạn
+    else $idle <= 28800 giây (Phiên còn hiệu lực)
+        SessCheck -> Sess: $_SESSION['last_activity'] = time() (Gia hạn thời gian)
+        SessCheck --> Browser: Tiếp tục nạp nội dung trang yêu cầu
+    end
+else Khách vãng lai chưa đăng nhập
+    SessCheck --> Browser: Tiếp tục xử lý chế độ khách
+end
+deactivate SessCheck
+@enduml
+

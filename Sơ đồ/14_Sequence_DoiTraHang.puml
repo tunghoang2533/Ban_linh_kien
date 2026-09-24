@@ -1,0 +1,55 @@
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - QUY TRÌNH ĐỔI / TRẢ HÀNG & BẢO HÀNH
+
+actor "Khách hàng" as Customer
+participant "Giao diện Đổi trả\n(doitra.php)" as UI
+participant "Return Handler" as Ctrl
+database "MySQL Database" as DB
+actor "Quản trị viên / Kỹ thuật" as Admin
+actor "Thủ kho tiếp nhận" as WH
+participant "Cổng VNPay / Ngân hàng" as Gateway
+
+Customer -> UI: Chọn đơn 'completed', chọn linh kiện lỗi, nhập lý do & tải ảnh
+UI -> Ctrl: POST /doitra.php (order_id, product_id, reason, images, CSRF)
+activate Ctrl
+
+Ctrl -> DB: SELECT created_at, status FROM orders WHERE id=?
+note over Ctrl: Kiểm tra điều kiện chính sách (thời gian <= 7 ngày)
+Ctrl -> DB: INSERT INTO return_requests (order_id, product_id, user_id, reason, images, status='pending')
+Ctrl --> UI: Báo gửi yêu cầu thành công
+deactivate Ctrl
+
+Admin -> DB: Xem danh sách yêu cầu đổi trả (status='pending')
+Admin -> Admin: Thẩm định hình ảnh / video bằng chứng lỗi
+
+alt Từ chối (Lỗi do người dùng làm rơi vỡ, cháy nổ)
+    Admin -> DB: UPDATE return_requests SET status='rejected', admin_note=?
+    Admin -> Customer: Gửi Email giải thích nguyên nhân từ chối
+else Chấp thuận đổi trả
+    Admin -> DB: UPDATE return_requests SET status='approved'
+    Admin -> Customer: Gửi hướng dẫn đóng gói gửi linh kiện về kho
+    
+    Customer -> WH: Gửi bưu kiện linh kiện lỗi về trung tâm bảo hành
+    activate WH
+    WH -> DB: SELECT * FROM serial_numbers WHERE serial_code=? AND sold_order_id=?
+    note over WH: Đối soát tem niêm phong và mã Serial Number gốc
+
+    alt Khách chọn Đổi linh kiện mới
+        WH -> DB: UPDATE serial_numbers SET status='defective' WHERE serial_code=?
+        WH -> DB: Xuất linh kiện mới: INSERT INTO warehouse_logs (type='out')
+        WH -> Customer: Giao sản phẩm mới thay thế
+    else Khách chọn Hoàn tiền giao dịch
+        Admin -> Gateway: Gửi lệnh hoàn tiền qua API
+        Gateway --> Admin: Xác nhận hoàn tiền thành công
+        Admin -> DB: UPDATE orders SET payment_status='refunded'
+        Admin -> DB: UPDATE return_requests SET status='completed', refund_amount=?
+        Admin -> Customer: Gửi Email biên lai hoàn tiền
+    end
+    deactivate WH
+end
+@enduml

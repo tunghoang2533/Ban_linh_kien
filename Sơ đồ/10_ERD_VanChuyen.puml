@@ -1,0 +1,97 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #16A34A
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #15803D
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM VẬN CHUYỂN & GIAO VẬN
+
+entity "shipping_carriers (Đơn vị vận chuyển)" as shipping_carriers {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  code : VARCHAR(50) <<UNIQUE>>
+  phone : VARCHAR(20)
+  api_url : VARCHAR(255)
+  api_token : VARCHAR(255)
+  is_active : TINYINT(1)
+}
+
+entity "shipping_zones (Vùng cước phí)" as shipping_zones {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  province_ids : TEXT
+  base_fee : DECIMAL(10,2)
+  fee_per_kg : DECIMAL(10,2)
+  free_threshold : DECIMAL(12,2)
+  is_active : TINYINT(1)
+}
+
+entity "orders (Đơn đặt hàng)" as orders {
+  * id : INT <<PK>>
+  --
+  tracking_code : VARCHAR(20)
+  total_amount : DECIMAL(15,2)
+}
+
+entity "shipping_orders (Vận đơn giao hàng)" as shipping_orders {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  carrier_id : INT <<FK>>
+  tracking_number : VARCHAR(100)
+  shipping_fee : DECIMAL(10,2)
+  cod_amount : DECIMAL(15,2)
+  status : ENUM('picking','shipping','delivered','failed','returned')
+  weight : DECIMAL(8,2)
+  pickup_address : TEXT
+  delivery_address : TEXT
+  created_at : TIMESTAMP
+}
+
+entity "shipping_tracking_events (Lịch trình)" as shipping_tracking_events {
+  * id : INT <<PK>>
+  --
+  shipping_order_id : INT <<FK>>
+  status : VARCHAR(50)
+  description : VARCHAR(255)
+  location : VARCHAR(255)
+  event_time : DATETIME
+}
+
+entity "vietnam_provinces (Tỉnh/Thành)" as vietnam_provinces {
+  * id : INT <<PK>>
+  --
+  code : VARCHAR(20)
+  name : VARCHAR(100)
+}
+
+entity "vietnam_districts (Quận/Huyện)" as vietnam_districts {
+  * id : INT <<PK>>
+  --
+  province_id : INT <<FK>>
+  code : VARCHAR(20)
+  name : VARCHAR(100)
+}
+
+entity "vietnam_wards (Phường/Xã)" as vietnam_wards {
+  * id : INT <<PK>>
+  --
+  district_id : INT <<FK>>
+  code : VARCHAR(20)
+  name : VARCHAR(100)
+}
+
+shipping_carriers ||--o{ shipping_orders : "carrier_id"
+orders ||--o{ shipping_orders : "order_id"
+shipping_orders ||--o{ shipping_tracking_events : "shipping_order_id"
+vietnam_provinces ||--o{ vietnam_districts : "province_id"
+vietnam_districts ||--o{ vietnam_wards : "district_id"
+@enduml

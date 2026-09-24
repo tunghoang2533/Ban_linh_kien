@@ -1,0 +1,61 @@
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam conditionStyle inside
+skinparam ActivityFontSize 12
+skinparam ActivityFontName "Segoe UI, Arial"
+
+title SƠ ĐỒ ACTIVITY - QUY TRÌNH XỬ LÝ ĐƠN HÀNG (END-TO-END)
+
+|#E0F2FE|Khách hàng|
+start
+:Duyệt giỏ hàng & Bấm "Thanh toán";
+:Điền thông tin nhận hàng & Áp dụng Voucher;
+if (Chọn hình thức thanh toán?) then (VNPay / Trực tuyến)
+  |#FEF3C7|Cổng thanh toán & Hệ thống|
+  :Chuyển hướng sang VNPay Gateway;
+  :Khách quét mã QR / Nhập OTP;
+  if (Thanh toán thành công?) then (Có)
+    :Cập nhật payment_status = 'paid';
+    :Tạo đơn hàng trạng thái 'processing';
+  else (Thất bại)
+    :Báo lỗi thanh toán & Cho phép chọn lại;
+    detach
+  endif
+else (COD - Tiền mặt khi nhận)
+  |#FEF3C7|Cổng thanh toán & Hệ thống|
+  :Tạo đơn hàng trạng thái 'pending';
+  |#FCE7F3|Bộ phận Bán hàng / Admin|
+  :Gọi điện thoại xác nhận đơn;
+  if (Xác nhận hợp lệ?) then (Có)
+    :Chuyển đơn sang 'processing';
+  else (Khách hủy / Không liên lạc được)
+    :Cập nhật trạng thái 'cancelled';
+    :Hoàn trả số lượng tồn kho;
+    stop
+  endif
+endif
+
+|#DCFCE7|Bộ phận Kho hàng|
+:In phiếu xuất kho & Đóng gói linh kiện;
+:Quét & Gán mã Serial Number từng linh kiện (status = 'sold');
+:Tạo vận đơn với Đơn vị vận chuyển (sinh tracking_code);
+:Cập nhật đơn sang 'shipped' & Gửi email thông báo vận đơn;
+
+|#EDE9FE|Đơn vị vận chuyển (Logistics)|
+:Shipper giao hàng tới địa chỉ nhận;
+if (Khách nhận hàng thành công?) then (Có)
+  :Ký nhận & Thu tiền (nếu COD);
+  |#FEF3C7|Cổng thanh toán & Hệ thống|
+  :Cập nhật đơn sang 'completed' (payment_status = 'paid');
+  :Cộng điểm tích lũy thành viên (Loyalty Points);
+  |#E0F2FE|Khách hàng|
+  :Mở quyền đánh giá sản phẩm & Quyền yêu cầu đổi trả (trong 7 ngày);
+  stop
+else (Giao thất bại quá 3 lần / Khách boom)
+  |#DCFCE7|Bộ phận Kho hàng|
+  :Chuyển hoàn kiện hàng về kho;
+  :Nhập lại kho & Cập nhật đơn sang 'cancelled';
+  stop
+endif
+@enduml

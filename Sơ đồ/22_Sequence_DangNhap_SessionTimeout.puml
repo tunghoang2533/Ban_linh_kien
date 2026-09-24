@@ -1,0 +1,60 @@
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - ĐĂNG NHẬP & QUẢN LÝ PHIÊN (SESSION TIMEOUT 8H)
+
+actor "Người dùng" as User
+participant "Trình duyệt Web" as Browser
+participant "session_check.php" as SessCheck
+participant "UserController" as Ctrl
+database "MySQL Database\n(users)" as DB
+participant "PHP Session Store\n($_SESSION)" as Sess
+
+== Giai đoạn 1: Đăng nhập an toàn & Khởi tạo phiên ==
+User -> Browser: Nhập username, password & Bấm Đăng nhập
+Browser -> Ctrl: POST /taikhoan.php?action=login (CSRF Token)
+activate Ctrl
+
+Ctrl -> DB: SELECT * FROM users WHERE username = ?
+activate DB
+DB --> Ctrl: Bản ghi user (password hash, is_blocked)
+deactivate DB
+
+Ctrl -> Ctrl: password_verify(password, hash)
+
+alt Mật khẩu chính xác VÀ is_blocked == 0
+    Ctrl -> Sess: session_regenerate_id(true) [Chống Session Fixation]
+    Ctrl -> Sess: $_SESSION['user_id'] = $user['id']
+    Ctrl -> Sess: $_SESSION['last_activity'] = time()
+    Ctrl --> Browser: Set-Cookie: PHPSESSID (HttpOnly, SameSite=Lax, 28800s)
+    Ctrl --> Browser: HTTP 302 Redirect về Trang chủ / Dashboard
+else Sai thông tin hoặc tài khoản bị khóa
+    Ctrl --> Browser: Flash Message thông báo lỗi đăng nhập
+end
+deactivate Ctrl
+
+== Giai đoạn 2: Tự động gia hạn hoặc Đăng xuất sau 8h không hoạt động ==
+User -> Browser: Nhấp chuột điều hướng sang trang khác (VD: giohang.php)
+Browser -> SessCheck: GET /giohang.php (Kèm Cookie PHPSESSID)
+activate SessCheck
+
+alt $_SESSION['user_id'] tồn tại
+    SessCheck -> SessCheck: $idle = time() - $_SESSION['last_activity']
+
+    alt $idle > 28800 giây (Quá 8 tiếng không hoạt động)
+        SessCheck -> Sess: $_SESSION = []; session_destroy();
+        SessCheck -> Sess: session_start(); $_SESSION['timeout_msg'] = 'Phiên hết hạn...'
+        SessCheck --> Browser: HTTP 302 Redirect sang /taikhoan.php?timeout=1
+        Browser --> User: Chuyển về màn hình đăng nhập kèm cảnh báo hết hạn
+    else $idle <= 28800 giây (Phiên còn hiệu lực)
+        SessCheck -> Sess: $_SESSION['last_activity'] = time() (Gia hạn thời gian)
+        SessCheck --> Browser: Tiếp tục nạp nội dung trang yêu cầu
+    end
+else Khách vãng lai chưa đăng nhập
+    SessCheck --> Browser: Tiếp tục xử lý chế độ khách
+end
+deactivate SessCheck
+@enduml

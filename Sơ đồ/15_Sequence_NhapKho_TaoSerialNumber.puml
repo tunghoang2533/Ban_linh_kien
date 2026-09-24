@@ -1,0 +1,55 @@
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+
+title SƠ ĐỒ SEQUENCE - NHẬP KHO & TẠO SERIAL NUMBER
+
+actor "Nhân viên kho" as Staff
+actor "Quản lý kho" as Manager
+participant "Giao diện Nhập kho\n(receipt_form.php)" as UI
+participant "WarehouseController" as Ctrl
+database "MySQL Database" as DB
+participant "Back in Stock Worker" as Worker
+
+Staff -> UI: Chọn NCC, Kho nhập, danh sách linh kiện và số lượng
+UI -> Ctrl: POST /admin/receipts/create (PO_id, supplier_id, warehouse_id, items[])
+activate Ctrl
+
+Ctrl -> DB: INSERT INTO warehouse_receipts (status='pending')
+Ctrl -> DB: INSERT INTO warehouse_receipt_items
+Ctrl --> UI: Tạo phiếu nhập thành công (Chờ kiểm đếm duyệt)
+deactivate Ctrl
+
+Manager -> UI: Mở phiếu nhập & Kiểm tra kiện hàng thực tế giao tới
+Manager -> UI: Nhập/Quét Barcode mã Serial Number cho từng linh kiện
+Manager -> UI: Bấm "Phê duyệt phiếu nhập kho"
+
+UI -> Ctrl: POST /admin/receipts/approve (receipt_id, serial_list[])
+activate Ctrl
+
+group Database Transaction Nhập kho
+    Ctrl -> DB: UPDATE warehouse_receipts SET status='approved' WHERE id=?
+    
+    loop Duyệt từng mã Serial Number được quét
+        Ctrl -> DB: INSERT INTO serial_numbers (product_id, receipt_id, serial_code, status='in_stock', warranty_months)
+    end
+
+    loop Duyệt từng sản phẩm trong phiếu nhập
+        Ctrl -> DB: SELECT quantity FROM products WHERE id=?
+        Ctrl -> DB: UPDATE products SET quantity = quantity + ? WHERE id=?
+        Ctrl -> DB: INSERT INTO warehouse_logs (product_id, type='in', quantity, before_qty, after_qty)
+    end
+end
+
+Ctrl -> DB: SELECT email FROM back_in_stock_subscriptions WHERE product_id=? AND status='pending'
+alt Có khách hàng đăng ký nhận thông báo có hàng
+    Ctrl -> DB: INSERT INTO email_queue (to_email, subject, body_html)
+    Ctrl -> DB: UPDATE back_in_stock_subscriptions SET status='notified', notified_at=NOW()
+    Ctrl -> Worker: Kích hoạt gửi email tự động
+end
+
+Ctrl --> UI: Thông báo "Nhập kho thành công, đã cộng tồn kho và lưu mã Serial"
+deactivate Ctrl
+@enduml

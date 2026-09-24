@@ -1,0 +1,37 @@
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam componentStyle rectangle
+skinparam componentFontSize 12
+skinparam componentFontName "Segoe UI, Arial"
+left to right direction
+
+title SƠ ĐỒ COMPONENT - MIDDLEWARE PIPELINE (ADMIN SUB-SYSTEM)
+
+actor "Admin Browser\n(Request)" as Browser
+
+package "Admin Application Pipeline" {
+  component "MiddlewareRunner\n(Pipeline Manager)" as Runner
+
+  component "1. AuthMiddleware\n(Kiểm tra Session & Khóa)" as AuthMW
+  component "2. CsrfMiddleware\n(Xác thực Token POST/PUT)" as CsrfMW
+  component "3. PermissionMiddleware\n(Kiểm tra quyền RBAC)" as PermMW
+  component "4. AuditMiddleware\n(Ghi nhận thay đổi)" as AuditMW
+
+  component "Admin Controller Action\n(VD: ProductController::edit)" as Controller
+  component "View Renderer / JSON\n(Phản hồi kết quả)" as Response
+}
+
+database "MySQL Database\n(audit_logs & roles)" as DB
+
+Browser --> Runner : HTTP Request (/admin/?module=products&action=edit)
+Runner --> AuthMW : Bước 1
+AuthMW --> CsrfMW : Bước 2 (Nếu hợp lệ)
+CsrfMW --> PermMW : Bước 3 (Nếu CSRF khớp)
+PermMW --> AuditMW : Bước 4 (Nếu có quyền)
+AuditMW --> Controller : Bước 5 (Được phép thực thi)
+
+AuditMW ..> DB : Ghi log IP, OldData, NewData
+Controller --> Response : Trả dữ liệu giao diện
+Response --> Browser : HTTP 200 Response
+@enduml

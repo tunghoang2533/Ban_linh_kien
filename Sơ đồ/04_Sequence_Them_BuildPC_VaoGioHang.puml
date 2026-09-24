@@ -1,0 +1,41 @@
+@startuml
+autonumber
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam sequenceMessageAlign center
+skinparam sequenceBoxBorderColor #CBD5E1
+
+title SƠ ĐỒ SEQUENCE - THÊM CẤU HÌNH BUILD PC VÀO GIỎ HÀNG
+
+actor "Khách hàng" as Customer
+participant "Giao diện Build PC\n(buildpc.php)" as UI
+participant "BuildPcController" as Ctrl
+participant "ProductModel" as Model
+database "MySQL Database\n(products)" as DB
+participant "Session\n($_SESSION['cart'])" as Sess
+
+Customer -> UI: Chọn CPU, Mainboard, RAM, VGA, PSU, Case
+note over UI: JavaScript kiểm tra tương thích Socket & Công suất nguồn (TDP)
+Customer -> UI: Bấm "Thêm tất cả vào giỏ hàng"
+UI -> Ctrl: POST /buildpc.php?action=add_to_cart (danh sách product_id[])
+activate Ctrl
+
+loop Duyệt từng linh kiện trong bộ máy ráp
+    Ctrl -> Model: getProductById(id)
+    activate Model
+    Model -> DB: SELECT * FROM products WHERE id=? AND is_active=1
+    DB --> Model: Trả về giá, số lượng tồn kho
+    deactivate Model
+end
+
+alt Có linh kiện hết hàng (quantity <= 0)
+    Ctrl --> UI: Redirect kèm Flash Error ("Linh kiện X đã hết hàng!")
+    UI --> Customer: Hiển thị cảnh báo màu đỏ
+else Tất cả linh kiện đều còn hàng
+    Ctrl -> Sess: Merge linh kiện vào $_SESSION['cart']
+    Ctrl -> DB: Đồng bộ dữ liệu giỏ vào bảng abandoned_carts
+    Ctrl --> UI: Header("Location: giohang.php")
+    deactivate Ctrl
+    UI --> Customer: Chuyển hướng đến giỏ hàng kèm thông báo thành công
+end
+@enduml

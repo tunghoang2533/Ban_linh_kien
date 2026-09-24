@@ -1,0 +1,90 @@
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam packageStyle rectangle
+skinparam actorFontSize 12
+skinparam usecaseFontSize 12
+left to right direction
+
+title SƠ ĐỒ USE CASE - PHÂN HỆ QUẢN TRỊ VIÊN (ADMIN)
+
+actor "Super Admin\n(Toàn quyền)" as SuperAdmin
+actor "Nhân viên Bán hàng" as OrderStaff
+actor "Thủ kho" as WHStaff
+actor "Nhân viên Marketing" as MktStaff
+actor "Nhân viên CSKH" as CSStaff
+
+SuperAdmin --|> OrderStaff
+SuperAdmin --|> WHStaff
+SuperAdmin --|> MktStaff
+SuperAdmin --|> CSStaff
+
+rectangle "Cổng Quản Trị Hệ Thống (Admin Portal)" {
+  package "Quản lý Sản phẩm & Cấu hình" {
+    usecase "Thêm / Sửa / Xóa linh kiện" as UC_Prod
+    usecase "Cây danh mục & Thương hiệu" as UC_Cat
+    usecase "Cấu hình Thông số & Socket" as UC_Spec
+    usecase "Lịch sử điều chỉnh giá" as UC_Price
+  }
+
+  package "Quản lý Đơn hàng & Thanh toán" {
+    usecase "Xem, lọc & Tìm kiếm đơn hàng" as UC_Orders
+    usecase "Duyệt đơn & Đổi trạng thái" as UC_Status
+    usecase "In phiếu xuất kho & Hóa đơn" as UC_Invoice
+    usecase "Đối soát giao dịch VNPay" as UC_Trans
+  }
+
+  package "Quản lý Kho & Serial" {
+    usecase "Tạo đơn đặt hàng NCC (PO)" as UC_PO
+    usecase "Lập & Duyệt phiếu nhập kho" as UC_Receipt
+    usecase "Quét & Quản lý Serial Number" as UC_Serial
+    usecase "Kiểm kê kho định kỳ" as UC_Stocktake
+  }
+
+  package "Tiếp thị & Khuyến mãi" {
+    usecase "Quản lý Banner quảng cáo" as UC_Banner
+    usecase "Cài đặt Flash Sale" as UC_Flash
+    usecase "Tạo mã giảm giá (Voucher)" as UC_VoucherAdm
+    usecase "Cứu giỏ hàng bỏ quên" as UC_Abandon
+  }
+
+  package "Tương tác & CSKH" {
+    usecase "Trực quầy Live Chat hỗ trợ" as UC_ChatAdm
+    usecase "Kiểm duyệt Đánh giá sản phẩm" as UC_CommAdm
+    usecase "Xử lý Đổi trả / Hoàn tiền" as UC_ReturnAdm
+  }
+
+  package "Hệ thống & An ninh" {
+    usecase "Quản lý Tài khoản & Phân quyền RBAC" as UC_RBAC
+    usecase "Giám sát Audit Logs" as UC_Audit
+    usecase "Cấu hình Thông số & Email SMTP" as UC_Settings
+  }
+}
+
+OrderStaff --> UC_Orders
+OrderStaff --> UC_Status
+OrderStaff --> UC_Invoice
+OrderStaff --> UC_Trans
+
+WHStaff --> UC_Prod
+WHStaff --> UC_PO
+WHStaff --> UC_Receipt
+WHStaff --> UC_Serial
+WHStaff --> UC_Stocktake
+
+MktStaff --> UC_Banner
+MktStaff --> UC_Flash
+MktStaff --> UC_VoucherAdm
+MktStaff --> UC_Abandon
+
+CSStaff --> UC_ChatAdm
+CSStaff --> UC_CommAdm
+CSStaff --> UC_ReturnAdm
+
+SuperAdmin --> UC_RBAC
+SuperAdmin --> UC_Audit
+SuperAdmin --> UC_Settings
+SuperAdmin --> UC_Cat
+SuperAdmin --> UC_Spec
+SuperAdmin --> UC_Price
+@enduml

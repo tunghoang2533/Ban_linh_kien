@@ -1,0 +1,109 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #475569
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #334155
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM HỆ THỐNG, THÔNG BÁO & AUDIT LOG
+
+entity "users (Người dùng)" as users {
+  * id : INT <<PK>>
+  --
+  username : VARCHAR(100)
+  email : VARCHAR(100)
+}
+
+entity "notifications (Thông báo cá nhân)" as notifications {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  type : VARCHAR(50)
+  title : VARCHAR(255)
+  message : TEXT
+  url : VARCHAR(255)
+  is_read : TINYINT(1)
+  created_at : TIMESTAMP
+}
+
+entity "broadcast_notifications (Thông báo chung)" as broadcast_notifications {
+  * id : INT <<PK>>
+  --
+  title : VARCHAR(255)
+  message : TEXT
+  target_role : VARCHAR(50)
+  url : VARCHAR(255)
+  expires_at : DATETIME
+  created_by : INT
+  created_at : TIMESTAMP
+}
+
+entity "notification_reads (Đã đọc broadcast)" as notification_reads {
+  * id : INT <<PK>>
+  --
+  broadcast_id : INT <<FK>>
+  user_id : INT <<FK>>
+  read_at : TIMESTAMP
+}
+
+entity "push_subscriptions (Web Push Token)" as push_subscriptions {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  endpoint : TEXT
+  p256dh : VARCHAR(255)
+  auth : VARCHAR(255)
+  created_at : TIMESTAMP
+}
+
+entity "email_queue (Hàng đợi Email)" as email_queue {
+  * id : INT <<PK>>
+  --
+  to_email : VARCHAR(255)
+  to_name : VARCHAR(100)
+  subject : VARCHAR(255)
+  body_html : LONGTEXT
+  status : ENUM('pending','sent','failed')
+  attempts : TINYINT
+  error_message : TEXT
+  scheduled_at : DATETIME
+  sent_at : DATETIME
+  created_at : TIMESTAMP
+}
+
+entity "audit_logs (Nhật ký kiểm toán)" as audit_logs {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  username : VARCHAR(100)
+  action : VARCHAR(100)
+  module : VARCHAR(100)
+  target_id : INT
+  old_data : TEXT
+  new_data : TEXT
+  ip_address : VARCHAR(50)
+  user_agent : VARCHAR(500)
+  created_at : TIMESTAMP
+}
+
+entity "shop_settings (Cấu hình hệ thống)" as shop_settings {
+  * id : INT <<PK>>
+  --
+  setting_key : VARCHAR(100) <<UNIQUE>>
+  setting_value : TEXT
+  setting_group : VARCHAR(50)
+  description : VARCHAR(255)
+  updated_at : TIMESTAMP
+}
+
+users ||--o{ notifications : "user_id"
+users ||--o{ push_subscriptions : "user_id"
+users ||--o{ audit_logs : "user_id"
+broadcast_notifications ||--o{ notification_reads : "broadcast_id"
+users ||--o{ notification_reads : "user_id"
+@enduml

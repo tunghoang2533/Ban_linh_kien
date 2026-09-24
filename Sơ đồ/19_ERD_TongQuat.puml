@@ -1,0 +1,239 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 11
+skinparam classFontName "Segoe UI, Arial"
+skinparam packageFontSize 13
+skinparam packageFontName "Segoe UI, Arial"
+skinparam packageFontStyle bold
+left to right direction
+
+title SƠ ĐỒ ERD TỔNG QUÁT TOÀN BỘ HỆ THỐNG (8 PHÂN HỆ)
+
+package "1. Phân hệ Người dùng & Phân quyền" as pkg_users #EEF2FF {
+  entity "roles" as roles {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(50)
+    permissions : LONGTEXT
+  }
+
+  entity "users" as users {
+    * id : INT <<PK>>
+    --
+    role_id : INT <<FK>>
+    username : VARCHAR(100)
+    full_name : VARCHAR(100)
+    email : VARCHAR(100)
+    phone : VARCHAR(20)
+    is_blocked : TINYINT(1)
+  }
+
+  entity "user_addresses" as user_addresses {
+    * id : INT <<PK>>
+    --
+    user_id : INT <<FK>>
+    address_line : VARCHAR(255)
+  }
+}
+
+package "2. Phân hệ Sản phẩm & Danh mục" as pkg_products #EFF6FF {
+  entity "categories" as categories {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(100)
+    parent_id : INT <<FK>>
+  }
+
+  entity "brands" as brands {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(100)
+  }
+
+  entity "products" as products {
+    * id : INT <<PK>>
+    --
+    category_id : INT <<FK>>
+    brand_id : INT <<FK>>
+    name : VARCHAR(255)
+    price : DECIMAL(15,2)
+    quantity : INT
+    socket : VARCHAR(50)
+  }
+
+  entity "product_specs" as product_specs {
+    * id : INT <<PK>>
+    --
+    product_id : INT <<FK>>
+    spec_name : VARCHAR(100)
+    spec_value : TEXT
+  }
+}
+
+package "3. Phân hệ Đơn hàng & Thanh toán" as pkg_orders #FEFCE8 {
+  entity "orders" as orders {
+    * id : INT <<PK>>
+    --
+    user_id : INT <<FK>>
+    access_token : VARCHAR(36)
+    total_amount : DECIMAL(15,2)
+    status : ENUM
+    payment_method : ENUM
+    payment_status : ENUM
+  }
+
+  entity "order_items" as order_items {
+    * id : INT <<PK>>
+    --
+    order_id : INT <<FK>>
+    product_id : INT <<FK>>
+    price : DECIMAL(15,2)
+    quantity : INT
+  }
+
+  entity "payment_transactions" as payment_transactions {
+    * id : INT <<PK>>
+    --
+    order_id : INT <<FK>>
+    gateway : ENUM
+    amount : DECIMAL(15,2)
+    status : ENUM
+  }
+}
+
+package "4. Phân hệ Kho hàng & Nhập hàng" as pkg_warehouse #FFF7ED {
+  entity "warehouses" as warehouses {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(100)
+    code : VARCHAR(50)
+  }
+
+  entity "suppliers" as suppliers {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(255)
+    code : VARCHAR(50)
+  }
+
+  entity "warehouse_receipts" as warehouse_receipts {
+    * id : INT <<PK>>
+    --
+    supplier_id : INT <<FK>>
+    warehouse_id : INT <<FK>>
+    status : ENUM
+  }
+
+  entity "serial_numbers" as serial_numbers {
+    * id : INT <<PK>>
+    --
+    product_id : INT <<FK>>
+    receipt_id : INT <<FK>>
+    serial_code : VARCHAR(100)
+    sold_order_id : INT <<FK>>
+    status : ENUM
+  }
+}
+
+package "5. Phân hệ Vận chuyển" as pkg_shipping #F0FDF4 {
+  entity "shipping_carriers" as shipping_carriers {
+    * id : INT <<PK>>
+    --
+    name : VARCHAR(100)
+    code : VARCHAR(50)
+  }
+
+  entity "shipping_orders" as shipping_orders {
+    * id : INT <<PK>>
+    --
+    order_id : INT <<FK>>
+    carrier_id : INT <<FK>>
+    tracking_number : VARCHAR(100)
+    status : ENUM
+  }
+}
+
+package "6. Phân hệ Marketing & Khuyến mãi" as pkg_marketing #FAF5FF {
+  entity "vouchers" as vouchers {
+    * id : INT <<PK>>
+    --
+    code : VARCHAR(50)
+    discount_value : DECIMAL(10,2)
+  }
+
+  entity "voucher_usages" as voucher_usages {
+    * id : INT <<PK>>
+    --
+    voucher_id : INT <<FK>>
+    order_id : INT <<FK>>
+    user_id : INT <<FK>>
+  }
+
+  entity "loyalty_points" as loyalty_points {
+    * id : INT <<PK>>
+    --
+    user_id : INT <<FK>>
+    order_id : INT <<FK>>
+    points : INT
+  }
+}
+
+package "7. Phân hệ Tương tác & CSKH" as pkg_cskh #FDF2F8 {
+  entity "product_comments" as product_comments {
+    * id : INT <<PK>>
+    --
+    product_id : INT <<FK>>
+    user_id : INT <<FK>>
+    rating : TINYINT
+  }
+
+  entity "return_requests" as return_requests {
+    * id : INT <<PK>>
+    --
+    order_id : INT <<FK>>
+    user_id : INT <<FK>>
+    product_id : INT <<FK>>
+    status : ENUM
+  }
+}
+
+package "8. Phân hệ Hệ thống & Audit" as pkg_system #F8FAFC {
+  entity "audit_logs" as audit_logs {
+    * id : INT <<PK>>
+    --
+    user_id : INT <<FK>>
+    action : VARCHAR(100)
+    module : VARCHAR(100)
+  }
+}
+
+roles ||--o{ users : "role_id"
+users ||--o{ user_addresses : "user_id"
+categories ||--o{ products : "category_id"
+brands ||--o{ products : "brand_id"
+products ||--o{ product_specs : "product_id"
+
+users ||--o{ orders : "user_id"
+orders ||--o{ order_items : "order_id"
+products ||--o{ order_items : "product_id"
+orders ||--o{ payment_transactions : "order_id"
+
+suppliers ||--o{ warehouse_receipts : "supplier_id"
+warehouses ||--o{ warehouse_receipts : "warehouse_id"
+products ||--o{ serial_numbers : "product_id"
+orders ||--o{ serial_numbers : "sold_order_id"
+
+orders ||--o{ shipping_orders : "order_id"
+shipping_carriers ||--o{ shipping_orders : "carrier_id"
+
+vouchers ||--o{ voucher_usages : "voucher_id"
+orders ||--o{ voucher_usages : "order_id"
+users ||--o{ loyalty_points : "user_id"
+
+users ||--o{ product_comments : "user_id"
+products ||--o{ product_comments : "product_id"
+orders ||--o{ return_requests : "order_id"
+users ||--o{ audit_logs : "user_id"
+@enduml

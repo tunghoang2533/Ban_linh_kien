@@ -1,0 +1,118 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #EA580C
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #C2410C
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM KHO HÀNG & NHẬP HÀNG
+
+entity "warehouses (Kho hàng)" as warehouses {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  code : VARCHAR(50) <<UNIQUE>>
+  address : TEXT
+  manager_name : VARCHAR(100)
+  phone : VARCHAR(20)
+  is_active : TINYINT(1)
+}
+
+entity "suppliers (Nhà cung cấp)" as suppliers {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(255)
+  code : VARCHAR(50) <<UNIQUE>>
+  contact_name : VARCHAR(100)
+  phone : VARCHAR(20)
+  email : VARCHAR(100)
+  tax_code : VARCHAR(50)
+  is_active : TINYINT(1)
+}
+
+entity "purchase_orders (Đơn đặt hàng NCC)" as purchase_orders {
+  * id : INT <<PK>>
+  --
+  po_number : VARCHAR(50) <<UNIQUE>>
+  supplier_id : INT <<FK>>
+  warehouse_id : INT <<FK>>
+  total_amount : DECIMAL(15,2)
+  status : ENUM('draft','sent','partial','completed','cancelled')
+  expected_delivery : DATE
+  created_by : INT
+  created_at : TIMESTAMP
+}
+
+entity "purchase_order_items (Chi tiết đặt)" as purchase_order_items {
+  * id : INT <<PK>>
+  --
+  po_id : INT <<FK>>
+  product_id : INT <<FK>>
+  quantity : INT
+  unit_price : DECIMAL(15,2)
+  received_quantity : INT
+}
+
+entity "warehouse_receipts (Phiếu nhập kho)" as warehouse_receipts {
+  * id : INT <<PK>>
+  --
+  receipt_number : VARCHAR(50) <<UNIQUE>>
+  po_id : INT <<FK>>
+  warehouse_id : INT <<FK>>
+  supplier_id : INT <<FK>>
+  receipt_type : ENUM('purchase','return','transfer')
+  total_amount : DECIMAL(15,2)
+  status : ENUM('pending','approved','cancelled')
+  created_by : INT
+  created_at : TIMESTAMP
+}
+
+entity "warehouse_receipt_items (Chi tiết nhập)" as warehouse_receipt_items {
+  * id : INT <<PK>>
+  --
+  receipt_id : INT <<FK>>
+  product_id : INT <<FK>>
+  quantity : INT
+  unit_price : DECIMAL(15,2)
+  total_price : DECIMAL(15,2)
+}
+
+entity "serial_numbers (Serial linh kiện)" as serial_numbers {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  receipt_id : INT <<FK>>
+  serial_code : VARCHAR(100) <<UNIQUE>>
+  status : ENUM('in_stock','sold','defective','returned')
+  warranty_months : INT
+  sold_order_id : INT <<FK>>
+  sold_at : DATETIME
+}
+
+entity "warehouse_logs (Biến động kho)" as warehouse_logs {
+  * id : INT <<PK>>
+  --
+  product_id : INT <<FK>>
+  warehouse_id : INT <<FK>>
+  type : ENUM('in','out','adjust')
+  quantity : INT
+  before_quantity : INT
+  after_quantity : INT
+  reference_type : VARCHAR(50)
+  reference_id : INT
+  created_at : TIMESTAMP
+}
+
+suppliers ||--o{ purchase_orders : "supplier_id"
+warehouses ||--o{ purchase_orders : "warehouse_id"
+purchase_orders ||--o{ purchase_order_items : "po_id"
+purchase_orders ||--o{ warehouse_receipts : "po_id"
+warehouses ||--o{ warehouse_receipts : "warehouse_id"
+warehouse_receipts ||--o{ warehouse_receipt_items : "receipt_id"
+warehouse_receipts ||--o{ serial_numbers : "receipt_id"
+@enduml

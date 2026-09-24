@@ -1,0 +1,52 @@
+@startuml
+skinparam shadowing false
+skinparam roundcorner 5
+skinparam nodeFontSize 12
+skinparam nodeFontName "Segoe UI, Arial"
+
+title SƠ ĐỒ DEPLOYMENT - MÔ HÌNH TRIỂN KHAI VẬT LÝ HỆ THỐNG
+
+node "Client Devices (Thiết bị đầu cuối)" as Clients {
+  artifact "Desktop Web Browser\n(Chrome, Edge, Firefox)" as Desktop
+  artifact "Mobile Web / PWA\n(Safari, Chrome Mobile)" as Mobile
+  artifact "Admin Station\n(Máy trạm Quản trị)" as AdminPC
+}
+
+node "Edge / Web Server (Laragon / Apache / Nginx)" as WebServer {
+  component "Reverse Proxy & SSL (HTTPS:443)\nLet's Encrypt TLS" as SSL
+  component "URL Rewriting Engine\n(.htaccess / Nginx router)" as Rewrite
+  folder "Static Assets Directory\n(/public/css, js, uploads)" as StaticFiles
+}
+
+node "Application Server (PHP 8.1+ Pure MVC)" as AppServer {
+  component "Core Router & Session Guard\n(session_check.php - 8h Timeout)" as Core
+  component "Admin Middleware Pipeline\n(Auth, CSRF, Permission, Audit)" as Middleware
+  component "Controllers & Domain Services\n(Checkout, BuildPC, Product, User)" as Controllers
+  component "Data Access Models & PDO\n(Database.php Singleton)" as Models
+}
+
+node "Background Workers (CLI Scheduled Tasks)" as Workers {
+  artifact "email_queue_worker.php\n(Gửi mail hóa đơn & Reset pass)" as MailWorker
+  artifact "abandoned_cart_worker.php\n(Quét cứu giỏ hàng bỏ quên)" as CartWorker
+}
+
+node "Database Server (Private Network)" as DBServer {
+  database "MySQL 8.0 Server\n(InnoDB Engine - UTF8mb4)" as MySQL
+  folder "File System Storage\n(/uploads/products, /invoices)" as FileStorage
+}
+
+cloud "External Cloud Services (Dịch vụ bên thứ ba)" as CloudServices {
+  component "VNPay Payment Gateway\n(HMAC-SHA512 API & IPN)" as VNPay
+  component "Groq AI Cloud\n(LLaMA 3.3 70B REST API)" as Groq
+  component "SMTP Mail Server\n(Google SMTP TLS Port 587)" as SMTP
+}
+
+Clients --> WebServer : HTTPS (Port 443)
+WebServer --> AppServer : FastCGI / PHP-FPM (Port 9000)
+AppServer --> DBServer : PDO Prepared Statements (Port 3306)
+AppServer --> FileStorage : Ghi file Upload ảnh
+Workers --> MySQL : Quét hàng đợi (Port 3306)
+Workers --> SMTP : TLS Port 587
+AppServer --> VNPay : Redirect & Webhook IPN
+AppServer --> Groq : HTTPS POST cURL
+@enduml

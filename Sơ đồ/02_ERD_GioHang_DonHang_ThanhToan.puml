@@ -1,0 +1,126 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam classFontSize 12
+skinparam classFontName "Segoe UI, Arial"
+skinparam classHeaderBackgroundColor #2563EB
+skinparam classHeaderFontColor #FFFFFF
+skinparam classBorderColor #1E40AF
+skinparam classBackgroundColor #F8FAFC
+left to right direction
+
+title SƠ ĐỒ ERD - NHÓM GIỎ HÀNG, ĐƠN HÀNG & THANH TOÁN
+
+entity "users (Người dùng)" as users {
+  * id : INT <<PK>>
+  --
+  username : VARCHAR(100)
+  full_name : VARCHAR(100)
+  email : VARCHAR(100)
+  phone : VARCHAR(20)
+}
+
+entity "abandoned_carts (Giỏ hàng bỏ quên)" as abandoned_carts {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  session_id : VARCHAR(255)
+  cart_data : LONGTEXT
+  cart_total : DECIMAL(12,2)
+  item_count : INT
+  status : ENUM('active','recovered','expired','contacted')
+  reminder_count : INT
+  created_at : TIMESTAMP
+}
+
+entity "orders (Đơn đặt hàng)" as orders {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  access_token : VARCHAR(36) <<UNIQUE>>
+  customer_name : VARCHAR(100)
+  customer_phone : VARCHAR(20)
+  customer_email : VARCHAR(100)
+  customer_address : TEXT
+  shipping_province : VARCHAR(100)
+  total_amount : DECIMAL(15,2)
+  status : ENUM('pending','processing','shipped','completed','cancelled')
+  voucher_code : VARCHAR(50)
+  discount_amount : DECIMAL(10,2)
+  shipping_fee : DECIMAL(10,2)
+  payment_method : ENUM('cod','bank','vnpay')
+  payment_status : ENUM('unpaid','paid','refunded')
+  tracking_code : VARCHAR(20)
+  vnpay_transaction : VARCHAR(100)
+  created_at : TIMESTAMP
+}
+
+entity "order_items (Chi tiết đơn hàng)" as order_items {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  product_id : INT <<FK>>
+  product_name : VARCHAR(255)
+  price : DECIMAL(15,2)
+  quantity : INT
+}
+
+entity "order_status_history (Nhật ký trạng thái)" as order_status_history {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  from_status : VARCHAR(50)
+  to_status : VARCHAR(50)
+  changed_by : INT
+  changer_name : VARCHAR(100)
+  note : TEXT
+  created_at : TIMESTAMP
+}
+
+entity "payment_transactions (Giao dịch cổng)" as payment_transactions {
+  * id : INT <<PK>>
+  --
+  order_id : INT <<FK>>
+  gateway : ENUM('vnpay','momo','bank')
+  transaction_code : VARCHAR(100)
+  amount : DECIMAL(15,2)
+  status : ENUM('pending','success','failed')
+  gateway_response : TEXT
+  paid_at : DATETIME
+}
+
+entity "vouchers (Mã giảm giá)" as vouchers {
+  * id : INT <<PK>>
+  --
+  code : VARCHAR(50) <<UNIQUE>>
+  discount_type : ENUM('percent','fixed')
+  discount_value : DECIMAL(10,2)
+  min_order_amount : DECIMAL(12,2)
+  max_discount_amount : DECIMAL(12,2)
+  usage_limit : INT
+  used_count : INT
+  start_date : DATETIME
+  end_date : DATETIME
+  is_active : TINYINT(1)
+}
+
+entity "voucher_usages (Lịch sử dùng voucher)" as voucher_usages {
+  * id : INT <<PK>>
+  --
+  voucher_id : INT <<FK>>
+  user_id : INT <<FK>>
+  order_id : INT <<FK>>
+  discount_amount : DECIMAL(10,2)
+  used_at : TIMESTAMP
+}
+
+users ||--o{ abandoned_carts : "user_id"
+users ||--o{ orders : "user_id"
+orders ||--o{ order_items : "order_id"
+orders ||--o{ order_status_history : "order_id"
+orders ||--o{ payment_transactions : "order_id"
+orders ||--o{ voucher_usages : "order_id"
+vouchers ||--o{ voucher_usages : "voucher_id"
+users ||--o{ voucher_usages : "user_id"
+@enduml
