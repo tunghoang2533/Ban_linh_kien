@@ -127,10 +127,19 @@ include 'app/views/header.php';
                 </span>
             </div>
             <?php if ($paymentMethod === 'bank'): 
-                $bankId      = getenv('BANK_ID')           ?: 'vcb';
-                $bankAccount = getenv('BANK_ACCOUNT')       ?: '1234567890';
-                $bankName    = getenv('BANK_ACCOUNT_NAME')  ?: 'CONG TY PC STORE';
-                $transferContent = 'DH' . $orderId . ' ' . preg_replace('/[^a-zA-Z0-9 ]/', '', $_SESSION['user']['fullname'] ?? 'khachhang');
+                $bankId      = getenv('BANK_ID')           ?: 'mb';
+                $bankAccount = getenv('BANK_ACCOUNT')       ?: '2312200566656';
+                $bankName    = getenv('BANK_ACCOUNT_NAME')  ?: 'HOANG QUANG TUNG';
+                $custRaw     = $data['customer_name'] ?? ($_SESSION['user']['fullname'] ?? 'Khach hang');
+                $custAscii   = preg_replace('/[áàảãạăắằẳẵặâấầẩẫậ]/ui', 'a', $custRaw);
+                $custAscii   = preg_replace('/[éèẻẽẹêếềểễệ]/ui', 'e', $custAscii);
+                $custAscii   = preg_replace('/[íìỉĩị]/ui', 'i', $custAscii);
+                $custAscii   = preg_replace('/[óòỏõọôốồổỗộơớờởỡợ]/ui', 'o', $custAscii);
+                $custAscii   = preg_replace('/[úùủũụưứừửữự]/ui', 'u', $custAscii);
+                $custAscii   = preg_replace('/[ýỳỷỹỵ]/ui', 'y', $custAscii);
+                $custAscii   = preg_replace('/[đ]/ui', 'd', $custAscii);
+                $custAscii   = preg_replace('/[^a-zA-Z0-9 ]/', '', $custAscii);
+                $transferContent = 'DH' . $orderId . ' ' . trim($custAscii);
                 $qrAmount    = (int)$finalTotal;
                 $qrUrl = 'https://img.vietqr.io/image/' . urlencode($bankId) . '-' . urlencode($bankAccount)
                        . '-compact2.png'
@@ -138,7 +147,10 @@ include 'app/views/header.php';
                        . '&addInfo=' . urlencode($transferContent)
                        . '&accountName=' . urlencode($bankName);
             ?>
-            <div style="background:#eff6ff;border-radius:16px;padding:20px;margin:12px 0;text-align:center;">
+            <div id="payment-pending-box" style="background:#eff6ff;border-radius:16px;padding:20px;margin:12px 0;text-align:center;">
+                <div style="display:inline-flex;align-items:center;gap:8px;background:#fef3c7;border:1px solid #fde68a;border-radius:20px;padding:5px 14px;color:#92400e;font-size:12.5px;font-weight:600;margin-bottom:12px;">
+                    <i class="fa fa-spinner fa-spin"></i> Chờ chuyển khoản (Hệ thống tự động xác nhận)
+                </div>
                 <p style="margin:0 0 14px;font-size:14px;font-weight:700;color:#1d4ed8;">
                     📱 Quét mã QR để chuyển khoản ngay
                 </p>
@@ -178,6 +190,12 @@ include 'app/views/header.php';
                     ⚠️ Vui lòng chuyển khoản <strong>đúng số tiền và nội dung</strong> để đơn hàng được xử lý nhanh nhất.
                 </p>
             </div>
+
+            <div id="payment-paid-box" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:16px;padding:24px 20px;margin:12px 0;text-align:center;">
+                <div style="font-size:48px;margin-bottom:8px;">✅</div>
+                <h3 style="color:#15803d;margin:0 0 6px;font-size:18px;font-weight:800;">Đã nhận thanh toán thành công!</h3>
+                <p style="color:#166534;margin:0;font-size:13.5px;line-height:1.5;">Hệ thống đã tự động xác nhận tiền vào tài khoản MB Bank. Đơn hàng đang được chuẩn bị đóng gói.</p>
+            </div>
             <?php endif; ?>
 
             <div class="total-row">
@@ -196,5 +214,38 @@ include 'app/views/header.php';
         </div>
     </div>
 </div>
+
+<script>
+(function() {
+    var orderId = <?php echo $orderId; ?>;
+    var paymentMethod = '<?php echo $paymentMethod; ?>';
+    if (paymentMethod !== 'bank' || orderId <= 0) return;
+
+    var checkCount = 0;
+    var maxChecks = 300; // Tối đa 15 phút (300 * 3s)
+    var pollInterval = setInterval(function() {
+        checkCount++;
+        if (checkCount > maxChecks) {
+            clearInterval(pollInterval);
+            return;
+        }
+
+        fetch('<?php echo BASE_URL; ?>api_check_order_status.php?order_id=' + orderId)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success && data.paid) {
+                    clearInterval(pollInterval);
+                    var pendingBox = document.getElementById('payment-pending-box');
+                    var paidBox = document.getElementById('payment-paid-box');
+                    if (pendingBox) pendingBox.style.display = 'none';
+                    if (paidBox) paidBox.style.display = 'block';
+                }
+            })
+            .catch(function(err) {
+                // Lỗi mạng tạm thời, bỏ qua và thử lại ở chu kỳ kế
+            });
+    }, 3000);
+})();
+</script>
 
 <?php include 'app/views/footer.php'; ?>

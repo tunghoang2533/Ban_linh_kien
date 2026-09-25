@@ -83,6 +83,12 @@ class CheckoutController {
                 ? $_POST['payment_method']
                 : 'cod';
 
+            if ($paymentMethod === 'vnpay' && !VNPayHelper::isConfigured()) {
+                $_SESSION['checkout_error'] = 'Cổng thanh toán VNPay chưa được cấu hình (thiếu VNPAY_TMN_CODE hoặc VNPAY_HASH_SECRET trong file .env). Vui lòng chọn phương thức thanh toán khác hoặc cấu hình tài khoản VNPay.';
+                header("Location: " . BASE_URL . "thanhtoan.php" . (!empty($selectedIdsRaw) ? "?ids=$selectedIdsRaw" : ''));
+                exit();
+            }
+
             // Xác thực voucher server-side (chỉ áp dụng khi đã login)
             $voucherCode    = null;
             $discountAmount = 0;
@@ -268,6 +274,7 @@ class CheckoutController {
                     'voucher_code'   => $voucherCode,
                     'discount'       => $discountAmount,
                     'payment_method' => $paymentMethod,
+                    'customer_name'  => trim($_POST['fullname'] ?? ''),
                 ];
                 header("Location: " . BASE_URL . "thanhtoan_success.php");
                 exit();

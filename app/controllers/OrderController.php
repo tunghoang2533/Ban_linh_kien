@@ -18,7 +18,7 @@ class OrderController {
         $userId = $_SESSION['user']['id'];
         
         // Lọc theo trạng thái
-        $status = isset($_GET['status']) && in_array($_GET['status'], ['pending', 'completed', 'cancelled'])
+        $status = isset($_GET['status']) && in_array($_GET['status'], ['pending', 'processing', 'shipped', 'completed', 'cancelled'])
             ? $_GET['status']
             : null;
 
@@ -50,6 +50,14 @@ class OrderController {
         if (!$order) {
             header("Location: lichsu.php");
             exit();
+        }
+
+        // Đảm bảo đơn đã thanh toán thì trạng thái ít nhất là 'processing' (Đang xử lý)
+        if (($order['payment_status'] ?? '') === 'paid' && ($order['status'] ?? '') === 'pending') {
+            $db = $this->orderModel->getDb();
+            $upStmt = $db->prepare("UPDATE orders SET status = 'processing' WHERE id = ?");
+            $upStmt->execute([$orderId]);
+            $order['status'] = 'processing';
         }
 
         $orderItems = $this->orderModel->getOrderItems($orderId);

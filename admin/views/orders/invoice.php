@@ -385,7 +385,19 @@ $stCfg = $statusMap[strtolower($orderDetail['status'])] ?? ['label'=>$orderDetai
             </div>
             <div class="inv-info-section">
                 <h3><i class="fas fa-file-invoice-dollar"></i> Thông tin thanh toán</h3>
-                <p><strong>Phương thức:</strong> <?php echo strtoupper($orderDetail['payment_method'] ?? 'COD'); ?></p>
+                <?php
+                $pm = strtolower($orderDetail['payment_method'] ?? 'cod');
+                $pmMap = [
+                    'cod'   => 'Tiền mặt (COD)',
+                    'bank'  => 'Chuyển khoản VietQR (MB Bank)',
+                    'vnpay' => 'VNPay (VNPAY-QR)'
+                ];
+                $pmText = $pmMap[$pm] ?? strtoupper($pm);
+                $pSt = strtolower($orderDetail['payment_status'] ?? 'unpaid');
+                $pStText = ($pSt === 'paid') ? 'Đã thanh toán' : (($pSt === 'refunded') ? 'Đã hoàn tiền' : 'Chưa thanh toán');
+                ?>
+                <p><strong>Phương thức:</strong> <?php echo htmlspecialchars($pmText); ?></p>
+                <p><strong>Trạng thái TT:</strong> <span style="font-weight:700;color:<?php echo $pSt === 'paid' ? '#16a34a' : ($pSt === 'refunded' ? '#dc2626' : '#d97706'); ?>;"><?php echo $pStText; ?></span></p>
                 <p><strong>Ngày đặt hàng:</strong> <?php echo date('d/m/Y H:i', strtotime($orderDetail['created_at'])); ?></p>
                 <?php if (!empty($orderDetail['voucher_code'])): ?>
                 <p><strong>Voucher:</strong> <?php echo htmlspecialchars($orderDetail['voucher_code']); ?></p>
@@ -418,17 +430,18 @@ $stCfg = $statusMap[strtolower($orderDetail['status'])] ?? ['label'=>$orderDetai
                 <?php foreach ($items as $i => $item):
                     $lineTotal = $item['price'] * $item['quantity'];
                     $imgSrc = BASE_URL . 'public/img/products/' . ($item['image'] ?? 'default.png');
+                    $pName = $item['product_name'] ?? ($item['name'] ?? 'Sản phẩm');
                 ?>
                 <tr>
                     <td style="color:#94a3b8;font-weight:600;"><?php echo $i + 1; ?></td>
                     <td>
                         <img class="product-img"
                              src="<?php echo htmlspecialchars($imgSrc); ?>"
-                             alt="<?php echo htmlspecialchars($item['product_name'] ?? ''); ?>"
+                             alt="<?php echo htmlspecialchars($pName); ?>"
                              onerror="this.style.display='none'">
                     </td>
                     <td>
-                        <p class="product-name" style="margin:0;"><?php echo htmlspecialchars($item['product_name'] ?? 'Sản phẩm'); ?></p>
+                        <p class="product-name" style="margin:0;"><?php echo htmlspecialchars($pName); ?></p>
                         <?php if (!empty($item['product_id'])): ?>
                         <p style="margin:2px 0 0;font-size:11px;color:#94a3b8;">SKU: #<?php echo $item['product_id']; ?></p>
                         <?php endif; ?>

@@ -112,7 +112,7 @@ class OrderModel {
         $sql = "SELECT * FROM orders WHERE user_id = :user_id";
         $params = ['user_id' => $userId];
 
-        if ($status && in_array($status, ['pending', 'completed', 'cancelled'])) {
+        if ($status && in_array($status, ['pending', 'processing', 'shipped', 'completed', 'cancelled'])) {
             $sql .= " AND status = :status";
             $params['status'] = $status;
         }
@@ -136,7 +136,7 @@ class OrderModel {
         $sql = "SELECT COUNT(*) FROM orders WHERE user_id = :user_id";
         $params = ['user_id' => $userId];
 
-        if ($status && in_array($status, ['pending', 'completed', 'cancelled'])) {
+        if ($status && in_array($status, ['pending', 'processing', 'shipped', 'completed', 'cancelled'])) {
             $sql .= " AND status = :status";
             $params['status'] = $status;
         }

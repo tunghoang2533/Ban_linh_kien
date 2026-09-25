@@ -903,8 +903,8 @@ textarea.form-control { resize: vertical; min-height: 90px; }
                                 <input type="radio" name="payment_method" value="bank">
                                 <span class="pay-option-icon">🏦</span>
                                 <span class="pay-option-label">
-                                    <strong>Chuyển khoản ngân hàng</strong>
-                                    <span>Chúng tôi sẽ gửi thông tin tài khoản qua email</span>
+                                    <strong>Chuyển khoản ngân hàng (Quét mã VietQR)</strong>
+                                    <span>Quét mã QR qua MB Bank hoặc mọi app ngân hàng (tiền vào ngay)</span>
                                 </span>
                             </label>
                             <label class="pay-option">

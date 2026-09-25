@@ -141,8 +141,27 @@ $orderId = intval($orderDetail['id'] ?? 0);
                             <p style="font-weight:800;font-size:20px;color:#10b981;"><?php echo number_format($orderDetail['total_amount'] ?? 0, 0, ',', '.'); ?> ₫</p>
                         </div>
                         <div>
-                            <p style="font-size:12px;color:var(--text-faint);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Thanh toán</p>
-                            <p style="color:var(--text-secondary);font-weight:600;"><?php echo strtoupper($orderDetail['payment_method'] ?? 'COD'); ?></p>
+                            <p style="font-size:12px;color:var(--text-faint);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Phương thức TT</p>
+                            <p style="color:var(--text-primary);font-weight:600;">
+                                <?php
+                                $pm = strtolower($orderDetail['payment_method'] ?? 'cod');
+                                $pmMap = ['cod' => 'Tiền mặt (COD)', 'bank' => 'VietQR (MB Bank)', 'vnpay' => 'VNPay'];
+                                echo $pmMap[$pm] ?? strtoupper($pm);
+                                ?>
+                            </p>
+                        </div>
+                        <div>
+                            <p style="font-size:12px;color:var(--text-faint);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Trạng thái TT</p>
+                            <?php
+                            $pSt = strtolower($orderDetail['payment_status'] ?? 'unpaid');
+                            if ($pSt === 'paid') {
+                                echo '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.15);color:#10b981;"><i class="fas fa-check-circle"></i> Đã thanh toán</span>';
+                            } elseif ($pSt === 'refunded') {
+                                echo '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(239,68,68,0.15);color:#ef4444;"><i class="fas fa-undo"></i> Đã hoàn tiền</span>';
+                            } else {
+                                echo '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(245,158,11,0.15);color:#f59e0b;"><i class="fas fa-clock"></i> Chưa thanh toán</span>';
+                            }
+                            ?>
                         </div>
                     </div>
 

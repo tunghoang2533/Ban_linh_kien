@@ -103,9 +103,11 @@
     letter-spacing: .5px;
     text-transform: uppercase;
 }
-.hs-status-pending   { background: #fff7e0; color: #b45309; }
-.hs-status-completed { background: #d1fae5; color: #059669; }
-.hs-status-cancelled { background: #fee2e2; color: #dc2626; }
+.hs-status-pending    { background: #fff7e0; color: #b45309; }
+.hs-status-processing { background: #eff6ff; color: #1d4ed8; }
+.hs-status-shipped    { background: #f5f3ff; color: #7c3aed; }
+.hs-status-completed  { background: #d1fae5; color: #059669; }
+.hs-status-cancelled  { background: #fee2e2; color: #dc2626; }
 
 .hs-order-body {
     padding: 18px 24px 16px;
@@ -148,6 +150,31 @@
     opacity: .92;
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(40,138,214,0.35);
+}
+
+/* === INVOICE BUTTON === */
+.hs-invoice-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 10px;
+    background: #eef2ff;
+    color: #4f46e5 !important;
+    border: 1.5px solid #c7d2fe;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all .2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.hs-invoice-btn:hover {
+    background: #4f46e5;
+    color: #fff !important;
+    border-color: #4f46e5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(79,70,229,0.25);
 }
 
 /* === EMPTY STATE === */
@@ -330,11 +357,14 @@
         <p class="hs-subtitle">Theo dõi các đơn hàng bạn đã đặt</p>
 
         <!-- Bộ lọc trạng thái (server-side, kết hợp phân trang) -->
+        <?php $currentFilter = $status; ?>
         <div class="hs-filter-tabs">
-            <a href="?page=1" class="hs-filter-btn <?php echo is_null($status) ? 'active' : ''; ?>"><i class="fa fa-list"></i> Tất cả</a>
-            <a href="?status=pending&page=1" class="hs-filter-btn <?php echo $status === 'pending' ? 'active' : ''; ?>"><i class="fa fa-clock-o"></i> Chờ xử lý</a>
-            <a href="?status=completed&page=1" class="hs-filter-btn <?php echo $status === 'completed' ? 'active' : ''; ?>"><i class="fa fa-check-circle"></i> Hoàn thành</a>
-            <a href="?status=cancelled&page=1" class="hs-filter-btn <?php echo $status === 'cancelled' ? 'active' : ''; ?>"><i class="fa fa-times-circle"></i> Đã hủy</a>
+            <a href="?page=1" class="hs-filter-btn <?php echo is_null($currentFilter) ? 'active' : ''; ?>"><i class="fa fa-list"></i> Tất cả</a>
+            <a href="?status=pending&page=1" class="hs-filter-btn <?php echo $currentFilter === 'pending' ? 'active' : ''; ?>"><i class="fa fa-clock-o"></i> Chờ xử lý</a>
+            <a href="?status=processing&page=1" class="hs-filter-btn <?php echo $currentFilter === 'processing' ? 'active' : ''; ?>"><i class="fa fa-cogs"></i> Đang xử lý</a>
+            <a href="?status=shipped&page=1" class="hs-filter-btn <?php echo $currentFilter === 'shipped' ? 'active' : ''; ?>"><i class="fa fa-truck"></i> Đang giao</a>
+            <a href="?status=completed&page=1" class="hs-filter-btn <?php echo $currentFilter === 'completed' ? 'active' : ''; ?>"><i class="fa fa-check-circle"></i> Hoàn thành</a>
+            <a href="?status=cancelled&page=1" class="hs-filter-btn <?php echo $currentFilter === 'cancelled' ? 'active' : ''; ?>"><i class="fa fa-times-circle"></i> Đã hủy</a>
         </div>
 
         <?php if (!empty($_SESSION['cancel_success'])): ?>
@@ -346,7 +376,7 @@
 
         <?php if (empty($orders)): ?>
             <div class="hs-empty">
-                <?php if ($status): ?>
+                <?php if ($currentFilter): ?>
                     <span class="hs-empty-icon">📭</span>
                     <h3>Không có đơn hàng nào</h3>
                     <p>Bạn chưa có đơn hàng nào ở trạng thái này.</p>
@@ -361,9 +391,29 @@
         <?php else: ?>
             <?php foreach ($orders as $order): ?>
                 <?php
-                    $status = strtolower($order['status']);
-                    $statusText = ['pending' => 'Chờ xử lý', 'completed' => 'Hoàn thành', 'cancelled' => 'Đã hủy'];
-                    $displayStatus = $statusText[$status] ?? strtoupper($status);
+                    $orderSt = strtolower($order['status']);
+                    // Đơn đã thanh toán thì luôn là đang xử lý
+                    if (($order['payment_status'] ?? '') === 'paid' && $orderSt === 'pending') {
+                        $orderSt = 'processing';
+                    }
+                    $statusText = [
+                        'pending'    => 'Chờ xử lý',
+                        'processing' => 'Đang xử lý',
+                        'shipped'    => 'Đang giao hàng',
+                        'completed'  => 'Hoàn thành',
+                        'cancelled'  => 'Đã hủy'
+                    ];
+                    $displayStatus = $statusText[$orderSt] ?? strtoupper($orderSt);
+
+                    // Phương thức thanh toán
+                    $methodNames = [
+                        'cod'   => 'Tiền mặt khi nhận hàng (COD)',
+                        'bank'  => 'Chuyển khoản VietQR (MB Bank)',
+                        'vnpay' => 'VNPay (VNPAY-QR)'
+                    ];
+                    $pmKey = strtolower($order['payment_method'] ?? 'cod');
+                    $displayMethod = $methodNames[$pmKey] ?? strtoupper($pmKey);
+                    $pStatus = strtolower($order['payment_status'] ?? 'unpaid');
                 ?>
                 <div class="hs-order-card">
                     <!-- Header đơn hàng -->
@@ -372,7 +422,7 @@
                             <span class="hs-order-id">Đơn hàng #<?php echo $order['id']; ?></span>
                             <span class="hs-order-date"> &nbsp;|&nbsp; Ngày đặt: <?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></span>
                         </div>
-                        <span class="hs-status-badge hs-status-<?php echo $status; ?>"><?php echo $displayStatus; ?></span>
+                        <span class="hs-status-badge hs-status-<?php echo $orderSt; ?>"><?php echo $displayStatus; ?></span>
                     </div>
 
                     <!-- Body đơn hàng -->
@@ -380,24 +430,55 @@
                         <div class="hs-order-info">
                             <p><strong>Người nhận:</strong> <?php echo htmlspecialchars($order['customer_name']); ?> &mdash; <?php echo htmlspecialchars($order['customer_phone']); ?></p>
                             <p><strong>Địa chỉ:</strong> <?php echo htmlspecialchars($order['customer_address']); ?></p>
+                            <p>
+                                <strong>Phương thức TT:</strong> <?php echo htmlspecialchars($displayMethod); ?>
+                            </p>
+                            <p>
+                                <strong>Trạng thái TT:</strong> 
+                                <?php if ($pStatus === 'paid'): ?>
+                                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;background:#d1fae5;color:#059669;border:1px solid #a7f3d0;">
+                                        <i class="fa fa-check-circle"></i> Đã thanh toán
+                                    </span>
+                                <?php elseif ($pStatus === 'refunded'): ?>
+                                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;background:#fee2e2;color:#dc2626;border:1px solid #fecaca;">
+                                        <i class="fa fa-undo"></i> Đã hoàn tiền
+                                    </span>
+                                <?php else: ?>
+                                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;background:#fef3c7;color:#b45309;border:1px solid #fde68a;">
+                                        <i class="fa fa-clock-o"></i> Chưa thanh toán
+                                    </span>
+                                <?php endif; ?>
+                            </p>
                             <div class="hs-order-total">Tổng tiền: <?php echo number_format($order['total_amount'], 0, ',', '.'); ?>&#8363;</div>
                         </div>
 
                         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                            <!-- Nút tiếp tục thanh toán QR (nếu chưa thanh toán) -->
+                            <?php if ($pmKey === 'bank' && $pStatus !== 'paid' && $orderSt === 'pending'): ?>
+                            <a href="thanhtoan_success.php?id=<?php echo $order['id']; ?>"
+                               style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;background:#ecfdf5;color:#059669;border:1.5px solid #a7f3d0;font-size:13px;font-weight:700;text-decoration:none;"
+                               title="Quét mã QR thanh toán MB Bank">
+                                <i class="fa fa-qrcode"></i> Thanh toán ngay
+                            </a>
+                            <?php endif; ?>
                             <!-- Nút hủy đơn (chỉ hiện khi pending) -->
-                            <?php if ($status === 'pending'): ?>
+                            <?php if ($orderSt === 'pending'): ?>
                             <button class="hs-cancel-btn" onclick="openCancelModal(<?php echo $order['id']; ?>)">
                                 <i class="fa fa-times"></i> Hủy đơn
                             </button>
                             <?php endif; ?>
                             <!-- Nút đổi trả (chỉ hiện khi completed) -->
-                            <?php if ($status === 'completed'): ?>
+                            <?php if ($orderSt === 'completed'): ?>
                             <a href="<?php echo BASE_URL; ?>doisanpham.php?order_id=<?php echo $order['id']; ?>"
                                style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#fef2f2;color:#dc2626;border:1.5px solid #fecaca;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:.15s;"
                                onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
                                 <i class="fa fa-undo"></i> Đổi trả / BH
                             </a>
                             <?php endif; ?>
+                            <!-- Nút in hóa đơn -->
+                            <a href="inhoadon.php?id=<?php echo $order['id']; ?>" target="_blank" class="hs-invoice-btn" title="Xem và in hóa đơn">
+                                <i class="fa fa-print"></i> In hóa đơn
+                            </a>
                             <!-- Nút xem chi tiết -->
                             <a href="chitietdonhang.php?id=<?php echo $order['id']; ?>" class="hs-detail-btn">
                                 <i class="fa fa-eye"></i> Xem chi tiết
@@ -409,7 +490,7 @@
 
             <!-- Pagination (giữ nguyên status filter) -->
             <?php
-                $paginationQuery = $status ? 'status=' . urlencode($status) . '&' : '';
+                $paginationQuery = $currentFilter ? 'status=' . urlencode($currentFilter) . '&' : '';
             ?>
             <?php if ($totalPages > 1): ?>
             <div class="hs-pagination">

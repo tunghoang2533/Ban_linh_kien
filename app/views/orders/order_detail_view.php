@@ -112,9 +112,11 @@
     position: relative;
     z-index: 1;
 }
-.od-status-badge.pending  { background: rgba(245,158,11,0.25); border-color: rgba(245,158,11,0.5); }
-.od-status-badge.completed { background: rgba(16,185,129,0.25); border-color: rgba(16,185,129,0.5); }
-.od-status-badge.cancelled { background: rgba(239,68,68,0.25); border-color: rgba(239,68,68,0.5); }
+.od-status-badge.pending    { background: rgba(245,158,11,0.25); border-color: rgba(245,158,11,0.5); }
+.od-status-badge.processing { background: rgba(37,99,235,0.25); border-color: rgba(147,197,253,0.6); }
+.od-status-badge.shipped    { background: rgba(126,34,206,0.25); border-color: rgba(216,180,254,0.6); }
+.od-status-badge.completed  { background: rgba(16,185,129,0.25); border-color: rgba(16,185,129,0.5); }
+.od-status-badge.cancelled  { background: rgba(239,68,68,0.25); border-color: rgba(239,68,68,0.5); }
 .od-status-dot {
     width: 9px; height: 9px;
     border-radius: 50%;
@@ -351,6 +353,26 @@
     box-shadow: 0 8px 20px rgba(40,138,214,0.4);
     color: #fff;
 }
+/* === INVOICE BUTTON === */
+.od-invoice-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff !important;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: background .2s, transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(99,102,241,0.3);
+}
+.od-invoice-btn:hover {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99,102,241,0.4);
+}
 
 /* === REORDER BUTTON === */
 .od-reorder-btn {
@@ -412,16 +434,47 @@
                 </div>
             </div>
             <?php
-                $status = strtolower($order['status']);
-                $statusText = ['pending' => 'Chờ xử lý', 'completed' => 'Hoàn thành', 'cancelled' => 'Đã hủy'];
-                $statusIcons = ['pending' => 'fa-clock-o', 'completed' => 'fa-check-circle', 'cancelled' => 'fa-times-circle'];
+                $status = strtolower($order['status'] ?? 'pending');
+                // Nếu đơn đã thanh toán thì trạng thái tối thiểu là Đang xử lý
+                if (($order['payment_status'] ?? '') === 'paid' && $status === 'pending') {
+                    $status = 'processing';
+                }
+                $statusText = [
+                    'pending'    => 'Chờ xử lý',
+                    'processing' => 'Đang xử lý',
+                    'shipped'    => 'Đang giao hàng',
+                    'completed'  => 'Hoàn thành',
+                    'cancelled'  => 'Đã hủy'
+                ];
+                $statusIcons = [
+                    'pending'    => 'fa-clock-o',
+                    'processing' => 'fa-cogs',
+                    'shipped'    => 'fa-truck',
+                    'completed'  => 'fa-check-circle',
+                    'cancelled'  => 'fa-times-circle'
+                ];
                 $displayText = $statusText[$status] ?? strtoupper($status);
                 $displayIcon = $statusIcons[$status] ?? 'fa-circle';
+
+                // Phương thức thanh toán
+                $methodNames = [
+                    'cod'   => 'Thanh toán khi nhận hàng (COD)',
+                    'bank'  => 'Chuyển khoản VietQR (MB Bank)',
+                    'vnpay' => 'Cổng thanh toán điện tử VNPAY (VNPAY-QR)'
+                ];
+                $pmKey = strtolower($order['payment_method'] ?? 'cod');
+                $paymentMethodLabel = $methodNames[$pmKey] ?? strtoupper($pmKey);
+                $paymentStatus = strtolower($order['payment_status'] ?? 'unpaid');
             ?>
-            <div class="od-status-badge <?php echo $status; ?>">
-                <span class="od-status-dot"></span>
-                <i class="fa <?php echo $displayIcon; ?>"></i>
-                <?php echo $displayText; ?>
+            <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:2;flex-wrap:wrap;">
+                <a href="inhoadon.php?id=<?php echo $order['id']; ?>" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:99px;font-size:13px;font-weight:700;background:rgba(255,255,255,0.22);color:#fff;text-decoration:none;border:1.5px solid rgba(255,255,255,0.4);backdrop-filter:blur(8px);transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.22)'">
+                    <i class="fa fa-print"></i> In hóa đơn
+                </a>
+                <div class="od-status-badge <?php echo $status; ?>">
+                    <span class="od-status-dot"></span>
+                    <i class="fa <?php echo $displayIcon; ?>"></i>
+                    <?php echo $displayText; ?>
+                </div>
             </div>
         </div>
 
@@ -469,9 +522,41 @@
                         <span class="value"><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></span>
                     </div>
                     <div class="od-info-item">
-                        <span class="label">Trạng thái:</span>
-                        <span class="value" style="color:<?php echo $status === 'completed' ? '#10b981' : ($status === 'cancelled' ? '#e10c00' : '#f59e0b'); ?>">
-                            <?php echo $displayText; ?>
+                        <span class="label">Trạng thái đơn:</span>
+                        <span class="value" style="font-weight:700;color:<?php 
+                            echo match($status) {
+                                'completed'  => '#10b981',
+                                'processing' => '#2563eb',
+                                'shipped'    => '#7c3aed',
+                                'cancelled'  => '#e10c00',
+                                default      => '#f59e0b',
+                            };
+                        ?>;">
+                            <i class="fa <?php echo $displayIcon; ?>" style="margin-right:4px;"></i><?php echo $displayText; ?>
+                        </span>
+                    </div>
+                    <div class="od-info-item">
+                        <span class="label">Phương thức TT:</span>
+                        <span class="value" style="font-weight:600;color:#1e293b;">
+                            <?php echo htmlspecialchars($paymentMethodLabel); ?>
+                        </span>
+                    </div>
+                    <div class="od-info-item">
+                        <span class="label">Trạng thái TT:</span>
+                        <span class="value">
+                            <?php if ($paymentStatus === 'paid'): ?>
+                                <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:#d1fae5;color:#059669;border:1px solid #a7f3d0;">
+                                    <i class="fa fa-check-circle"></i> Đã thanh toán
+                                </span>
+                            <?php elseif ($paymentStatus === 'refunded'): ?>
+                                <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:#fee2e2;color:#dc2626;border:1px solid #fecaca;">
+                                    <i class="fa fa-undo"></i> Đã hoàn tiền
+                                </span>
+                            <?php else: ?>
+                                <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:#fef3c7;color:#b45309;border:1px solid #fde68a;">
+                                    <i class="fa fa-clock-o"></i> Chưa thanh toán
+                                </span>
+                            <?php endif; ?>
                         </span>
                     </div>
                     <div class="od-info-item">
@@ -909,6 +994,30 @@
             <?php endif; ?>
 
 
+            <div class="od-summary-row" style="padding-top:12px;border-top:1px dashed #e2e8f0;margin-top:10px;">
+                <span>Phương thức thanh toán</span>
+                <span class="val" style="font-weight:600;color:#1e293b;"><?php echo htmlspecialchars($paymentMethodLabel); ?></span>
+            </div>
+
+            <div class="od-summary-row">
+                <span>Tình trạng thanh toán</span>
+                <span class="val">
+                    <?php if ($paymentStatus === 'paid'): ?>
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:#d1fae5;color:#059669;border:1px solid #a7f3d0;">
+                            <i class="fa fa-check-circle"></i> Đã thanh toán
+                        </span>
+                    <?php elseif ($paymentStatus === 'refunded'): ?>
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:#fee2e2;color:#dc2626;border:1px solid #fecaca;">
+                            <i class="fa fa-undo"></i> Đã hoàn tiền
+                        </span>
+                    <?php else: ?>
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:#fef3c7;color:#b45309;border:1px solid #fde68a;">
+                            <i class="fa fa-clock-o"></i> Chưa thanh toán
+                        </span>
+                    <?php endif; ?>
+                </span>
+            </div>
+
             <div class="od-summary-total">
                 <span>Tổng thanh toán</span>
                 <span class="val"><?php echo number_format($order['total_amount'], 0, ',', '.'); ?>₫</span>
@@ -919,6 +1028,14 @@
         <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
             <a href="lichsu.php" class="od-back-btn">
                 <i class="fa fa-arrow-left"></i> Quay lại lịch sử mua hàng
+            </a>
+            <?php if ($pmKey === 'bank' && $paymentStatus !== 'paid' && $status === 'pending'): ?>
+            <a href="thanhtoan_success.php?id=<?php echo $order['id']; ?>" class="od-invoice-btn" style="background:#ecfdf5;color:#059669;border-color:#a7f3d0;" title="Quét mã VietQR chuyển khoản">
+                <i class="fa fa-qrcode"></i> Quét mã QR thanh toán
+            </a>
+            <?php endif; ?>
+            <a href="inhoadon.php?id=<?php echo $order['id']; ?>" target="_blank" class="od-invoice-btn">
+                <i class="fa fa-print"></i> Xem & In hóa đơn
             </a>
             <form method="POST" action="mualaisan.php" style="margin:0;">
                 <?php echo CsrfHelper::field(); ?>

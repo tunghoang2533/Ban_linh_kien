@@ -25,15 +25,15 @@ Logger::info('VNPay return', [
 ]);
 
 if ($result['valid'] && $result['success']) {
-    // Thanh toán thành công
-    $stmt = $db->prepare("UPDATE orders SET status = 'confirmed', payment_status = 'paid', vnpay_transaction = ? WHERE id = ?");
+    // Thanh toán thành công: chuyển sang processing và paid
+    $stmt = $db->prepare("UPDATE orders SET status = 'processing', payment_status = 'paid', vnpay_transaction = ? WHERE id = ?");
     $stmt->execute([$vnp_TransactionNo, $result['order_id']]);
     $_SESSION['payment_success'] = "Thanh toán VNPay thành công. Mã GD: $vnp_TransactionNo";
     header('Location: ' . BASE_URL . 'thanhtoan_success.php?order_id=' . $result['order_id']);
 } else {
-    // Thanh toán thất bại hoặc chữ ký không hợp lệ
+    // Thanh toán thất bại hoặc huỷ giao dịch: giữ pending và unpaid
     if ($result['valid'] && $result['order_id'] > 0) {
-        $stmt = $db->prepare("UPDATE orders SET status = 'pending', payment_status = 'failed' WHERE id = ?");
+        $stmt = $db->prepare("UPDATE orders SET status = 'pending', payment_status = 'unpaid' WHERE id = ?");
         $stmt->execute([$result['order_id']]);
     }
     $_SESSION['payment_error'] = $result['message'];

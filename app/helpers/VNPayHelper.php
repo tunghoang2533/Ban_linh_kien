@@ -19,6 +19,18 @@ namespace App\Helpers;
  */
 class VNPayHelper
 {
+    /**
+     * Kiểm tra xem thông tin VNPay đã được cấu hình hợp lệ trong .env chưa.
+     */
+    public static function isConfigured(): bool
+    {
+        $tmnCode    = getenv('VNPAY_TMN_CODE');
+        $hashSecret = getenv('VNPAY_HASH_SECRET');
+
+        return !empty($tmnCode) && $tmnCode !== 'YOUR_TMN_CODE'
+            && !empty($hashSecret) && $hashSecret !== 'YOUR_HASH_SECRET';
+    }
+
     // ── Lấy config từ environment ──────────────────────────────
     private static function config(): array
     {
@@ -65,11 +77,22 @@ class VNPayHelper
 
         ksort($inputData);
 
-        $query      = http_build_query($inputData);
-        $hashData   = urldecode($query); // VNPay cần raw (không encode)
-        $secureHash = hash_hmac('sha512', $hashData, $cfg['hash_secret']);
+        $query = '';
+        $i = 0;
+        $hashData = '';
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashData .= '&' . urlencode($key) . '=' . urlencode((string)$value);
+            } else {
+                $hashData .= urlencode($key) . '=' . urlencode((string)$value);
+                $i = 1;
+            }
+            $query .= urlencode($key) . '=' . urlencode((string)$value) . '&';
+        }
 
-        return $cfg['url'] . '?' . $query . '&vnp_SecureHash=' . $secureHash;
+        $vnpSecureHash = hash_hmac('sha512', $hashData, $cfg['hash_secret']);
+
+        return $cfg['url'] . '?' . $query . 'vnp_SecureHash=' . $vnpSecureHash;
     }
 
     /**
@@ -83,10 +106,26 @@ class VNPayHelper
         $cfg = self::config();
 
         $vnpSecureHash = $params['vnp_SecureHash'] ?? '';
-        unset($params['vnp_SecureHash'], $params['vnp_SecureHashType']);
 
-        ksort($params);
-        $hashData   = urldecode(http_build_query($params));
+        $inputData = [];
+        foreach ($params as $key => $value) {
+            if (str_starts_with($key, 'vnp_')) {
+                $inputData[$key] = $value;
+            }
+        }
+        unset($inputData['vnp_SecureHash'], $inputData['vnp_SecureHashType']);
+
+        ksort($inputData);
+        $hashData = '';
+        $i = 0;
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashData .= '&' . urlencode($key) . '=' . urlencode((string)$value);
+            } else {
+                $hashData .= urlencode($key) . '=' . urlencode((string)$value);
+                $i = 1;
+            }
+        }
         $secureHash = hash_hmac('sha512', $hashData, $cfg['hash_secret']);
 
         if ($secureHash !== $vnpSecureHash) {
