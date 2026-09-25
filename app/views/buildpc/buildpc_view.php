@@ -5,7 +5,7 @@ $selectedCount = isset($_SESSION['buildpc']) ? count(array_filter($_SESSION['bui
 ?>
 
 <!-- ════════════════════════════════════════
-     SELECTOR PANEL (slide-in từ phải)
+     SELECTOR PANEL (slide-in modal)
 ════════════════════════════════════════ -->
 <style>
 .selector-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;display:none;align-items:center;justify-content:center;}
@@ -15,7 +15,7 @@ $selectedCount = isset($_SESSION['buildpc']) ? count(array_filter($_SESSION['bui
     box-shadow:0 24px 60px rgba(0,0,0,.28);
     opacity:0;transform:scale(.95) translateY(10px);transition:opacity .22s ease,transform .22s ease;z-index:9001;}
 .selector-overlay.open .selector-panel{opacity:1;transform:scale(1) translateY(0);}
-.sp-header{background:linear-gradient(135deg,#1e3a6e,#2563eb);color:#fff;padding:16px 22px;
+.sp-header{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;padding:16px 22px;
     display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .sp-header h3{font-size:16px;font-weight:700;margin:0;}
 .sp-close-btn{background:rgba(255,255,255,.2);border:none;color:#fff;width:32px;height:32px;
@@ -25,19 +25,19 @@ $selectedCount = isset($_SESSION['buildpc']) ? count(array_filter($_SESSION['bui
 /* Filter sidebar */
 .sp-filter{width:200px;flex-shrink:0;border-right:1px solid #e8edf3;padding:16px 14px;
     overflow-y:auto;background:#fafbfc;}
-.sp-filter .ftitle{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;
+.sp-filter .ftitle{font-size:11px;font-weight:700;color:#0284c7;text-transform:uppercase;
     letter-spacing:.8px;margin-bottom:14px;}
 .sp-filter .fsec{margin-bottom:16px;}
 .sp-filter .fsec h4{font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;}
 .sp-filter label{display:flex;align-items:center;gap:6px;font-size:12px;color:#475569;
     margin-bottom:5px;cursor:pointer;}
-.sp-filter input[type=radio]{accent-color:#2563eb;}
+.sp-filter input[type=radio]{accent-color:#0284c7;}
 /* Product list */
 .sp-products{flex:1;overflow-y:auto;padding:14px 16px;}
 .sp-searchbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
 .sp-searchbar input{flex:1;padding:9px 13px;border:1.5px solid #e2e8f0;border-radius:9px;
     font-size:13px;outline:none;}
-.sp-searchbar input:focus{border-color:#2563eb;}
+.sp-searchbar input:focus{border-color:#0284c7;}
 .sock-badge{background:#fef9c3;color:#92400e;padding:6px 12px;border-radius:6px;
     font-size:12px;font-weight:600;margin-bottom:10px;display:none;}
 .sp-loading{text-align:center;padding:50px;color:#94a3b8;font-size:14px;}
@@ -45,140 +45,479 @@ $selectedCount = isset($_SESSION['buildpc']) ? count(array_filter($_SESSION['bui
 .sp-empty i{font-size:40px;display:block;margin-bottom:10px;color:#cbd5e1;}
 .prow{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #e8edf3;
     border-radius:12px;padding:12px 16px;margin-bottom:8px;transition:border-color .15s,box-shadow .15s;}
-.prow:hover{border-color:#bfdbfe;box-shadow:0 2px 12px rgba(37,99,235,.08);}
+.prow:hover{border-color:#bae6fd;box-shadow:0 2px 12px rgba(2,132,199,.08);}
 .prow img{width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid #e8edf3;
     flex-shrink:0;background:#f8fafc;}
 .pinfo{flex:1;min-width:0;}
 .pname{font-size:13px;font-weight:600;color:#1e293b;margin-bottom:3px;}
 .pprice{font-size:15px;font-weight:700;color:#e10c00;}
-.psock{display:inline-block;background:#eff6ff;color:#2563eb;padding:2px 8px;border-radius:5px;
+.psock{display:inline-block;background:#eff6ff;color:#0284c7;padding:2px 8px;border-radius:5px;
     font-size:11px;font-weight:600;margin-bottom:3px;}
-.btn-padd{background:#2563eb;color:#fff;border:none;padding:9px 16px;border-radius:9px;
+.btn-padd{background:#0284c7;color:#fff;border:none;padding:9px 16px;border-radius:9px;
     cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap;flex-shrink:0;
     display:inline-flex;align-items:center;gap:5px;transition:background .15s;}
-.btn-padd:hover{background:#1d4ed8;}
+.btn-padd:hover{background:#0369a1;}
 .btn-padd.added{background:#16a34a;}
 
-/* ══ Chatbot ══════════════════════════════════════════════════ */
-#chatbotFab{
-    position:fixed;bottom:28px;right:28px;z-index:9999;
-    width:58px;height:58px;border-radius:50%;
-    background:linear-gradient(135deg,#6366f1,#8b5cf6);
-    border:none;cursor:pointer;
-    box-shadow:0 6px 24px rgba(99,102,241,.55);
-    display:flex;align-items:center;justify-content:center;
-    transition:transform .2s,box-shadow .2s;
+/* ══════════════════════════════════════════════════
+   NEW 3-COLUMN BUILD PC LAYOUT
+   ══════════════════════════════════════════════════ */
+.bpc-main-container {
+    max-width: 1280px;
+    margin: 25px auto 60px;
+    padding: 0 16px;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
-#chatbotFab:hover{transform:scale(1.12);box-shadow:0 8px 32px rgba(99,102,241,.7);}
-#chatbotFab svg{width:28px;height:28px;fill:#fff;}
-#chatbotFab .fab-pulse{
-    position:absolute;top:-3px;right:-3px;
-    width:18px;height:18px;
-    background:#ef4444;border-radius:50%;border:2.5px solid #fff;
-    animation:fabPulse 2s infinite;
+.bpc-top-header {
+    margin-bottom: 22px;
 }
-@keyframes fabPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.35);}}
+.bpc-top-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.bpc-top-header p {
+    color: #64748b;
+    font-size: 13.5px;
+    margin: 0;
+}
+.bpc-grid-layout {
+    display: grid;
+    grid-template-columns: 285px 1fr 285px;
+    gap: 20px;
+    align-items: start;
+}
+@media (max-width: 1200px) {
+    .bpc-grid-layout {
+        grid-template-columns: 260px 1fr 260px;
+        gap: 16px;
+    }
+}
+@media (max-width: 992px) {
+    .bpc-grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
 
-#chatbotTooltip{
-    position:fixed;bottom:34px;right:96px;z-index:9998;
-    background:#1e293b;color:#fff;font-size:13px;font-weight:600;
-    padding:9px 16px;border-radius:10px;white-space:nowrap;
-    box-shadow:0 4px 16px rgba(0,0,0,.2);
-    opacity:0;transform:translateX(10px);pointer-events:none;
-    transition:opacity .2s,transform .2s;
+/* CỘT 1: AI TRỢ LÝ TƯ VẤN PC */
+.bpc-ai-widget {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 20px;
 }
-#chatbotTooltip.show{opacity:1;transform:translateX(0);}
-#chatbotTooltip::after{
-    content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%);
-    border:6px solid transparent;border-right:none;border-left-color:#1e293b;
+.bpc-ai-header {
+    background: #0284c7;
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+}
+.bpc-ai-header .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+    flex-shrink: 0;
+}
+.bpc-ai-header .ai-title {
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff;
+}
+.bpc-ai-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #fff;
+}
+.bpc-chat-msgs {
+    max-height: 380px;
+    min-height: 140px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 4px;
+    scroll-behavior: smooth;
+}
+.bpc-chat-msgs::-webkit-scrollbar {
+    width: 4px;
+}
+.bpc-chat-msgs::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 4px;
 }
 
-#chatbotWindow{
-    position:fixed;bottom:98px;right:28px;z-index:9998;
-    width:390px;max-width:calc(100vw - 48px);
-    height:580px;max-height:calc(100vh - 130px);
-    background:#fff;border-radius:22px;
-    box-shadow:0 24px 72px rgba(0,0,0,.18);
-    display:flex;flex-direction:column;overflow:hidden;
-    transform:scale(0) translateY(20px);transform-origin:bottom right;
-    transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .22s;
-    opacity:0;pointer-events:none;
+/* Chat bubble styling */
+.cb-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
 }
-#chatbotWindow.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}
+.cb-row.user {
+    flex-direction: row-reverse;
+}
+.cb-bubble {
+    max-width: 90%;
+    padding: 10px 13px;
+    border-radius: 14px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    word-wrap: break-word;
+}
+.cb-row.bot .cb-bubble {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    border-top-left-radius: 4px;
+}
+.cb-row.user .cb-bubble {
+    background: #0284c7;
+    color: #fff;
+    border-top-right-radius: 4px;
+}
+.cb-bubble strong { font-weight: 700; }
+.cb-bubble em { font-style: italic; }
+.cb-bubble hr { border: none; border-top: 1px solid rgba(0,0,0,.08); margin: 6px 0; }
+.cb-row.user .cb-bubble hr { border-top-color: rgba(255,255,255,.3); }
 
-.cb-head{
-    background:linear-gradient(135deg,#6366f1,#8b5cf6);
-    padding:15px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;
+.cb-typing {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    border-top-left-radius: 4px;
+    width: fit-content;
 }
-.cb-head-avatar{
-    width:40px;height:40px;background:rgba(255,255,255,.2);
-    border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+.cb-typing span {
+    width: 6px;
+    height: 6px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: cbTyping .9s infinite;
 }
-.cb-head-avatar svg{width:22px;height:22px;fill:#fff;}
-.cb-head-info{flex:1;}
-.cb-head-info strong{display:block;font-size:14px;font-weight:700;color:#fff;}
-.cb-head-info span{font-size:11.5px;color:rgba(255,255,255,.78);}
-.cb-head-status{width:8px;height:8px;background:#4ade80;border-radius:50%;border:1.5px solid #fff;flex-shrink:0;}
-.cb-head-close{background:rgba(255,255,255,.18);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
-.cb-head-close:hover{background:rgba(255,255,255,.35);}
+.cb-typing span:nth-child(2) { animation-delay: .2s; }
+.cb-typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes cbTyping { 0%,80%,100%{transform:translateY(0);} 40%{transform:translateY(-6px);} }
 
-.cb-msgs{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;}
-.cb-msgs::-webkit-scrollbar{width:4px;}
-.cb-msgs::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:4px;}
-
-.cb-row{display:flex;gap:8px;align-items:flex-end;}
-.cb-row.user{flex-direction:row-reverse;}
-.cb-bubble{max-width:82%;padding:10px 14px;border-radius:18px;font-size:13px;line-height:1.6;word-wrap:break-word;}
-.cb-row.bot .cb-bubble{background:#f1f5f9;color:#1e293b;border-bottom-left-radius:4px;}
-.cb-row.user .cb-bubble{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-bottom-right-radius:4px;}
-.cb-avatar-mini{width:30px;height:30px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.cb-avatar-mini svg{width:15px;height:15px;fill:#fff;}
-.cb-bubble strong{font-weight:700;}
-.cb-bubble em{font-style:italic;}
-.cb-bubble hr{border:none;border-top:1px solid rgba(0,0,0,.1);margin:6px 0;}
-.cb-row.user .cb-bubble hr{border-top-color:rgba(255,255,255,.3);}
-
-.cb-typing{display:flex;align-items:center;gap:5px;padding:12px 16px;background:#f1f5f9;border-radius:18px;border-bottom-left-radius:4px;width:fit-content;}
-.cb-typing span{width:7px;height:7px;background:#94a3b8;border-radius:50%;animation:cbTyping .9s infinite;}
-.cb-typing span:nth-child(2){animation-delay:.2s;}
-.cb-typing span:nth-child(3){animation-delay:.4s;}
-@keyframes cbTyping{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-7px);}}
-
-.cb-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px;flex-shrink:0;}
-.cb-chip{
-    background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;
-    border-radius:20px;padding:6px 13px;font-size:12px;
-    cursor:pointer;transition:all .15s;white-space:nowrap;font-weight:500;
+.cb-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
-.cb-chip:hover{background:#dbeafe;border-color:#93c5fd;transform:translateY(-1px);}
-.cb-chip.chip-apply{
-    background:linear-gradient(135deg,#10b981,#059669);color:#fff;
-    border-color:transparent;font-weight:700;
-    box-shadow:0 3px 10px rgba(16,185,129,.3);
+.cb-chip {
+    background: #f0f9ff;
+    color: #0284c7;
+    border: 1px solid #bae6fd;
+    border-radius: 18px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+    white-space: nowrap;
 }
-.cb-chip.chip-apply:hover{opacity:.9;transform:translateY(-1px);}
+.cb-chip:hover {
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+    transform: translateY(-1px);
+}
+.cb-chip.chip-apply {
+    background: #10b981;
+    color: #fff;
+    border-color: transparent;
+    font-weight: 700;
+    box-shadow: 0 3px 10px rgba(16,185,129,.25);
+}
+.cb-chip.chip-apply:hover {
+    background: #059669;
+}
 
-.cb-foot{border-top:1px solid #f1f5f9;padding:12px 14px;display:flex;gap:8px;align-items:center;flex-shrink:0;background:#fff;}
-.cb-input{
-    flex:1;border:1.5px solid #e2e8f0;border-radius:24px;
-    padding:10px 16px;font-size:13px;outline:none;
-    transition:border-color .15s;background:#fafbfc;
-    font-family:inherit;
+.bpc-ai-input-wrap {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 4px;
 }
-.cb-input:focus{border-color:#6366f1;background:#fff;}
-.cb-send-btn{
-    width:40px;height:40px;background:linear-gradient(135deg,#6366f1,#8b5cf6);
-    border:none;border-radius:50%;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;transition:transform .15s,opacity .15s;
-    box-shadow:0 4px 12px rgba(99,102,241,.35);
+.bpc-ai-input {
+    flex: 1;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    outline: none;
+    background: #fff;
+    color: #1e293b;
+    transition: border-color .15s;
+    font-family: inherit;
 }
-.cb-send-btn:hover{transform:scale(1.1);}
-.cb-send-btn:disabled{opacity:.45;cursor:default;transform:none;}
-.cb-send-btn svg{width:17px;height:17px;fill:#fff;}
+.bpc-ai-input:focus {
+    border-color: #0284c7;
+}
+.bpc-ai-send-btn {
+    background: #0284c7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, opacity .15s;
+    flex-shrink: 0;
+    font-family: inherit;
+}
+.bpc-ai-send-btn:hover {
+    background: #0369a1;
+}
+.bpc-ai-send-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* CỘT 2: DANH SÁCH LINH KIỆN */
+.bpc-rows-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.bpc-item-row {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: border-color .15s, box-shadow .15s;
+}
+.bpc-item-row:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+}
+.bpc-col-cat {
+    width: 175px;
+    flex-shrink: 0;
+}
+.bpc-cat-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0284c7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.bpc-cat-status {
+    font-size: 12.5px;
+    color: #64748b;
+}
+.bpc-col-content {
+    flex: 1;
+    min-width: 0;
+}
+.bpc-empty-slot {
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 12px 18px;
+    color: #94a3b8;
+    font-size: 12.5px;
+    background: #fff;
+}
+.bpc-selected-slot {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.bpc-selected-slot img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    flex-shrink: 0;
+}
+.bpc-selected-info {
+    flex: 1;
+    min-width: 0;
+}
+.bpc-selected-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+    line-height: 1.35;
+}
+.bpc-socket-badge {
+    display: inline-block;
+    background: #eff6ff;
+    color: #0284c7;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.bpc-selected-price {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #dc2626;
+}
+.bpc-col-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.btn-bpc-select {
+    background: #0284c7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s;
+    font-family: inherit;
+}
+.btn-bpc-select:hover {
+    background: #0369a1;
+}
+.btn-bpc-remove {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .15s;
+    font-family: inherit;
+}
+.btn-bpc-remove:hover {
+    background: #fecaca;
+}
+
+/* CỘT 3: CHI PHÍ ƯỚC TÍNH */
+.bpc-summary-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    position: sticky;
+    top: 20px;
+}
+.bpc-summary-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0284c7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+}
+.bpc-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 13.5px;
+}
+.bpc-summary-count-label {
+    color: #64748b;
+}
+.bpc-summary-count-val {
+    font-weight: 700;
+    color: #0f172a;
+}
+.bpc-summary-total-price {
+    font-size: 26px;
+    font-weight: 800;
+    color: #dc2626;
+    margin-bottom: 6px;
+}
+.bpc-summary-note {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+.bpc-summary-empty {
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 18px 12px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+.btn-bpc-cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background: #ff9800;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 9px;
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 4px 14px rgba(255,152,0,.2);
+    margin-bottom: 10px;
+    transition: background .15s;
+    font-family: inherit;
+}
+.btn-bpc-cart:hover {
+    background: #f57c00;
+}
+.btn-bpc-buynow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background: #0284c7;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 9px;
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 4px 14px rgba(2,132,199,.2);
+    transition: background .15s;
+    font-family: inherit;
+}
+.btn-bpc-buynow:hover {
+    background: #0369a1;
+}
 </style>
 
-<!-- Overlay + Panel -->
+<!-- Overlay + Modal Panel khi chọn linh kiện -->
 <div class="selector-overlay" id="spOverlay" onclick="closeSelectorOutside(event)">
 <div class="selector-panel" id="selectorPanel">
     <div class="sp-header">
@@ -205,15 +544,12 @@ $selectedCount = isset($_SESSION['buildpc']) ? count(array_filter($_SESSION['bui
             </div>
             <div class="sock-badge" id="spSockBadge"></div>
             <div id="spList"><div class="sp-loading"><i class="fa fa-spinner fa-spin"></i> Đang tải...</div></div>
-        </div><!-- end sp-products -->
-    </div><!-- end sp-body -->
-</div><!-- end selector-panel -->
-</div><!-- end selector-overlay -->
+        </div>
+    </div>
+</div>
+</div>
 
-<!-- ════════════════════════════════════════
-     MAIN BUILD PC VIEW
-════════════════════════════════════════ -->
-
+<!-- Thông báo lỗi (Toast) -->
 <?php if (!empty($_SESSION['buildpc_error'])): ?>
 <div id="bpcErrorToast" style="
     position: fixed;
@@ -254,126 +590,128 @@ setTimeout(function() {
 <?php unset($_SESSION['buildpc_error']); ?>
 <?php endif; ?>
 
-<div class="container" style="margin: 30px auto 50px; font-family: Arial, sans-serif; max-width: 1180px;">
-    <!-- Banner -->
-    <div style="background: linear-gradient(135deg, #0c70c1 0%, #25a7d8 100%); border-radius: 24px; padding: 34px 34px 28px; color: #fff; box-shadow: 0 20px 45px rgba(11, 48, 88, 0.18); margin-bottom: 30px;">
-        <div style="max-width: 760px;">
-            <p style="text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.8); font-size: 13px; margin-bottom: 14px;">Build PC Chuyên Nghiệp</p>
-            <h1 style="font-size: 34px; line-height: 1.1; margin: 0 0 12px; font-weight: 700;">Tạo cấu hình máy tính vừa mạnh mẽ vừa cân bằng</h1>
-            <p style="font-size: 16px; color: rgba(255,255,255,0.92); max-width: 700px; margin: 0 0 24px;">Chọn linh kiện tương thích, tối ưu hiệu năng và mua ngay bộ cấu hình hoàn chỉnh với chỉ một cú nhấp.</p>
-        </div>
+<!-- ════════════════════════════════════════
+     MAIN CONTENT (3 COLUMNS)
+════════════════════════════════════════ -->
+<div class="bpc-main-container">
+    <!-- Tiêu đề trang -->
+    <div class="bpc-top-header">
+        <h1><span>🛠️</span> Xây Dựng Cấu Hình PC</h1>
+        <p>Lựa chọn linh kiện máy tính đồng bộ, tương thích 100% chuẩn chân cắm (Socket), tối ưu hiệu năng và ngân sách.</p>
     </div>
 
-    <div style="display: flex; flex-wrap: wrap; gap: 24px;">
-        <!-- Danh sách linh kiện -->
-        <section style="flex: 1 1 660px; min-width: 320px;">
-            <div style="display: grid; gap: 18px;" id="buildRows">
-                <?php foreach ($buildCategories as $cat_id => $cat_name):
-                    $selectedItem = $_SESSION['buildpc'][$cat_id] ?? null;
-                    if ($selectedItem) $totalPrice += $selectedItem['price'];
-                    $selectedImageSrc = '';
-                    $itemOutOfStock = false;
-                    if ($selectedItem) {
-                        // Kiểm tra tồn kho thực tế từ DB
-                        $dbItem = $productModel->getProductById($selectedItem['id']);
-                        $itemOutOfStock = !$dbItem || (int)($dbItem['quantity'] ?? 0) <= 0;
-                        if (!empty($selectedItem['image'])) {
-                            if (strpos($selectedItem['image'], 'data:') === 0) {
-                                $selectedImageSrc = $selectedItem['image'];
-                            } elseif (file_exists(__DIR__ . '/../../../public/img/products/' . $selectedItem['image'])) {
-                                $selectedImageSrc = BASE_URL . 'public/img/products/' . $selectedItem['image'];
-                            }
-                        }
-                    }
-                ?>
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;background:#fff;border:1px solid <?php echo $itemOutOfStock ? '#fca5a5' : '#e8eff7'; ?>;border-radius:18px;padding:24px;box-shadow:0 12px 35px rgba(38,79,119,.06);<?php echo $itemOutOfStock ? 'background:#fff8f8;' : ''; ?>" id="row-<?php echo $cat_id; ?>">
-                    <div style="min-width:180px;flex:0 0 220px;">
-                        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#1768b5;margin-bottom:8px;"><?php echo $cat_name; ?></div>
-                        <div style="font-size:14px;color:#5a6984;">
-                            <?php if ($selectedItem && $itemOutOfStock): ?>
-                                <span style="background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;">⛔ Hết hàng</span>
-                            <?php else: ?>
-                                <?php echo $selectedItem ? 'Đã chọn linh kiện' : 'Chưa có sản phẩm'; ?>
-                            <?php endif; ?>
+    <div class="bpc-grid-layout">
+        <!-- CỘT 1: AI TRỢ LÝ TƯ VẤN PC -->
+        <aside class="bpc-ai-widget">
+            <div class="bpc-ai-header">
+                <span class="status-dot"></span>
+                <span style="font-size: 15px;">🤖</span>
+                <span class="ai-title">AI Trợ Lý Tư Vấn PC</span>
+            </div>
+            <div class="bpc-ai-body">
+                <div class="bpc-chat-msgs" id="cbMsgs">
+                    <div class="cb-row bot">
+                        <div class="cb-bubble">
+                            Xin chào! Tôi có thể tư vấn cấu hình tối ưu theo ngân sách và mục đích sử dụng (Gaming, Văn phòng, Đồ họa). Hãy nhập yêu cầu hoặc chọn gợi ý bên dưới!
                         </div>
                     </div>
+                </div>
+                <div class="cb-chips" id="cbChips">
+                    <button class="cb-chip" onclick="cbSend('PC Gaming 15Tr')">PC Gaming 15Tr</button>
+                    <button class="cb-chip" onclick="cbSend('PC Đồ Họa 25Tr')">PC Đồ Họa 25Tr</button>
+                    <button class="cb-chip" onclick="cbSend('Văn Phòng 8Tr')">Văn Phòng 8Tr</button>
+                </div>
+                <div class="bpc-ai-input-wrap">
+                    <input class="bpc-ai-input" id="cbInput" type="text"
+                           placeholder="Hỏi AI cấu hình mong muốn..."
+                           onkeydown="if(event.key==='Enter')cbSend()">
+                    <button class="bpc-ai-send-btn" id="cbSendBtn" onclick="cbSend()">Gửi</button>
+                </div>
+            </div>
+        </aside>
 
-                    <div style="flex:1;display:flex;align-items:center;gap:18px;min-width:260px;">
-                        <?php if ($selectedItem): ?>
-                            <img src="<?php echo $selectedImageSrc; ?>" alt="<?php echo $selectedItem['name']; ?>" style="width:84px;height:84px;object-fit:cover;border-radius:16px;border:1px solid #e7eff6;background:#f7fbff;" loading="lazy">
-                            <div style="flex:1;min-width:0;">
-                                <div style="font-size:16px;font-weight:700;color:#1f314d;margin-bottom:6px;"><?php echo $selectedItem['name']; ?></div>
-                                <?php if (!empty($selectedItem['socket'])): ?>
-                                    <span style="display:inline-block;background:#eff6ff;color:#1768b5;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;margin-bottom:8px;">Socket: <?php echo $selectedItem['socket']; ?></span>
-                                <?php endif; ?>
-                                <div style="font-size:18px;font-weight:700;color:#e10c00;"><?php echo number_format($selectedItem['price'],0,',','.'); ?> ₫</div>
-                            </div>
+        <!-- CỘT 2: DANH SÁCH LINH KIỆN (7 MỤC) -->
+        <section class="bpc-rows-container" id="buildRows">
+            <?php foreach ($buildCategories as $cat_id => $cat_name):
+                $selectedItem = $_SESSION['buildpc'][$cat_id] ?? null;
+                if ($selectedItem) $totalPrice += $selectedItem['price'];
+                $selectedImageSrc = '';
+                $itemOutOfStock = false;
+                if ($selectedItem) {
+                    $dbItem = $productModel->getProductById($selectedItem['id']);
+                    $itemOutOfStock = !$dbItem || (int)($dbItem['quantity'] ?? 0) <= 0;
+                    if (!empty($selectedItem['image'])) {
+                        if (strpos($selectedItem['image'], 'data:') === 0) {
+                            $selectedImageSrc = $selectedItem['image'];
+                        } elseif (file_exists(__DIR__ . '/../../../public/img/products/' . $selectedItem['image'])) {
+                            $selectedImageSrc = BASE_URL . 'public/img/products/' . $selectedItem['image'];
+                        }
+                    }
+                }
+            ?>
+            <div class="bpc-item-row" id="row-<?php echo $cat_id; ?>" style="<?php echo $itemOutOfStock ? 'border-color:#fca5a5; background:#fff8f8;' : ''; ?>">
+                <!-- Tên danh mục -->
+                <div class="bpc-col-cat">
+                    <div class="bpc-cat-name"><?php echo htmlspecialchars(mb_strtoupper($cat_name, 'UTF-8')); ?></div>
+                    <div class="bpc-cat-status">
+                        <?php if ($selectedItem && $itemOutOfStock): ?>
+                            <span style="background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;">⛔ Hết hàng</span>
                         <?php else: ?>
-                            <div style="flex:1;min-width:0;padding:18px 16px;border:1px dashed #d8e3f1;border-radius:16px;color:#8b98ac;font-size:14px;">Chưa có sản phẩm. Hãy chọn để hoàn thiện bộ máy.</div>
-                        <?php endif; ?>
-                    </div>
-
-                    <div style="display:grid;gap:10px;flex-shrink:0;min-width:140px;">
-                        <button onclick="openSelector(<?php echo $cat_id; ?>, '<?php echo addslashes($cat_name); ?>')"
-                                style="display:inline-flex;justify-content:center;align-items:center;background:<?php echo $selectedItem ? '#0c70c1' : '#2e8af6'; ?>;color:#fff;border:none;cursor:pointer;padding:11px 14px;border-radius:12px;font-weight:700;font-size:13px;box-shadow:0 8px 20px rgba(12,112,193,.16);">
-                            <?php echo $selectedItem ? 'Đổi' : 'Chọn'; ?>
-                        </button>
-                        <?php if ($selectedItem): ?>
-                        <a href="buildpc.php?action=remove&cat_id=<?php echo $cat_id; ?>" style="display:inline-flex;justify-content:center;align-items:center;background:#f03f3f;color:#fff;text-decoration:none;padding:11px 14px;border-radius:12px;font-weight:700;font-size:13px;">Xóa</a>
+                            <?php echo $selectedItem ? 'Đã chọn linh kiện' : 'Chưa có sản phẩm'; ?>
                         <?php endif; ?>
                     </div>
                 </div>
-                <?php endforeach; ?>
+
+                <!-- Ô sản phẩm -->
+                <div class="bpc-col-content">
+                    <?php if ($selectedItem): ?>
+                        <div class="bpc-selected-slot">
+                            <img src="<?php echo $selectedImageSrc; ?>" alt="<?php echo htmlspecialchars($selectedItem['name']); ?>" loading="lazy">
+                            <div class="bpc-selected-info">
+                                <div class="bpc-selected-title"><?php echo htmlspecialchars($selectedItem['name']); ?></div>
+                                <?php if (!empty($selectedItem['socket'])): ?>
+                                    <span class="bpc-socket-badge">Socket: <?php echo htmlspecialchars($selectedItem['socket']); ?></span>
+                                <?php endif; ?>
+                                <div class="bpc-selected-price"><?php echo number_format($selectedItem['price'], 0, ',', '.'); ?> đ</div>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="bpc-empty-slot">Chưa có sản phẩm. Nhấn "Chọn" để thêm linh kiện.</div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Nút thao tác -->
+                <div class="bpc-col-actions">
+                    <button class="btn-bpc-select" onclick="openSelector(<?php echo $cat_id; ?>, '<?php echo addslashes($cat_name); ?>')">
+                        <?php echo $selectedItem ? 'Đổi' : 'Chọn'; ?>
+                    </button>
+                    <?php if ($selectedItem): ?>
+                        <a href="buildpc.php?action=remove&cat_id=<?php echo $cat_id; ?>" class="btn-bpc-remove">Xóa</a>
+                    <?php endif; ?>
+                </div>
             </div>
+            <?php endforeach; ?>
         </section>
 
-        <!-- Sidebar tổng giá -->
-        <aside style="flex:0 0 320px;min-width:280px;background:#fff;border-radius:24px;border:1px solid #edf2f8;padding:28px;box-shadow:0 18px 40px rgba(38,79,119,.07);">
-            <div style="margin-bottom:22px;">
-                <div style="font-size:13px;font-weight:700;color:#0c73c1;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Tổng cấu hình</div>
-                <div style="display:flex;justify-content:space-between;color:#5e6f85;margin-bottom:10px;"><span>Đã chọn</span><span><?php echo $selectedCount; ?>/<?php echo count($buildCategories); ?></span></div>
-                <div style="font-size:28px;font-weight:700;color:#162a46;margin-bottom:6px;"><?php echo number_format($totalPrice,0,',','.'); ?> ₫</div>
-                <div style="font-size:13px;color:#7a8ba8;line-height:1.6;">Giá gồm linh kiện đã chọn. Chưa bao gồm phí lắp ráp và giao hàng.</div>
+        <!-- CỘT 3: CHI PHÍ ƯỚC TÍNH -->
+        <aside class="bpc-summary-card">
+            <div class="bpc-summary-title">CHI PHÍ ƯỚC TÍNH</div>
+            <div class="bpc-summary-row">
+                <span class="bpc-summary-count-label">Linh kiện đã chọn:</span>
+                <span class="bpc-summary-count-val" id="bpcSummaryCount"><?php echo $selectedCount; ?>/<?php echo count($buildCategories); ?></span>
             </div>
-            <?php if ($totalPrice > 0): ?>
-                <a href="buildpc.php?action=add_to_cart" style="display:inline-flex;align-items:center;justify-content:center;width:100%;background:#ff9800;color:#fff;text-decoration:none;border-radius:14px;padding:14px 18px;font-weight:700;font-size:15px;box-shadow:0 14px 30px rgba(255,152,0,.18);margin-bottom:12px;">Thêm tất cả vào giỏ hàng</a>
-                <a href="buildpc.php?action=buy_now" style="display:inline-flex;align-items:center;justify-content:center;width:100%;background:#0c70c1;color:#fff;text-decoration:none;border-radius:14px;padding:14px 18px;font-weight:700;font-size:15px;box-shadow:0 14px 30px rgba(12,112,193,.16);">Mua ngay</a>
-            <?php else: ?>
-                <button onclick="openSelector(1,'Vi xử lý (CPU)')" style="display:inline-flex;align-items:center;justify-content:center;width:100%;background:#2e8af6;color:#fff;border:none;cursor:pointer;border-radius:14px;padding:14px 18px;font-weight:700;font-size:15px;">Bắt đầu chọn linh kiện</button>
-            <?php endif; ?>
+            <div class="bpc-summary-total-price" id="bpcSummaryTotalPrice"><?php echo number_format($totalPrice, 0, ',', '.'); ?> đ</div>
+            <div class="bpc-summary-note">Đã bao gồm VAT. Chưa bao gồm chi phí lắp ráp và vận chuyển.</div>
+            
+            <div id="bpcSummaryActionBox">
+                <?php if ($totalPrice > 0): ?>
+                    <a href="buildpc.php?action=add_to_cart" class="btn-bpc-cart">Thêm tất cả vào giỏ hàng</a>
+                    <a href="buildpc.php?action=buy_now" class="btn-bpc-buynow">Mua ngay</a>
+                <?php else: ?>
+                    <div class="bpc-summary-empty">Chưa có linh kiện nào trong cấu hình. Hãy chọn linh kiện ở giữa để bắt đầu!</div>
+                <?php endif; ?>
+            </div>
         </aside>
-    </div>
-</div>
-
-<!-- ══ Chatbot Floating Button ══════════════════════════════ -->
-<button id="chatbotFab" onclick="cbToggle()" title="Trợ lý Build PC">
-    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 10H6V10h12v2zm0-3H6V7h12v2z"/></svg>
-    <div class="fab-pulse"></div>
-</button>
-<div id="chatbotTooltip">💬 Tư vấn Build PC</div>
-
-<!-- ══ Chatbot Window ══════════════════════════════════════════ -->
-<div id="chatbotWindow">
-    <div class="cb-head">
-        <div class="cb-head-avatar">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm3.07-7.75-.9.92C12.45 9.9 12 10.5 12 12h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H9c0-1.66 1.34-3 3-3s3 1.34 3 3c0 .66-.27 1.26-.69 1.69z"/></svg>
-        </div>
-        <div class="cb-head-info">
-            <strong>Trợ lý Build PC 🤖</strong>
-            <span>Tư vấn cấu hình • Gợi ý linh kiện</span>
-        </div>
-        <div class="cb-head-status"></div>
-        <button class="cb-head-close" onclick="cbToggle()">×</button>
-    </div>
-    <div class="cb-msgs" id="cbMsgs"></div>
-    <div class="cb-chips" id="cbChips"></div>
-    <div class="cb-foot">
-        <input class="cb-input" id="cbInput" type="text"
-               placeholder="Nhập câu hỏi... (vd: build gaming 15 triệu)"
-               onkeydown="if(event.key==='Enter')cbSend()">
-        <button class="cb-send-btn" id="cbSendBtn" onclick="cbSend()">
-            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
     </div>
 </div>
 
@@ -392,8 +730,8 @@ function openSelector(catId, catName) {
     document.getElementById('spSockBadge').style.display = 'none';
 
     fetch(BASE_URL + 'buildpc_modal.php?ajax_products=1&cat_id=' + catId)
-        .then(r => r.json())
-        .then(data => {
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
             allProducts = data.products || [];
             if (data.req_sock) {
                 var b = document.getElementById('spSockBadge');
@@ -413,7 +751,6 @@ function closeSelector() {
 }
 
 function closeSelectorOutside(e) {
-    // Chỉ đóng khi click đúng vào overlay (nền mờ), không đóng khi click bên trong panel
     if (e.target === document.getElementById('spOverlay')) closeSelector();
 }
 
@@ -494,50 +831,14 @@ function bpcRemove(catId) {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeSelector();
-        // Nếu selector đang đóng thì đóng chatbot
-        if (!document.getElementById('spOverlay').classList.contains('open')) {
-            document.getElementById('chatbotWindow').classList.remove('open');
-            cbOpen = false;
-        }
     }
 });
 
 // ══════════════════════════════════════════════════════════════
-//  CHATBOT
+//  AI TRỢ LÝ TƯ VẤN PC
 // ══════════════════════════════════════════════════════════════
-var cbOpen        = false;
-var cbHistory     = [];
-var cbReady       = false;
-var cbPending     = null; // build_suggestion đang chờ áp dụng
-
-// Tooltip tự động hiện sau 1.5s
-setTimeout(function(){
-    var tip = document.getElementById('chatbotTooltip');
-    if(tip) tip.classList.add('show');
-    setTimeout(function(){ if(tip) tip.classList.remove('show'); }, 4000);
-}, 1500);
-
-function cbToggle() {
-    cbOpen = !cbOpen;
-    var win = document.getElementById('chatbotWindow');
-    var tip = document.getElementById('chatbotTooltip');
-    var dot = document.querySelector('#chatbotFab .fab-pulse');
-    if (cbOpen) {
-        win.classList.add('open');
-        if (tip) tip.classList.remove('show');
-        if (dot) dot.style.display = 'none';
-        if (!cbReady) {
-            cbReady = true;
-            cbBotMsg(
-                '👋 **Xin chào!** Tôi là trợ lý Build PC.\n\nTôi có thể giúp bạn:\n• 🔧 Gợi ý cấu hình theo ngân sách\n• 💡 Tư vấn linh kiện phù hợp\n• ❓ Giải đáp thắc mắc phần cứng\n\nHãy thử: *"Gợi ý PC gaming 15 triệu"*',
-                ['Build PC gaming 15 triệu', 'Build PC văn phòng 10 triệu', 'Build PC đồ họa 20 triệu', 'Xem CPU có sẵn']
-            );
-        }
-        setTimeout(function(){ document.getElementById('cbInput').focus(); }, 320);
-    } else {
-        win.classList.remove('open');
-    }
-}
+var cbHistory = [];
+var cbPending = null;
 
 function cbSend(textOverride) {
     var input = document.getElementById('cbInput');
@@ -578,7 +879,7 @@ function cbSend(textOverride) {
     .catch(function() {
         cbHideTyping(typingId);
         document.getElementById('cbSendBtn').disabled = false;
-        cbBotMsg('❌ Xin lỗi, có lỗi xảy ra. Vui lòng thử lại!', []);
+        cbBotMsg('❌ Xin lỗi, có lỗi xảy ra khi kết nối trợ lý AI. Vui lòng thử lại!', []);
     });
 }
 
@@ -593,9 +894,7 @@ function cbUserMsg(text) {
 function cbBotMsg(text, chips) {
     var el = document.createElement('div');
     el.className = 'cb-row bot';
-    el.innerHTML =
-        '<div class="cb-avatar-mini"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#fff"/></svg></div>'
-        + '<div class="cb-bubble">' + cbMd(text) + '</div>';
+    el.innerHTML = '<div class="cb-bubble">' + cbMd(text) + '</div>';
     document.getElementById('cbMsgs').appendChild(el);
     cbRenderChips(chips);
     cbScroll();
@@ -605,9 +904,7 @@ function cbShowTyping() {
     var id = 'cbt_' + Date.now();
     var el = document.createElement('div');
     el.className = 'cb-row bot'; el.id = id;
-    el.innerHTML =
-        '<div class="cb-avatar-mini"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#fff"/></svg></div>'
-        + '<div class="cb-typing"><span></span><span></span><span></span></div>';
+    el.innerHTML = '<div class="cb-typing"><span></span><span></span><span></span></div>';
     document.getElementById('cbMsgs').appendChild(el);
     cbScroll();
     return id;
@@ -646,14 +943,14 @@ function cbMd(text) {
     s = s.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
     s = s.replace(/^---$/gm,'<hr>');
     s = s.replace(/^[•\-] (.+)$/gm,'&bull; $1');
-    s = s.replace(/^↳ (.+)$/gm,'<span style="color:#64748b;padding-left:8px">↳ $1</span>');
+    s = s.replace(/^↳ (.+)$/gm,'<span style="color:#0284c7;font-weight:600;padding-left:4px">↳ $1</span>');
     s = s.replace(/\n/g,'<br>');
     return s;
 }
 
 function cbApply(items) {
     document.getElementById('cbChips').innerHTML = '';
-    cbBotMsg('⏳ Đang áp dụng cấu hình...', []);
+    cbBotMsg('⏳ Đang áp dụng cấu hình vào bảng...', []);
 
     // Sắp xếp: CPU (1) trước Mainboard (3) để tránh xóa do socket check
     var sorted = items.slice().sort(function(a, b) {
@@ -674,29 +971,27 @@ function cbApply(items) {
     }, Promise.resolve())
     .then(function() {
         cbPending = null;
-        cbUpdateRows(sorted);   // cập nhật UI không reload
-        cbBotMsg('✅ **Áp dụng thành công!** Cấu hình đã được điền vào danh sách.\n\nBạn có thể tiếp tục hỏi hoặc nhấn **Thêm vào giỏ** để đặt hàng.', ['Đặt cấu hình khác', 'Tư vấn thêm']);
+        cbUpdateRows(sorted);
+        cbBotMsg('✅ **Áp dụng thành công!** Cấu hình đã được điền vào danh sách.<br>Bạn có thể nhấn **Mua ngay** hoặc **Thêm vào giỏ hàng** bên phải để thanh toán.', ['Build cấu hình khác', 'Tư vấn thêm']);
     })
     .catch(function() {
         cbBotMsg('❌ Có lỗi khi áp dụng. Vui lòng thử lại!', ['Thử lại']);
     });
 }
 
-// Cập nhật DOM từng row – không cần reload trang
 function cbUpdateRows(items) {
     var catNames = {
-        1:'Vi xử lý (CPU)', 3:'Bo mạch chủ (Mainboard)',
-        2:'Bộ nhớ trong (RAM)', 4:'Card màn hình (VGA)',
-        5:'Ổ cứng (SSD/HDD)', 6:'Nguồn máy tính (PSU)', 7:'Vỏ máy tính (Case)'
+        1:'VI XỬ LÝ (CPU)', 3:'BO MẠCH CHỦ (MAINBOARD)',
+        2:'BỘ NHỚ TRONG (RAM)', 4:'CARD MÀN HÌNH (VGA)',
+        5:'Ổ CỨNG (SSD/HDD)', 6:'NGUỒN MÁY TÍNH (PSU)', 7:'VỎ MÁY TÍNH (CASE)'
     };
-    var noImg = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 width%3D%2284%22 height%3D%2284%22%3E%3Crect width%3D%2284%22 height%3D%2284%22 fill%3D%22%23f3f3f3%22/%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 dominant-baseline%3D%22middle%22 text-anchor%3D%22middle%22 fill%3D%22%23bbb%22 font-size%3D%2211%22%3EIMG%3C/text%3E%3C/svg%3E';
+    var fallbackImg = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 width%3D%2264%22 height%3D%2264%22%3E%3Crect width%3D%2264%22 height%3D%2264%22 fill%3D%22%23f3f3f3%22/%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 dominant-baseline%3D%22middle%22 text-anchor%3D%22middle%22 fill%3D%22%23bbb%22 font-size%3D%2210%22%3EIMG%3C/text%3E%3C/svg%3E';
 
     items.forEach(function(item) {
         var row = document.getElementById('row-' + item.cat_id);
         if (!row) return;
 
-        // Xây dựng src ảnh
-        var imgSrc = noImg;
+        var imgSrc = fallbackImg;
         if (item.image) {
             if (item.image.indexOf('data:') === 0 || item.image.indexOf('http') === 0) {
                 imgSrc = item.image;
@@ -705,46 +1000,45 @@ function cbUpdateRows(items) {
             }
         }
 
-        var priceStr = Number(item.price).toLocaleString('vi-VN') + ' ₫';
+        var priceStr = Number(item.price).toLocaleString('vi-VN') + ' đ';
         var catName  = catNames[item.cat_id] || '';
         var catEsc   = catName.replace(/'/g, "\\'");
 
-        // Cập nhật style row
-        row.style.border          = '1px solid #e8eff7';
-        row.style.background      = '#fff';
+        // Đổi trạng thái
+        var statusEl = row.querySelector('.bpc-cat-status');
+        if (statusEl) statusEl.textContent = 'Đã chọn linh kiện';
 
-        // Cột 1: status
-        var col1Status = row.querySelector('div:first-child > div:last-child');
-        if (col1Status) col1Status.textContent = 'Đã chọn linh kiện';
-
-        // Cột 2: thông tin sản phẩm
-        var col2 = row.children[1];
-        if (col2) {
-            col2.innerHTML =
-                '<img src="' + imgSrc + '" alt="' + item.name + '" style="width:84px;height:84px;object-fit:cover;border-radius:16px;border:1px solid #e7eff6;background:#f7fbff;flex-shrink:0;">'
-                + '<div style="flex:1;min-width:0;">'
-                + '<div style="font-size:16px;font-weight:700;color:#1f314d;margin-bottom:6px;">' + item.name + '</div>'
-                + '<div style="font-size:18px;font-weight:700;color:#e10c00;">' + priceStr + '</div>'
+        // Đổi nội dung giữa
+        var contentEl = row.querySelector('.bpc-col-content');
+        if (contentEl) {
+            contentEl.innerHTML =
+                '<div class="bpc-selected-slot">'
+                + '<img src="' + imgSrc + '" alt="' + cbEsc(item.name) + '">'
+                + '<div class="bpc-selected-info">'
+                + '<div class="bpc-selected-title">' + cbEsc(item.name) + '</div>'
+                + (item.socket ? '<span class="bpc-socket-badge">Socket: ' + cbEsc(item.socket) + '</span>' : '')
+                + '<div class="bpc-selected-price">' + priceStr + '</div>'
+                + '</div>'
                 + '</div>';
         }
 
-        // Cột 3: nút Đổi + Xóa
-        var col3 = row.children[2];
-        if (col3) {
-            col3.innerHTML =
-                '<button onclick="openSelector(' + item.cat_id + ',\'' + catEsc + '\')" style="display:inline-flex;justify-content:center;align-items:center;background:#0c70c1;color:#fff;border:none;cursor:pointer;padding:11px 14px;border-radius:12px;font-weight:700;font-size:13px;box-shadow:0 8px 20px rgba(12,112,193,.16);">Đổi</button>'
-                + '<a href="buildpc.php?action=remove&cat_id=' + item.cat_id + '" style="display:inline-flex;justify-content:center;align-items:center;background:#f03f3f;color:#fff;text-decoration:none;padding:11px 14px;border-radius:12px;font-weight:700;font-size:13px;">Xóa</a>';
+        // Đổi nút bấm
+        var actionsEl = row.querySelector('.bpc-col-actions');
+        if (actionsEl) {
+            actionsEl.innerHTML =
+                '<button class="btn-bpc-select" onclick="openSelector(' + item.cat_id + ',\'' + catEsc + '\')">Đổi</button>'
+                + '<a href="buildpc.php?action=remove&cat_id=' + item.cat_id + '" class="btn-bpc-remove">Xóa</a>';
         }
     });
 
-    // Cập nhật sidebar
     cbUpdateSidebar(items);
 }
 
-// Cập nhật tổng giá và đếm linh kiện trong sidebar
 function cbUpdateSidebar(newItems) {
     var appliedPrices = {};
-    newItems.forEach(function(i){ appliedPrices[i.cat_id] = Number(i.price); });
+    if (newItems && newItems.length) {
+        newItems.forEach(function(i){ appliedPrices[i.cat_id] = Number(i.price); });
+    }
 
     var total = 0, count = 0;
     [1,2,3,4,5,6,7].forEach(function(cid) {
@@ -753,7 +1047,7 @@ function cbUpdateSidebar(newItems) {
         } else {
             var row = document.getElementById('row-' + cid);
             if (!row) return;
-            var priceEl = row.querySelector('[style*="e10c00"]');
+            var priceEl = row.querySelector('.bpc-selected-price');
             if (priceEl) {
                 var n = parseInt(priceEl.textContent.replace(/[^\d]/g,''));
                 if (n) { total += n; count++; }
@@ -761,25 +1055,24 @@ function cbUpdateSidebar(newItems) {
         }
     });
 
-    // Tổng giá
-    var totalEl = document.querySelector('aside [style*="28px"][style*="162a46"]');
-    if (totalEl) totalEl.textContent = total.toLocaleString('vi-VN') + ' ₫';
+    // Cập nhật giá
+    var totalEl = document.getElementById('bpcSummaryTotalPrice');
+    if (totalEl) totalEl.textContent = total.toLocaleString('vi-VN') + ' đ';
 
-    // Số linh kiện
-    var countEl = document.querySelector('aside [style*="5e6f85"] span:last-child');
+    // Cập nhật số món
+    var countEl = document.getElementById('bpcSummaryCount');
     if (countEl) countEl.textContent = count + '/7';
 
-    // Hiện nút Thêm giỏ / Mua ngay nếu chưa có
-    if (total > 0) {
-        var aside = document.querySelector('aside');
-        if (aside) {
-            var startBtn = aside.querySelector('button[onclick*="openSelector"]');
-            if (startBtn) {
-                var p = startBtn.parentNode;
-                p.innerHTML =
-                    '<a href="buildpc.php?action=add_to_cart" style="display:inline-flex;align-items:center;justify-content:center;width:100%;background:#ff9800;color:#fff;text-decoration:none;border-radius:14px;padding:14px 18px;font-weight:700;font-size:15px;box-shadow:0 14px 30px rgba(255,152,0,.18);margin-bottom:12px;">Thêm tất cả vào giỏ hàng</a>'
-                    + '<a href="buildpc.php?action=buy_now" style="display:inline-flex;align-items:center;justify-content:center;width:100%;background:#0c70c1;color:#fff;text-decoration:none;border-radius:14px;padding:14px 18px;font-weight:700;font-size:15px;box-shadow:0 14px 30px rgba(12,112,193,.16);">Mua ngay</a>';
-            }
+    // Cập nhật khối hành động
+    var actionBox = document.getElementById('bpcSummaryActionBox');
+    if (actionBox) {
+        if (total > 0) {
+            actionBox.innerHTML =
+                '<a href="buildpc.php?action=add_to_cart" class="btn-bpc-cart">Thêm tất cả vào giỏ hàng</a>'
+                + '<a href="buildpc.php?action=buy_now" class="btn-bpc-buynow">Mua ngay</a>';
+        } else {
+            actionBox.innerHTML =
+                '<div class="bpc-summary-empty">Chưa có linh kiện nào trong cấu hình. Hãy chọn linh kiện ở giữa để bắt đầu!</div>';
         }
     }
 }
