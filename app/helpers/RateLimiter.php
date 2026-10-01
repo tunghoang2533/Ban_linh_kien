@@ -1,6 +1,8 @@
 <?php
 namespace App\Helpers;
 
+use Exception;
+
 /**
  * RateLimiter — Chặn brute-force / spam request
  *

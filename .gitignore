@@ -5,6 +5,7 @@
 Thumbs.db
 .DS_Store
 desktop.ini
+~$*
 
 # IDE / Editor
 .vscode/

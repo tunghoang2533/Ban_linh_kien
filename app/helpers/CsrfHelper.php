@@ -1,6 +1,8 @@
 <?php
 namespace App\Helpers;
 
+use Exception;
+
 /**
  * CsrfHelper — Tạo và xác thực CSRF token cho mọi form POST.
  *
