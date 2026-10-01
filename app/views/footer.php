@@ -944,10 +944,10 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         /* Mỗi banner column chiếm FULL khoảng trắng 2 bên */
         .side-banner {
             position: fixed;
-            top: 104px;
+            top: 68px;   /* chỉ tính sticky header (topnav cuộn mất khi scroll) */
             bottom: 0;
             width: calc((100vw - 1240px) / 2 - 16px);
-            z-index: 150;
+            z-index: 900; /* đủ cao để hiển thị trên nội dung, dưới header (1000) */
             display: flex;
             flex-direction: column;
             gap: 10px;
