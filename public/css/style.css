@@ -1,54 +1,59 @@
 /* ====================================================
-   PC Store — Design System v2.0
+   PC Store — Design System v3.0
    Base tokens, reset & global utilities
-   Font: Outfit (Google Fonts) — loaded in header
-   Accent: Electric Blue #2563eb on cool near-white
+   Font: Roboto / Roboto Condensed (Google Fonts) — loaded in header
+   Theme mặc định: Dark Gaming (charcoal #0b0d12, accent cam #ff7a1b)
+   [data-theme="light"] ghi đè tokens cho chế độ sáng.
    ==================================================== */
 
-/* ── Design Tokens ── */
+/* ── Design Tokens — Light theme (được override bởi [data-theme="light"] mặc định sáng) ── */
 :root {
     /* Color — background */
-    --bg-page:      #f8fafc;
+    --bg-page:      #f4f5f7;
     --bg-surface:   #ffffff;
-    --bg-muted:     #f1f5f9;
-    --bg-subtle:    #e8f0fe;
+    --bg-muted:     #eceef1;
+    --bg-subtle:    #fdf1e7;
+    --bg-elevated:  #ffffff;
 
     /* Color — text */
-    --txt-primary:   #0f172a;
-    --txt-secondary: #475569;
-    --txt-tertiary:  #94a3b8;
-    --txt-link:      #2563eb;
+    --txt-primary:   #171b26;
+    --txt-secondary: #4a5264;
+    --txt-tertiary:  #8a93a5;
+    --txt-link:      #d95d0c;
 
-    /* Color — brand */
-    --accent:        #2563eb;
-    --accent-hover:  #1d4ed8;
-    --accent-light:  #dbeafe;
-    --accent-ring:   rgba(37, 99, 235, 0.18);
+    /* Color — brand (cam đồng nhất cả 2 theme) */
+    --accent:        #e8650f;
+    --accent-hover:  #c8570a;
+    --accent-light:  #fdebd9;
+    --accent-ring:   rgba(232, 101, 15, 0.2);
 
     /* Color — states */
-    --danger:        #ef4444;
-    --danger-light:  #fee2e2;
-    --success:       #16a34a;
-    --success-light: #dcfce7;
-    --warn:          #f59e0b;
-    --warn-light:    #fef3c7;
+    --danger:        #d92d20;
+    --danger-light:  #fee4e2;
+    --success:       #12893f;
+    --success-light: #dcfae6;
+    --warn:          #b54708;
+    --warn-light:    #fef0c7;
+
+    /* Color — giá bán (đỏ kiểu shop VN) */
+    --color-price:   #d70018;
 
     /* Color — borders */
-    --border:        #e2e8f0;
-    --border-strong: #cbd5e1;
+    --border:        #e3e6ec;
+    --border-strong: #c9cfda;
 
-    /* Radius scale — one system, used everywhere */
-    --r-sm:   6px;
-    --r-md:   12px;
-    --r-lg:   16px;
-    --r-xl:   24px;
+    /* Radius scale — góc sắc, phẳng kiểu PC shop */
+    --r-sm:   3px;
+    --r-md:   5px;
+    --r-lg:   8px;
+    --r-xl:   12px;
     --r-pill: 999px;
 
     /* Shadow scale */
-    --shadow-sm:  0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
-    --shadow-md:  0 4px 16px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
-    --shadow-lg:  0 12px 32px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.06);
-    --shadow-xl:  0 24px 56px rgba(15,23,42,0.16), 0 8px 24px rgba(15,23,42,0.08);
+    --shadow-sm:  0 1px 2px rgba(15,23,42,0.05);
+    --shadow-md:  0 2px 10px rgba(15,23,42,0.08);
+    --shadow-lg:  0 8px 24px rgba(15,23,42,0.12);
+    --shadow-xl:  0 16px 44px rgba(15,23,42,0.16);
 
     /* Spacing — 8px base grid */
     --space-1:  4px;
@@ -62,8 +67,9 @@
     --space-12: 48px;
     --space-16: 64px;
 
-    /* Typography */
-    --font-sans: 'Outfit', 'Segoe UI', Arial, sans-serif;
+    /* Typography — Roboto chuẩn TMĐT Việt, Condensed cho tiêu đề */
+    --font-sans: 'Roboto', 'Segoe UI', Arial, sans-serif;
+    --font-display: 'Roboto Condensed', 'Roboto', 'Segoe UI', Arial, sans-serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
     /* Transitions */
@@ -85,8 +91,8 @@ html {
 
 body {
     font-family: var(--font-sans);
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.55;
     color: var(--txt-primary);
     background-color: var(--bg-page);
     overflow-x: hidden;
@@ -96,9 +102,9 @@ body {
 
 /* ── Typography ── */
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-sans);
+    font-family: var(--font-display);
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.2;
     color: var(--txt-primary);
 }
 
@@ -364,12 +370,12 @@ hr {
 .btn-primary {
     background: var(--accent);
     color: #fff;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 2px 8px var(--accent-ring);
 }
 .btn-primary:hover {
     background: var(--accent-hover);
     color: #fff;
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 4px 16px var(--accent-ring);
     transform: translateY(-1px);
 }
 
@@ -390,25 +396,40 @@ hr {
 }
 .btn-danger:hover { background: #dc2626; color: #fff; }
 
-/* ── Dark Mode Theme ── */
+/* ── Dark Gaming Theme (mặc định của shop) ── */
 [data-theme="dark"] {
-    --bg-page:      #0f172a;
-    --bg-surface:   #1e293b;
-    --bg-muted:     #334155;
-    --bg-subtle:    #0f172a;
+    --bg-page:      #0b0d12;
+    --bg-surface:   #14171f;
+    --bg-muted:     #1b1f2a;
+    --bg-subtle:    #211a12;
+    --bg-elevated:  #1e2330;
 
-    --txt-primary:   #f8fafc;
-    --txt-secondary: #cbd5e1;
-    --txt-tertiary:  #64748b;
-    --txt-link:      #3b82f6;
+    --txt-primary:   #f1f3f8;
+    --txt-secondary: #a9b1c2;
+    --txt-tertiary:  #697181;
+    --txt-link:      #ffa04d;
 
-    --border:        #334155;
-    --border-strong: #475569;
+    --accent:        #ff7a1b;
+    --accent-hover:  #ff9440;
+    --accent-light:  rgba(255, 122, 27, 0.15);
+    --accent-ring:   rgba(255, 122, 27, 0.3);
 
-    --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
-    --shadow-md:  0 4px 16px rgba(0,0,0,0.4);
-    --shadow-lg:  0 12px 32px rgba(0,0,0,0.5);
-    --shadow-xl:  0 24px 56px rgba(0,0,0,0.6);
+    --danger:        #f04438;
+    --danger-light:  rgba(240, 68, 56, 0.15);
+    --success:       #34d399;
+    --success-light: rgba(52, 211, 153, 0.15);
+    --warn:          #fbbf24;
+    --warn-light:    rgba(251, 191, 36, 0.15);
+
+    --color-price:   #ff4d4d;
+
+    --border:        #232834;
+    --border-strong: #333b4a;
+
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
+    --shadow-lg:  0 10px 30px rgba(0,0,0,0.55);
+    --shadow-xl:  0 20px 50px rgba(0,0,0,0.6);
 }
 
 /* ── Dark Mode Class-specific Overrides ── */
