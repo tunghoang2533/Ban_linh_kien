@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // AssetHelper autoloaded via PSR-4 + class_alias
 // ── Load shop settings (nếu chưa được load bởi header.php) ──────
 if (!isset($shopSettings)) {
@@ -936,40 +936,42 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
      ════════════════════════════════════════════════════════════ -->
 <style>
     /* ── Side Banner Container ── */
-    .side-banners {
-        display: none; /* Ẩn mặc định, hiện qua media query */
-    }
+    .side-banners { display: none; }
+
     @media (min-width: 1500px) {
-        .side-banners {
-            display: block;
-        }
+        .side-banners { display: block; }
+
         .side-banner {
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
-            width: 120px;
+            width: 160px;
             z-index: 200;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            pointer-events: auto;
+            gap: 14px;
         }
-        .side-banner-left  { left: calc((100vw - 1240px) / 2 - 136px); }
-        .side-banner-right { right: calc((100vw - 1240px) / 2 - 136px); }
+        .side-banner-left  { left: calc((100vw - 1240px) / 2 - 176px); }
+        .side-banner-right { right: calc((100vw - 1240px) / 2 - 176px); }
     }
-    @media (min-width: 1600px) {
-        .side-banner { width: 140px; }
-        .side-banner-left  { left: calc((100vw - 1240px) / 2 - 160px); }
-        .side-banner-right { right: calc((100vw - 1240px) / 2 - 160px); }
+    @media (min-width: 1700px) {
+        .side-banner { width: 180px; }
+        .side-banner-left  { left: calc((100vw - 1240px) / 2 - 200px); }
+        .side-banner-right { right: calc((100vw - 1240px) / 2 - 200px); }
+    }
+    @media (min-width: 1920px) {
+        .side-banner { width: 200px; }
+        .side-banner-left  { left: calc((100vw - 1240px) / 2 - 224px); }
+        .side-banner-right { right: calc((100vw - 1240px) / 2 - 224px); }
     }
 
     /* ── Banner Card ── */
     .side-banner-card {
         background: var(--bg-surface, #fff);
-        border-radius: 16px;
-        border: 1.5px solid var(--border, #e2e8f0);
+        border-radius: 18px;
+        border: 2.5px solid var(--border, #e2e8f0);
         overflow: hidden;
-        box-shadow: 0 4px 20px rgba(15,23,42,0.08);
+        box-shadow: 0 6px 28px rgba(15,23,42,0.12);
         text-decoration: none;
         display: flex;
         flex-direction: column;
@@ -978,306 +980,185 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         cursor: pointer;
     }
     .side-banner-card:hover {
-        transform: translateY(-4px) scale(1.03);
-        box-shadow: 0 12px 36px rgba(37,99,235,0.18);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 16px 44px rgba(37,99,235,0.22);
         border-color: #2563eb;
     }
 
     /* ── Banner Image Area ── */
     .side-banner-img {
         width: 100%;
-        aspect-ratio: 3/4;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-        padding: 18px 14px;
-    }
-    .side-banner-img .banner-icon-wrap {
-        width: 100%;
-        height: 100%;
+        aspect-ratio: 1/1;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        text-align: center;
+        padding: 20px 14px;
+        text-decoration: none;
     }
-    .side-banner-img .banner-emoji {
-        font-size: 38px;
+    .banner-emoji {
+        font-size: 48px;
         line-height: 1;
-        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));
         animation: bannerFloat 3s ease-in-out infinite;
     }
     @keyframes bannerFloat {
         0%, 100% { transform: translateY(0); }
-        50%       { transform: translateY(-6px); }
+        50%       { transform: translateY(-7px); }
     }
-    .side-banner-img .banner-tag {
-        font-size: 9px;
+    .banner-tag {
+        font-size: 10px;
         font-weight: 800;
-        letter-spacing: .08em;
+        letter-spacing: .1em;
         text-transform: uppercase;
-        padding: 3px 9px;
+        padding: 4px 11px;
         border-radius: 20px;
         white-space: nowrap;
     }
-    .side-banner-img .banner-product-name {
-        font-size: 11px;
+    .banner-product-name {
+        font-size: 13px;
         font-weight: 700;
-        color: #0f172a;
-        line-height: 1.35;
+        line-height: 1.4;
         text-align: center;
         word-break: break-word;
     }
 
-    /* ── Banner Footer ── */
+    /* ── Banner Body ── */
     .side-banner-body {
-        padding: 10px 12px 14px;
+        padding: 12px 14px 16px;
         width: 100%;
         text-align: center;
-        background: inherit;
     }
     .side-banner-title {
-        font-size: 10.5px;
+        font-size: 13px;
         font-weight: 800;
         color: #0f172a;
-        line-height: 1.3;
-        margin-bottom: 4px;
+        line-height: 1.35;
+        margin-bottom: 5px;
         font-family: 'Outfit', sans-serif;
     }
     .side-banner-sub {
-        font-size: 9.5px;
+        font-size: 11px;
         color: #64748b;
-        line-height: 1.4;
+        line-height: 1.5;
         font-family: 'Outfit', sans-serif;
     }
     .side-banner-cta {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        margin-top: 8px;
-        font-size: 9.5px;
+        margin-top: 10px;
+        font-size: 11px;
         font-weight: 700;
-        padding: 5px 12px;
+        padding: 7px 14px;
         border-radius: 20px;
         letter-spacing: .02em;
         transition: transform .15s, box-shadow .15s;
         text-decoration: none;
         width: 100%;
+        font-family: 'Outfit', sans-serif;
     }
-    .side-banner-cta:hover { transform: scale(1.04); }
+    .side-banner-cta:hover { transform: scale(1.05); }
 
-    /* ── Dismiss button ── */
-    .side-banner-dismiss {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        border: none;
-        background: rgba(255,255,255,0.85);
-        color: #64748b;
-        font-size: 13px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        transition: background .18s, color .18s;
-        z-index: 5;
-    }
-    .side-banner-dismiss:hover { background: #ef4444; color: #fff; }
-
-    /* ── Banner 1 (Left — GPU/Build PC) ── */
-    .banner-left-1 .side-banner-img {
-        background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-    }
-    .banner-left-1 .banner-tag {
-        background: #38bdf8;
-        color: #0f172a;
-    }
+    /* ── Banner 1 (Left — Build PC) ── */
+    .banner-left-1 .side-banner-img { background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+    .banner-left-1 .banner-tag      { background: #38bdf8; color: #0f172a; }
     .banner-left-1 .banner-product-name { color: #e2e8f0; }
-    .banner-left-1 .side-banner-title { color: #0f172a; }
-    .banner-left-1 .side-banner-cta {
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: #38bdf8;
-        box-shadow: 0 4px 14px rgba(15,23,42,0.25);
-    }
-    .banner-left-1 .side-banner-cta:hover {
-        box-shadow: 0 6px 20px rgba(56,189,248,0.4);
-    }
+    .banner-left-1 .side-banner-cta { background: linear-gradient(135deg, #0f172a, #1e293b); color: #38bdf8; box-shadow: 0 4px 14px rgba(15,23,42,0.3); }
+    .banner-left-1 .side-banner-cta:hover { box-shadow: 0 6px 22px rgba(56,189,248,0.45); }
 
-    /* ── Banner 2 (Left — Combo sale) ── */
-    .banner-left-2 .side-banner-img {
-        background: linear-gradient(145deg, #dc2626 0%, #ef4444 50%, #b91c1c 100%);
-    }
-    .banner-left-2 .banner-tag {
-        background: #fff;
-        color: #dc2626;
-    }
+    /* ── Banner 2 (Left — Sale) ── */
+    .banner-left-2 .side-banner-img { background: linear-gradient(145deg, #dc2626 0%, #ef4444 50%, #b91c1c 100%); }
+    .banner-left-2 .banner-tag      { background: #fff; color: #dc2626; }
     .banner-left-2 .banner-product-name { color: #fff; }
-    .banner-left-2 .side-banner-cta {
-        background: linear-gradient(135deg, #dc2626, #ef4444);
-        color: #fff;
-        box-shadow: 0 4px 14px rgba(220,38,38,0.3);
-    }
-    .banner-left-2 .side-banner-cta:hover {
-        box-shadow: 0 6px 20px rgba(220,38,38,0.45);
-    }
+    .banner-left-2 .side-banner-cta { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; box-shadow: 0 4px 14px rgba(220,38,38,0.35); }
+    .banner-left-2 .side-banner-cta:hover { box-shadow: 0 6px 22px rgba(220,38,38,0.5); }
 
-    /* ── Banner 3 (Right — Flash sale) ── */
-    .banner-right-1 .side-banner-img {
-        background: linear-gradient(145deg, #7c3aed 0%, #8b5cf6 50%, #6d28d9 100%);
-    }
-    .banner-right-1 .banner-tag {
-        background: #fbbf24;
-        color: #78350f;
-    }
+    /* ── Banner 3 (Right — Combo) ── */
+    .banner-right-1 .side-banner-img { background: linear-gradient(145deg, #7c3aed 0%, #8b5cf6 50%, #6d28d9 100%); }
+    .banner-right-1 .banner-tag      { background: #fbbf24; color: #78350f; }
     .banner-right-1 .banner-product-name { color: #f3e8ff; }
-    .banner-right-1 .side-banner-cta {
-        background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-        color: #fff;
-        box-shadow: 0 4px 14px rgba(124,58,237,0.3);
-    }
-    .banner-right-1 .side-banner-cta:hover {
-        box-shadow: 0 6px 20px rgba(124,58,237,0.45);
-    }
+    .banner-right-1 .side-banner-cta { background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: #fff; box-shadow: 0 4px 14px rgba(124,58,237,0.35); }
+    .banner-right-1 .side-banner-cta:hover { box-shadow: 0 6px 22px rgba(124,58,237,0.5); }
 
     /* ── Banner 4 (Right — Bảo hành) ── */
-    .banner-right-2 .side-banner-img {
-        background: linear-gradient(145deg, #059669 0%, #10b981 50%, #047857 100%);
-    }
-    .banner-right-2 .banner-tag {
-        background: #d1fae5;
-        color: #065f46;
-    }
+    .banner-right-2 .side-banner-img { background: linear-gradient(145deg, #059669 0%, #10b981 50%, #047857 100%); }
+    .banner-right-2 .banner-tag      { background: #d1fae5; color: #065f46; }
     .banner-right-2 .banner-product-name { color: #ecfdf5; }
-    .banner-right-2 .side-banner-cta {
-        background: linear-gradient(135deg, #059669, #10b981);
-        color: #fff;
-        box-shadow: 0 4px 14px rgba(5,150,105,0.3);
-    }
-    .banner-right-2 .side-banner-cta:hover {
-        box-shadow: 0 6px 20px rgba(5,150,105,0.45);
-    }
+    .banner-right-2 .side-banner-cta { background: linear-gradient(135deg, #059669, #10b981); color: #fff; box-shadow: 0 4px 14px rgba(5,150,105,0.35); }
+    .banner-right-2 .side-banner-cta:hover { box-shadow: 0 6px 22px rgba(5,150,105,0.5); }
 </style>
 
 <div class="side-banners" id="sideBanners">
+
     <!-- ══ BANNER TRÁI ══ -->
-    <div class="side-banner side-banner-left" id="sideBannerLeft">
+    <div class="side-banner side-banner-left">
 
         <!-- Banner 1: Build PC -->
-        <div class="side-banner-card banner-left-1" style="position:relative;">
-            <button class="side-banner-dismiss" onclick="dismissBanner('sideBannerLeft')" title="Ẩn banner">×</button>
-            <a href="<?php echo BASE_URL; ?>buildpc.php" class="side-banner-img" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 12px;text-decoration:none;">
-                <div class="banner-icon-wrap">
-                    <span class="banner-emoji">🖥️</span>
-                    <span class="banner-tag">MỚI 2026</span>
-                    <span class="banner-product-name">Tự Build PC<br>theo ý bạn</span>
-                </div>
-            </a>
+        <a href="<?php echo BASE_URL; ?>buildpc.php" class="side-banner-card banner-left-1">
+            <div class="side-banner-img">
+                <span class="banner-emoji">🖥️</span>
+                <span class="banner-tag">MỚI 2026</span>
+                <span class="banner-product-name">Tự Build PC<br>theo ý bạn</span>
+            </div>
             <div class="side-banner-body">
                 <div class="side-banner-title">Build PC<br>Chuẩn Gu</div>
-                <div class="side-banner-sub">Kiểm tra tương<br>thích thông minh</div>
-                <a href="<?php echo BASE_URL; ?>buildpc.php" class="side-banner-cta">
-                    🔧 Thử ngay
-                </a>
+                <div class="side-banner-sub">Kiểm tra tương thích<br>linh kiện thông minh</div>
+                <span class="side-banner-cta">🔧 Thử ngay</span>
             </div>
-        </div>
+        </a>
 
         <!-- Banner 2: Flash Sale -->
-        <div class="side-banner-card banner-left-2" style="position:relative;">
-            <a href="<?php echo BASE_URL; ?>index.php?sort=discount" class="side-banner-img" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 12px;text-decoration:none;">
-                <div class="banner-icon-wrap">
-                    <span class="banner-emoji">🔥</span>
-                    <span class="banner-tag">HOT DEAL</span>
-                    <span class="banner-product-name">Giảm đến<br>50% hôm nay</span>
-                </div>
-            </a>
+        <a href="<?php echo BASE_URL; ?>index.php?sort=discount" class="side-banner-card banner-left-2">
+            <div class="side-banner-img">
+                <span class="banner-emoji">🔥</span>
+                <span class="banner-tag">HOT DEAL</span>
+                <span class="banner-product-name">Giảm đến<br>50% hôm nay</span>
+            </div>
             <div class="side-banner-body">
                 <div class="side-banner-title">Sale Khủng<br>Linh Kiện</div>
                 <div class="side-banner-sub">CPU · GPU · RAM<br>Giá siêu tốt</div>
-                <a href="<?php echo BASE_URL; ?>index.php?sort=discount" class="side-banner-cta">
-                    🛒 Xem ngay
-                </a>
+                <span class="side-banner-cta">🛒 Xem ngay</span>
             </div>
-        </div>
+        </a>
 
     </div>
 
     <!-- ══ BANNER PHẢI ══ -->
-    <div class="side-banner side-banner-right" id="sideBannerRight">
+    <div class="side-banner side-banner-right">
 
-        <!-- Banner 3: Flash Sale giờ vàng -->
-        <div class="side-banner-card banner-right-1" style="position:relative;">
-            <button class="side-banner-dismiss" onclick="dismissBanner('sideBannerRight')" title="Ẩn banner">×</button>
-            <a href="<?php echo BASE_URL; ?>combo.php" class="side-banner-img" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 12px;text-decoration:none;">
-                <div class="banner-icon-wrap">
-                    <span class="banner-emoji">⚡</span>
-                    <span class="banner-tag">GIỜ VÀNG</span>
-                    <span class="banner-product-name">Combo PC<br>Gaming cực hot</span>
-                </div>
-            </a>
+        <!-- Banner 3: Combo giờ vàng -->
+        <a href="<?php echo BASE_URL; ?>combo.php" class="side-banner-card banner-right-1">
+            <div class="side-banner-img">
+                <span class="banner-emoji">⚡</span>
+                <span class="banner-tag">GIỜ VÀNG</span>
+                <span class="banner-product-name">Combo PC<br>Gaming cực hot</span>
+            </div>
             <div class="side-banner-body">
                 <div class="side-banner-title">Combo Ưu<br>Đãi Đặc Biệt</div>
                 <div class="side-banner-sub">Tiết kiệm hơn<br>mua lẻ 30%</div>
-                <a href="<?php echo BASE_URL; ?>combo.php" class="side-banner-cta">
-                    🎁 Xem Combo
-                </a>
+                <span class="side-banner-cta">🎁 Xem Combo</span>
             </div>
-        </div>
+        </a>
 
         <!-- Banner 4: Bảo hành chính hãng -->
-        <div class="side-banner-card banner-right-2" style="position:relative;">
-            <a href="<?php echo BASE_URL; ?>chinh_sach.php" class="side-banner-img" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 12px;text-decoration:none;">
-                <div class="banner-icon-wrap">
-                    <span class="banner-emoji">🛡️</span>
-                    <span class="banner-tag">CHÍNH HÃNG</span>
-                    <span class="banner-product-name">Bảo hành<br>36 tháng</span>
-                </div>
-            </a>
+        <a href="<?php echo BASE_URL; ?>chinh_sach.php" class="side-banner-card banner-right-2">
+            <div class="side-banner-img">
+                <span class="banner-emoji">🛡️</span>
+                <span class="banner-tag">CHÍNH HÃNG</span>
+                <span class="banner-product-name">Bảo hành<br>36 tháng</span>
+            </div>
             <div class="side-banner-body">
                 <div class="side-banner-title">Cam Kết<br>Chính Hãng</div>
                 <div class="side-banner-sub">Bảo hành tận nơi<br>Đổi trả 7 ngày</div>
-                <a href="<?php echo BASE_URL; ?>chinh_sach.php" class="side-banner-cta">
-                    ✅ Xem chính sách
-                </a>
+                <span class="side-banner-cta">✅ Xem chính sách</span>
             </div>
-        </div>
+        </a>
 
     </div>
+
 </div>
-
-<script>
-(function() {
-    // Ẩn banner nếu người dùng đã dismiss
-    function initSideBanners() {
-        if (sessionStorage.getItem('bannerLeftDismissed')) {
-            var el = document.getElementById('sideBannerLeft');
-            if (el) el.style.display = 'none';
-        }
-        if (sessionStorage.getItem('bannerRightDismissed')) {
-            var el = document.getElementById('sideBannerRight');
-            if (el) el.style.display = 'none';
-        }
-    }
-    document.addEventListener('DOMContentLoaded', initSideBanners);
-
-    window.dismissBanner = function(id) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.style.transition = 'opacity .3s ease, transform .3s ease';
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(-50%) scale(0.9)';
-        setTimeout(function() { el.style.display = 'none'; }, 300);
-        var key = id === 'sideBannerLeft' ? 'bannerLeftDismissed' : 'bannerRightDismissed';
-        sessionStorage.setItem(key, '1');
-    };
-})();
-</script>
 
 </body>
 </html>
