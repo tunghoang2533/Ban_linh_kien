@@ -941,17 +941,18 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
     @media (min-width: 1500px) {
         .side-banners { display: block; }
 
-        /* Mỗi banner column chiếm FULL khoảng trắng 2 bên */
+        /* Mỗi banner column chiếm FULL khoảng trắng 2 bên, nằm tĩnh ở đầu trang */
+        body { position: relative; }
         .side-banner {
-            position: fixed;
-            top: 68px;   /* chỉ tính sticky header (topnav cuộn mất khi scroll) */
-            bottom: 0;
+            position: absolute;
+            top: 124px;   /* Ngang hàng với slider ở đầu trang */
+            height: 560px; /* Chiều cao vừa vặn cụm slider/banner đầu trang */
             width: calc((100vw - 1240px) / 2 - 16px);
-            z-index: 900; /* đủ cao để hiển thị trên nội dung, dưới header (1000) */
+            z-index: 50;  /* Nằm dưới header (z-index: 1000) khi cuộn lên */
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding: 8px 0;
+            gap: 12px;
+            padding: 0;
         }
         .side-banner-left  { left: 8px; }
         .side-banner-right { right: 8px; }
@@ -978,48 +979,48 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
             transform: scale(1.012);
         }
 
-        /* Phần màu/ảnh chiếm 58% card */
+        /* Phần màu/ảnh chiếm 52% card */
         .side-banner-img {
-            flex: 0 0 58%;
+            flex: 0 0 52%;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 14px 12px;
+            gap: 8px;
+            padding: 10px 10px;
             text-decoration: none;
         }
         .banner-emoji {
-            font-size: clamp(32px, 3.5vw, 68px);
+            font-size: clamp(28px, 2.8vw, 48px);
             line-height: 1;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.25));
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.22));
             animation: bannerFloat 3s ease-in-out infinite;
         }
         @keyframes bannerFloat {
             0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-8px); }
+            50%       { transform: translateY(-6px); }
         }
         .banner-tag {
-            font-size: clamp(8px, 0.65vw, 13px);
+            font-size: clamp(8px, 0.6vw, 11px);
             font-weight: 800;
-            letter-spacing: .1em;
+            letter-spacing: .08em;
             text-transform: uppercase;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 20px;
             white-space: nowrap;
         }
         .banner-product-name {
-            font-size: clamp(11px, 1vw, 17px);
+            font-size: clamp(10.5px, 0.85vw, 14px);
             font-weight: 700;
-            line-height: 1.4;
+            line-height: 1.35;
             text-align: center;
         }
 
-        /* Phần text chiếm 42% còn lại */
+        /* Phần text chiếm 48% còn lại */
         .side-banner-body {
             flex: 1;
-            padding: 10px 14px 14px;
+            padding: 8px 12px 12px;
             width: 100%;
             text-align: center;
             display: flex;
@@ -1029,31 +1030,31 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
             gap: 3px;
         }
         .side-banner-title {
-            font-size: clamp(12px, 1.1vw, 20px);
+            font-size: clamp(11.5px, 0.95vw, 16px);
             font-weight: 800;
             color: #0f172a;
             line-height: 1.3;
             font-family: 'Outfit', sans-serif;
         }
         .side-banner-sub {
-            font-size: clamp(10px, 0.8vw, 14px);
+            font-size: clamp(9.5px, 0.75vw, 12px);
             color: #64748b;
-            line-height: 1.5;
+            line-height: 1.45;
             font-family: 'Outfit', sans-serif;
         }
         .side-banner-cta {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-top: 10px;
-            font-size: clamp(10px, 0.85vw, 15px);
+            margin-top: 6px;
+            font-size: clamp(9.5px, 0.78vw, 13px);
             font-weight: 700;
-            padding: 9px 18px;
+            padding: 7px 14px;
             border-radius: 999px;
             letter-spacing: .02em;
             transition: transform .15s, box-shadow .15s;
             text-decoration: none;
-            width: calc(100% - 20px);
+            width: calc(100% - 16px);
             font-family: 'Outfit', sans-serif;
         }
         .side-banner-cta:hover { transform: scale(1.05); }
