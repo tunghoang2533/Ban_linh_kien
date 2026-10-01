@@ -129,6 +129,15 @@
         border: 1px solid #d1fae5;
         color: #166534;
     }
+    @media (max-width: 600px) {
+        .password-page { padding: 24px 12px 40px; }
+        .password-card { border-radius: 18px; }
+        .password-card-header { padding: 26px 20px; }
+        .password-card-header h1 { font-size: 25px; }
+        .password-card-body { padding: 24px 18px 28px; }
+        .field-group input { font-size: 16px; }
+        .toggle-pw { right: 10px; width: 36px; height: 36px; }
+    }
 </style>
 
 <div class="password-page">
