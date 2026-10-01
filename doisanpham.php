@@ -21,10 +21,10 @@ if (!empty($ids)) {
 include 'app/views/header.php';
 ?>
 <div class="container" style="max-width:1200px;margin:30px auto;padding:0 20px;">
-    <h2 style="margin-bottom:20px;"><i class="fa fa-scale-balanced"></i> So sánh sản phẩm</h2>
+    <h2 style="margin-bottom:20px;"><i class="fa fa-balance-scale"></i> So sánh sản phẩm</h2>
     <?php if (count($compareProducts) < 2): ?>
         <div style="text-align:center;padding:60px 20px;color:#94a3b8;">
-            <p style="font-size:48px;margin:0 0 12px;">🔍</p>
+            <p style="font-size:48px;margin:0 0 12px;"><i class="fa fa-search"></i></p>
             <p>Vui lòng chọn ít nhất 2 sản phẩm để so sánh.</p>
             <a href="index.php" style="display:inline-block;margin-top:16px;padding:12px 28px;background:#2563eb;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;">Quay lại trang chủ</a>
         </div>

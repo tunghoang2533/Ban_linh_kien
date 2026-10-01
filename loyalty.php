@@ -43,7 +43,7 @@ include 'app/views/header.php';
         <p style="margin:12px 0 0;font-size:13px;opacity:.8;">Có thể đổi khi đạt tối thiểu 50 điểm</p>
     </div>
     <div class="loyalty-history">
-        <h3><i class="fa fa-clock-rotate-left"></i> Lịch sử giao dịch</h3>
+        <h3><i class="fa fa-history"></i> Lịch sử giao dịch</h3>
         <div style="background:#fff;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.06);overflow:hidden;">
             <?php if (empty($history)): ?>
                 <p style="text-align:center;padding:40px;color:#94a3b8;">Chưa có giao dịch nào.</p>

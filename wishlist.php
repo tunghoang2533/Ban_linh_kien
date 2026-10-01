@@ -33,7 +33,7 @@ include 'app/views/header.php';
     <h2 style="margin-bottom:20px;"><i class="fa fa-heart" style="color:#ef4444;"></i> Sản phẩm yêu thích</h2>
     <?php if (empty($items)): ?>
         <div style="text-align:center;padding:60px 20px;color:#94a3b8;">
-            <p style="font-size:48px;margin:0 0 12px;">💔</p>
+            <p style="font-size:48px;margin:0 0 12px;"><i class="fa fa-heart-o"></i></p>
             <p style="font-size:16px;">Bạn chưa có sản phẩm yêu thích nào.</p>
             <a href="index.php" style="display:inline-block;margin-top:16px;padding:12px 28px;background:#2563eb;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;">Mua sắm ngay</a>
         </div>

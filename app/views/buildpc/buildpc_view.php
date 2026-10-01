@@ -596,7 +596,7 @@ setTimeout(function() {
 <div class="bpc-main-container">
     <!-- Tiêu đề trang -->
     <div class="bpc-top-header">
-        <h1><span>🛠️</span> Xây Dựng Cấu Hình PC</h1>
+        <h1><i class="fa fa-wrench"></i> Xây dựng cấu hình PC</h1>
         <p>Lựa chọn linh kiện máy tính đồng bộ, tương thích 100% chuẩn chân cắm (Socket), tối ưu hiệu năng và ngân sách.</p>
     </div>
 
@@ -605,7 +605,7 @@ setTimeout(function() {
         <aside class="bpc-ai-widget">
             <div class="bpc-ai-header">
                 <span class="status-dot"></span>
-                <span style="font-size: 15px;">🤖</span>
+                <i class="fa fa-comments-o"></i>
                 <span class="ai-title">AI Trợ Lý Tư Vấn PC</span>
             </div>
             <div class="bpc-ai-body">
@@ -735,7 +735,7 @@ function openSelector(catId, catName) {
             allProducts = data.products || [];
             if (data.req_sock) {
                 var b = document.getElementById('spSockBadge');
-                b.textContent = '🔌 Đang lọc Socket: ' + data.req_sock;
+                b.textContent = 'Đang lọc Socket: ' + data.req_sock;
                 b.style.display = 'block';
             }
             renderProducts(allProducts);

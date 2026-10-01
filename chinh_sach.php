@@ -8,7 +8,7 @@ include 'app/views/header.php';
 
         <!-- Header -->
         <div style="background:linear-gradient(135deg,#1e293b,#334155);padding:36px 40px;color:white;">
-            <h1 style="margin:0 0 6px;font-size:26px;font-weight:800;">📜 Điều khoản sử dụng & Chính sách bảo mật</h1>
+            <h1 style="margin:0 0 6px;font-size:26px;font-weight:800;"><i class="fa fa-file-text-o"></i> Điều khoản sử dụng & Chính sách bảo mật</h1>
             <p style="margin:0;font-size:14px;opacity:.7;">Cập nhật lần cuối: 06/07/2026</p>
         </div>
 
@@ -37,9 +37,9 @@ include 'app/views/header.php';
 
             <h2 style="font-size:18px;font-weight:700;color:#1e293b;margin:28px 0 12px;padding-bottom:8px;border-bottom:2px solid #e2e8f0;">5. Liên hệ</h2>
             <div style="background:#f8fafc;border-radius:14px;padding:20px 24px;border:1px solid #e2e8f0;">
-                <p style="margin:0 0 8px;">📧 <strong>Email:</strong> support@pcstore.vn</p>
-                <p style="margin:0 0 8px;">📞 <strong>Hotline:</strong> 1800 6975</p>
-                <p style="margin:0;">📍 <strong>Địa chỉ:</strong> 123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh</p>
+                <p style="margin:0 0 8px;"><i class="fa fa-envelope-o"></i> <strong>Email:</strong> support@pcstore.vn</p>
+                <p style="margin:0 0 8px;"><i class="fa fa-phone"></i> <strong>Hotline:</strong> 1800 6975</p>
+                <p style="margin:0;"><i class="fa fa-map-marker"></i> <strong>Địa chỉ:</strong> 123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh</p>
             </div>
         </div>
     </div>

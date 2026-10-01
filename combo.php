@@ -115,7 +115,8 @@ include 'app/views/header.php';
     overflow: hidden;
 }
 .cp-hero::before {
-    content: '🎁';
+    content: '\f06b';
+    font-family: FontAwesome;
     position: absolute;
     right: 30px;
     top: 50%;
@@ -337,7 +338,7 @@ include 'app/views/header.php';
     <div class="cp-container">
 
         <div class="cp-hero">
-            <h1>🎁 Combo ưu đãi</h1>
+            <h1><i class="fa fa-gift"></i> Combo ưu đãi</h1>
             <p>Ghép các linh kiện thành combo tiết kiệm hơn! Mua combo giúp bạn tiết kiệm đáng kể so với mua lẻ từng sản phẩm.</p>
         </div>
 
@@ -358,7 +359,7 @@ include 'app/views/header.php';
             ?>
             <div class="cp-card" id="combo-<?php echo $c['id']; ?>">
                 <div class="cp-card-header">
-                    <h2>🎁 <?php echo htmlspecialchars($c['name']); ?></h2>
+                    <h2><i class="fa fa-gift"></i> <?php echo htmlspecialchars($c['name']); ?></h2>
                     <span class="cp-badge"><?php echo count($items); ?> sản phẩm</span>
                 </div>
                 <div class="cp-card-body">
@@ -373,9 +374,9 @@ include 'app/views/header.php';
                             <img class="cp-item-img" src="<?php echo BASE_URL . 'public/img/products/' . htmlspecialchars($item['image']); ?>"
                                  alt="<?php echo htmlspecialchars($item['name']); ?>"
                                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-                            <div class="cp-item-img-placeholder" style="display:none;">🖥️</div>
+                            <div class="cp-item-img-placeholder" style="display:none;"><i class="fa fa-desktop"></i></div>
                             <?php else: ?>
-                            <div class="cp-item-img-placeholder">🖥️</div>
+                            <div class="cp-item-img-placeholder"><i class="fa fa-desktop"></i></div>
                             <?php endif; ?>
                             <div class="cp-item-info">
                                 <div class="cp-item-name"><?php echo htmlspecialchars($item['name']); ?></div>

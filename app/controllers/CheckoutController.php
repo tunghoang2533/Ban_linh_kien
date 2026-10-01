@@ -365,7 +365,7 @@ class CheckoutController {
         <div class="login-prompt-wrap">
             <div class="login-prompt-card">
                 <div class="login-prompt-header">
-                    <span class="prompt-icon">🛒</span>
+                    <span class="prompt-icon"><i class="fa fa-shopping-cart"></i></span>
                     <h1>Đăng nhập để thanh toán</h1>
                     <p>Bạn cần đăng nhập để hoàn tất đặt hàng và theo dõi đơn hàng của mình</p>
                 </div>

@@ -645,8 +645,8 @@ setTimeout(() => {
             <h2>Giỏ hàng của bạn</h2>
             <span><i class="fa fa-shopping-cart"></i> Có <?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?> sản phẩm trong giỏ</span>
         </div>
-        <div>
-            <span>Chào mừng bạn đến với trải nghiệm mua sắm chuẩn chuyên nghiệp.</span>
+        <div class="cart-hero-note">
+            <span>Kiểm tra sản phẩm và số lượng trước khi thanh toán.</span>
         </div>
     </div>
 
@@ -775,7 +775,7 @@ setTimeout(() => {
 
             <!-- CHI TIẾT THANH TOÁN -->
             <div class="payment-detail-box" id="paymentDetailBox">
-                <div class="payment-detail-title">📋 Chi tiết thanh toán</div>
+                <div class="payment-detail-title"><i class="fa fa-file-text-o"></i> Chi tiết thanh toán</div>
                 <div class="payment-detail-row">
                     <span>Tổng tiền hàng</span>
                     <span class="val" id="detailSubtotal">0₫</span>
@@ -956,7 +956,7 @@ function ajaxListVouchers(callback) {
 
 /* ---- UI helpers ---- */
 function iconForType(type) {
-    return { percent: '🎟️', fixed: '💰', freeship: '🚚' }[type] || '🎫';
+    return { percent: '<i class="fa fa-ticket"></i>', fixed: '<i class="fa fa-money"></i>', freeship: '<i class="fa fa-truck"></i>' }[type] || '<i class="fa fa-tag"></i>';
 }
 function iconBgForType(type) {
     return { percent: '#2563eb', fixed: '#16a34a', freeship: '#7c3aed' }[type] || '#64748b';

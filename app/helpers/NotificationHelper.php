@@ -41,7 +41,7 @@ class NotificationHelper {
         return self::send(
             $db,
             $userId,
-            '🎉 Đặt hàng thành công!',
+            'Đặt hàng thành công',
             'Đơn hàng #' . $orderId . ' của bạn đã được tiếp nhận và đang chờ xử lý. Cảm ơn bạn đã tin tưởng mua sắm!',
             'order',
             $baseUrl . 'chitietdonhang.php?id=' . $orderId
@@ -53,20 +53,20 @@ class NotificationHelper {
      */
     public static function orderStatusChanged($db, $userId, $orderId, $status, $baseUrl = '') {
         $statusMap = [
-            'pending'    => ['text' => 'đang chờ xử lý ⏳',                    'icon' => '📋'],
-            'processing' => ['text' => 'đang được xử lý ⚙️',                   'icon' => '⚙️'],
-            'shipped'    => ['text' => 'đã được giao cho đơn vị vận chuyển 🚚', 'icon' => '🚚'],
-            'completed'  => ['text' => 'đã giao thành công ✅',                  'icon' => '✅'],
-            'cancelled'  => ['text' => 'đã bị hủy ❌',                           'icon' => '❌'],
+            'pending'    => ['text' => 'đang chờ xử lý',                    'icon' => ''],
+            'processing' => ['text' => 'đang được xử lý',                   'icon' => ''],
+            'shipped'    => ['text' => 'đã được giao cho đơn vị vận chuyển', 'icon' => ''],
+            'completed'  => ['text' => 'đã giao thành công',                  'icon' => ''],
+            'cancelled'  => ['text' => 'đã bị hủy',                           'icon' => ''],
         ];
-        $info       = $statusMap[$status] ?? ['text' => $status, 'icon' => '📦'];
+        $info       = $statusMap[$status] ?? ['text' => $status, 'icon' => ''];
         $statusText = $info['text'];
         $icon       = $info['icon'];
 
         return self::send(
             $db,
             $userId,
-            $icon . ' Cập nhật đơn hàng #' . $orderId,
+            ($icon ? $icon . ' ' : '') . 'Cập nhật đơn hàng #' . $orderId,
             'Đơn hàng #' . $orderId . ' của bạn ' . $statusText . '. Nhấn để xem chi tiết.',
             'order',
             $baseUrl . 'chitietdonhang.php?id=' . $orderId

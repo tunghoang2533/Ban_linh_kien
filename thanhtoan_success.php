@@ -100,7 +100,7 @@ include 'app/views/header.php';
 <div class="success-page">
     <div class="success-card">
         <div class="success-header">
-            <span class="s-icon">🎉</span>
+            <span class="s-icon"><i class="fa fa-check-circle"></i></span>
             <h1>Đặt hàng thành công!</h1>
             <p>Cảm ơn bạn đã tin tưởng Shop Linh Kiện.<br>Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.</p>
         </div>
@@ -112,7 +112,7 @@ include 'app/views/header.php';
 
             <?php if ($voucherCode && $discount > 0): ?>
             <div class="voucher-badge">
-                🎟️ Voucher <strong><?php echo htmlspecialchars($voucherCode); ?></strong> — Tiết kiệm <strong><?php echo number_format($discount, 0, ',', '.'); ?>₫</strong>
+                <i class="fa fa-ticket"></i> Voucher <strong><?php echo htmlspecialchars($voucherCode); ?></strong> — Tiết kiệm <strong><?php echo number_format($discount, 0, ',', '.'); ?>₫</strong>
             </div>
             <?php endif; ?>
 
@@ -120,9 +120,9 @@ include 'app/views/header.php';
                 <span class="label">Phương thức thanh toán</span>
                 <span class="payment-badge">
                     <?php if ($paymentMethod === 'bank'): ?>
-                        🏦 Chuyển khoản ngân hàng
+                        <i class="fa fa-university"></i> Chuyển khoản ngân hàng
                     <?php else: ?>
-                        💵 Thanh toán khi nhận hàng (COD)
+                        <i class="fa fa-money"></i> Thanh toán khi nhận hàng (COD)
                     <?php endif; ?>
                 </span>
             </div>
@@ -152,7 +152,7 @@ include 'app/views/header.php';
                     <i class="fa fa-spinner fa-spin"></i> Chờ chuyển khoản (Hệ thống tự động xác nhận)
                 </div>
                 <p style="margin:0 0 14px;font-size:14px;font-weight:700;color:#1d4ed8;">
-                    📱 Quét mã QR để chuyển khoản ngay
+                    <i class="fa fa-qrcode"></i> Quét mã QR để chuyển khoản ngay
                 </p>
                 <div style="display:inline-block;background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.10);">
                     <img src="<?php echo htmlspecialchars($qrUrl); ?>"
@@ -161,7 +161,7 @@ include 'app/views/header.php';
                          onerror="this.style.display='none';document.getElementById('qr-fallback').style.display='block';">
                 </div>
                 <div id="qr-fallback" style="display:none;background:#fff;border-radius:12px;padding:14px;margin-top:8px;font-size:13px;color:#475569;">
-                    ⚠️ Không tải được QR. Vui lòng chuyển khoản thủ công bên dưới.
+                    <i class="fa fa-exclamation-triangle"></i> Không tải được QR. Vui lòng chuyển khoản thủ công bên dưới.
                 </div>
 
                 <div style="margin-top:16px;background:#fff;border-radius:12px;padding:14px 18px;text-align:left;font-size:13.5px;color:#1e293b;line-height:2;border:1px solid #bfdbfe;">
@@ -187,19 +187,19 @@ include 'app/views/header.php';
                     </div>
                 </div>
                 <p style="margin:10px 0 0;font-size:12px;color:#64748b;">
-                    ⚠️ Vui lòng chuyển khoản <strong>đúng số tiền và nội dung</strong> để đơn hàng được xử lý nhanh nhất.
+                    <i class="fa fa-info-circle"></i> Vui lòng chuyển khoản <strong>đúng số tiền và nội dung</strong> để đơn hàng được xử lý nhanh nhất.
                 </p>
             </div>
 
             <div id="payment-paid-box" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:16px;padding:24px 20px;margin:12px 0;text-align:center;">
-                <div style="font-size:48px;margin-bottom:8px;">✅</div>
+                <div style="font-size:48px;margin-bottom:8px;"><i class="fa fa-check-circle"></i></div>
                 <h3 style="color:#15803d;margin:0 0 6px;font-size:18px;font-weight:800;">Đã nhận thanh toán thành công!</h3>
                 <p style="color:#166534;margin:0;font-size:13.5px;line-height:1.5;">Hệ thống đã tự động xác nhận tiền vào tài khoản MB Bank. Đơn hàng đang được chuẩn bị đóng gói.</p>
             </div>
             <?php endif; ?>
 
             <div class="total-row">
-                <span class="label">💰 Tổng thanh toán</span>
+                <span class="label"><i class="fa fa-money"></i> Tổng thanh toán</span>
                 <span class="amount"><?php echo number_format($finalTotal, 0, ',', '.'); ?>₫</span>
             </div>
 

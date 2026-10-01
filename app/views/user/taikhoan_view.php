@@ -369,7 +369,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <style>@keyframes fpIn { from{opacity:0;transform:scale(.95)translateY(10px)} to{opacity:1;transform:scale(1)translateY(0)} }</style>
         <button onclick="document.getElementById('forgotPwModal').style.display='none'" style="position:absolute;top:14px;right:14px;border:none;background:#f1f5f9;border-radius:50%;width:30px;height:30px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;">&times;</button>
         <div style="text-align:center;margin-bottom:20px;">
-            <div style="font-size:48px;margin-bottom:10px;">🔐</div>
+            <div style="font-size:48px;margin-bottom:10px;"><i class="fa fa-lock"></i></div>
             <h2 style="margin:0 0 8px;font-size:20px;color:#1e293b;">Quên mật khẩu?</h2>
             <p style="margin:0;color:#64748b;font-size:14px;line-height:1.6;">Hiện tại chưa có tính năng tự reset mật khẩu tự động. Vui lòng liên hệ quản trị viên để được hỗ trợ đặt lại mật khẩu.</p>
         </div>

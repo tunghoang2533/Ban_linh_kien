@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         NotificationHelper::send(
                             $dbConn,
                             (int)$userId,
-                            '📬 Đã nhận yêu cầu hỗ trợ: ' . $subject,
+                            'Đã nhận yêu cầu hỗ trợ: ' . $subject,
                             'Chào ' . $name . ', PC Store đã nhận được yêu cầu hỗ trợ của bạn. Chuyên viên kỹ thuật sẽ liên hệ phản hồi trong thời gian sớm nhất!',
                             'info'
                         );
