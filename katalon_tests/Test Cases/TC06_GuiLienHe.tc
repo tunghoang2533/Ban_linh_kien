@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Kiểm thử gửi tin nhắn liên hệ hỗ trợ trực tuyến</description>
+   <name>TC06_GuiLienHe</name>
+   <tag>Contact, Support</tag>
+   <comment></comment>
+   <testCaseGuid>c1a00001-0001-0001-0001-000000000006</testCaseGuid>
+</TestCaseEntity>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Kiểm thử đăng nhập thành công với tài khoản hợp lệ</description>
+   <name>TC02_DangNhapThanhCong</name>
+   <tag>Auth, Login, Positive</tag>
+   <comment></comment>
+   <testCaseGuid>c1a00001-0001-0001-0001-000000000002</testCaseGuid>
+</TestCaseEntity>

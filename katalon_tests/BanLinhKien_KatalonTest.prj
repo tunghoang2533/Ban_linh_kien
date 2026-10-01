@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+   <description>Katalon Studio Automation Test Suite cho Website Ban Linh Kien</description>
+   <name>BanLinhKien_KatalonTest</name>
+   <tag></tag>
+   <UUID>d5598e89-b11b-4b67-8cc9-ec5ddc10e760</UUID>
+   <migratedVersion>5.9.0</migratedVersion>
+   <pageLoadTimeout>0</pageLoadTimeout>
+   <projectFileLocation>c:/laragon/www/Ban_linh_kien/katalon_tests/BanLinhKien_KatalonTest.prj</projectFileLocation>
+   <sourceContent>
+      <sourceFolderList>
+         <sourceFolderConfiguration>
+            <url>Include/scripts/groovy</url>
+         </sourceFolderConfiguration>
+      </sourceFolderList>
+      <systemFolderList>
+         <systemFolderConfiguration>
+            <url>Include/scripts/groovy</url>
+         </systemFolderConfiguration>
+         <systemFolderConfiguration>
+            <url>Include/features</url>
+         </systemFolderConfiguration>
+         <systemFolderConfiguration>
+            <url>Include/config</url>
+         </systemFolderConfiguration>
+      </systemFolderList>
+   </sourceContent>
+   <timeStampOfPropertiesProvider>1727766000000</timeStampOfPropertiesProvider>
+   <type>WEB</type>
+</Project>

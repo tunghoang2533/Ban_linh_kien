@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalVariableEntities>
+   <description></description>
+   <name>default</name>
+   <tag></tag>
+   <defaultProfile>true</defaultProfile>
+   <GlobalVariableEntity>
+      <description>URL gốc của ứng dụng web Bán Linh Kiện</description>
+      <initValue>'http://localhost/Ban_linh_kien/'</initValue>
+      <name>G_SiteURL</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Thời gian chờ mặc định cho các phần tử (giây)</description>
+      <initValue>10</initValue>
+      <name>G_Timeout</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Tài khoản thử nghiệm mặc định</description>
+      <initValue>'admin'</initValue>
+      <name>G_TestUser</name>
+   </GlobalVariableEntity>
+</GlobalVariableEntities>
