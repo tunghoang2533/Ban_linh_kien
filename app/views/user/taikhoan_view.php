@@ -248,6 +248,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     .logout-panel .btn-logout:hover {
         background: #cf4334;
     }
+    @media (max-width: 600px) {
+        .account-page { align-items: flex-start; padding: 24px 12px 40px; }
+        .account-card { border-radius: 18px; }
+        .account-card-header { padding: 28px 20px 26px; }
+        .account-card-header h1 { font-size: 25px; line-height: 1.2; }
+        .account-card-tabs button { padding: 15px 8px; }
+        .account-card-body { padding: 24px 18px 28px; }
+        .field-group input { font-size: 16px; } /* Ngăn iOS tự phóng to khi focus */
+        .logout-panel { padding: 30px 18px; }
+        .logout-panel h2 { font-size: 22px; overflow-wrap: anywhere; }
+    }
 </style>
 
 <div class="account-page">
@@ -432,20 +443,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         });
     }
 
-    // Fix #6 client-side fallback validation
-    document.getElementById('form-register').addEventListener('submit', function(e) {
-        var pw  = document.getElementById('register-password').value;
-        var cpw = document.getElementById('register-confirm-password').value;
-        if (pw.length < 6) {
-            e.preventDefault();
-            alert('Mật khẩu phải có ít nhất 6 ký tự!');
-            document.getElementById('register-password').focus();
-            return;
-        }
-        if (pw !== cpw) {
-            e.preventDefault();
-            alert('Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.');
-            document.getElementById('register-confirm-password').focus();
-        }
-    });
+    // Client-side fallback validation. Form không tồn tại khi người dùng đã đăng nhập.
+    var registerForm = document.getElementById('form-register');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            var pw  = document.getElementById('register-password').value;
+            var cpw = document.getElementById('register-confirm-password').value;
+            if (pw.length < 6) {
+                e.preventDefault();
+                alert('Mật khẩu phải có ít nhất 6 ký tự!');
+                document.getElementById('register-password').focus();
+                return;
+            }
+            if (pw !== cpw) {
+                e.preventDefault();
+                alert('Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.');
+                document.getElementById('register-confirm-password').focus();
+            }
+        });
+    }
 </script>

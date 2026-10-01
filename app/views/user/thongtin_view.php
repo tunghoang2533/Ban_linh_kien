@@ -164,9 +164,22 @@
         border-radius: 14px;
     }
     @media (max-width: 980px) {
-        .profile-card-body {
-            grid-template-columns: 1fr;
-        }
+        .profile-card-body { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+        .profile-page { padding: 24px 12px 40px; }
+        .profile-card { border-radius: 18px; }
+        .profile-card-header { padding: 26px 20px; }
+        .profile-card-header h1 { font-size: 25px; }
+        .profile-card-body { padding: 24px 18px 30px; gap: 24px; }
+        .profile-form .field-row { grid-template-columns: 1fr; }
+        .profile-form input, .profile-form textarea { font-size: 16px; }
+        .profile-aside { padding: 20px 14px; border-radius: 18px; }
+        .profile-stats { gap: 7px; }
+        .stat-card { padding: 14px 6px; }
+        .stat-card .stat-val { font-size: 19px; }
+        .stat-card .stat-label { font-size: 9px; }
+        .avatar-preview { width: 130px; height: 130px; }
     }
     /* === STATS CARDS === */
     .profile-stats {
@@ -240,6 +253,12 @@
     .ql-green i { background: #d1fae5; color: #059669; }
     .ql-red   i { background: #fee2e2; color: #dc2626; }
     .ql-purple i { background: #ede9fe; color: #7c3aed; }
+    @media (max-width: 600px) {
+        .profile-stats { gap: 7px; }
+        .stat-card { padding: 14px 6px; }
+        .stat-card .stat-val { font-size: 19px; }
+        .stat-card .stat-label { font-size: 9px; }
+    }
 </style>
 
 <div class="profile-page">

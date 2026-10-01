@@ -996,12 +996,23 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
             .search-bar { max-width: none !important; flex: 1; }
         }
         @media (max-width: 600px) {
-            .header-inner { gap: 10px; }
-            .logo-text { font-size: 18px; }
+            .header-inner { gap: 8px; height: 62px; }
+            .logo-text { display: none; }
+            .logo a { gap: 0; }
+            .search-bar { min-width: 0; }
+            .search-bar input { min-width: 0; padding: 9px 10px; font-size: 16px; }
+            .search-bar button { padding: 0 13px; }
+            /* Hồ sơ và thông báo đã có trong menu trượt; ẩn để ô tìm kiếm không tràn. */
+            .user-menu .notif-wrapper,
+            .user-menu .user-menu-item { display: none; }
+            .cart-btn, .hamburger-btn { width: 38px; height: 38px; }
         }
         @media (max-width: 420px) {
-            .top-nav .container { padding: 0 12px; }
+            .top-nav .container { padding: 0 12px; justify-content: flex-end; }
             .top-nav .top-nav-left { display: none; }
+            .top-nav a { padding: 0 9px; }
+            .header-inner { padding-left: 12px; padding-right: 12px; }
+            .search-bar input::placeholder { color: transparent; }
         }
     </style>
 
