@@ -37,7 +37,7 @@ include 'app/views/header.php';
     <!-- Về chúng tôi -->
     <div class="about-card">
         <div class="about-card-header">
-            <span class="icon">🏪</span>
+            <span class="icon"><i class="fa fa-building"></i></span>
             <h2>Về PC Store</h2>
         </div>
         <div class="about-card-body">
@@ -55,16 +55,16 @@ include 'app/views/header.php';
     <!-- Cam kết -->
     <div class="about-card">
         <div class="about-card-header">
-            <span class="icon">✅</span>
+            <span class="icon"><i class="fa fa-check-circle"></i></span>
             <h2>Cam Kết Của Chúng Tôi</h2>
         </div>
         <div class="about-card-body">
             <ul>
-                <li>🛡️ <strong>Hàng chính hãng 100%</strong> – Có tem bảo hành từ nhà sản xuất</li>
-                <li>🚀 <strong>Giao hàng nhanh</strong> – Nội thành 2–4 giờ, toàn quốc 1–3 ngày</li>
-                <li>🔧 <strong>Bảo hành tận tâm</strong> – Hỗ trợ đổi trả trong vòng 30 ngày</li>
-                <li>💰 <strong>Giá cạnh tranh</strong> – Cam kết hoàn tiền nếu tìm được giá tốt hơn</li>
-                <li>📞 <strong>Hỗ trợ 24/7</strong> – Tư vấn kỹ thuật miễn phí qua hotline</li>
+                <li><i class="fa fa-shield"></i> <strong>Hàng chính hãng 100%</strong> – Có tem bảo hành từ nhà sản xuất</li>
+                <li><i class="fa fa-rocket"></i> <strong>Giao hàng nhanh</strong> – Nội thành 2–4 giờ, toàn quốc 1–3 ngày</li>
+                <li><i class="fa fa-wrench"></i> <strong>Bảo hành tận tâm</strong> – Hỗ trợ đổi trả trong vòng 30 ngày</li>
+                <li><i class="fa fa-money"></i> <strong>Giá cạnh tranh</strong> – Cam kết hoàn tiền nếu tìm được giá tốt hơn</li>
+                <li><i class="fa fa-phone"></i> <strong>Hỗ trợ 24/7</strong> – Tư vấn kỹ thuật miễn phí qua hotline</li>
             </ul>
         </div>
     </div>
@@ -72,15 +72,15 @@ include 'app/views/header.php';
     <!-- Đội ngũ -->
     <div class="about-card">
         <div class="about-card-header">
-            <span class="icon">👨‍💻</span>
+            <span class="icon"><i class="fa fa-users"></i></span>
             <h2>Đội Ngũ Của Chúng Tôi</h2>
         </div>
         <div class="about-card-body">
             <div class="team-grid">
-                <div class="team-card"><div class="team-avatar">👨‍💼</div><strong>Nguyễn Văn A</strong><span>Giám đốc điều hành</span></div>
-                <div class="team-card"><div class="team-avatar">👩‍💻</div><strong>Trần Thị B</strong><span>Quản lý kỹ thuật</span></div>
-                <div class="team-card"><div class="team-avatar">👨‍🔧</div><strong>Lê Văn C</strong><span>Kỹ thuật viên</span></div>
-                <div class="team-card"><div class="team-avatar">👩‍🎨</div><strong>Phạm Thị D</strong><span>Chăm sóc khách hàng</span></div>
+                <div class="team-card"><div class="team-avatar"><i class="fa fa-user"></i></div><strong>Nguyễn Văn A</strong><span>Giám đốc điều hành</span></div>
+                <div class="team-card"><div class="team-avatar"><i class="fa fa-code"></i></div><strong>Trần Thị B</strong><span>Quản lý kỹ thuật</span></div>
+                <div class="team-card"><div class="team-avatar"><i class="fa fa-wrench"></i></div><strong>Lê Văn C</strong><span>Kỹ thuật viên</span></div>
+                <div class="team-card"><div class="team-avatar"><i class="fa fa-headphones"></i></div><strong>Phạm Thị D</strong><span>Chăm sóc khách hàng</span></div>
             </div>
         </div>
     </div>

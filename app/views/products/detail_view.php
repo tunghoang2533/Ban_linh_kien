@@ -78,11 +78,11 @@ if (empty($allImages)) {
 $isOutOfStock = ((int)($product['quantity'] ?? 0) <= 0);
 $allImagesJson = json_encode($allImages);
 ?>
-<div class="container" style="margin-top: 50px; margin-bottom: 50px;">
-    <div style="display: flex; gap: 40px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+<div class="container product-detail-shell" style="margin-top: 50px; margin-bottom: 50px;">
+    <div class="product-detail-card" style="display: flex; gap: 40px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
 
         <!-- PHẦN GALLERY -->
-        <div style="flex: 1; display: flex; gap: 14px; min-width: 0;">
+        <div class="product-detail-gallery" style="flex: 1; display: flex; gap: 14px; min-width: 0;">
 
             <!-- THUMBNAIL SIDEBAR TRÁI -->
             <div id="pg-thumbs" style="display:flex;flex-direction:column;gap:8px;max-height:500px;overflow-y:auto;scrollbar-width:thin;flex-shrink:0;">
@@ -103,7 +103,7 @@ $allImagesJson = json_encode($allImages);
 
                     <?php if ($isOutOfStock): ?>
                     <div style="position:absolute;inset:0;background:rgba(0,0,0,0.52);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none;">
-                        <span style="background:#ef4444;color:#fff;font-size:18px;font-weight:800;letter-spacing:0.1em;padding:10px 28px;border-radius:999px;text-transform:uppercase;box-shadow:0 6px 20px rgba(239,68,68,0.5);">🚫 HẾT HÀNG</span>
+                        <span style="background:#ef4444;color:#fff;font-size:18px;font-weight:800;letter-spacing:0.1em;padding:10px 28px;border-radius:999px;text-transform:uppercase;box-shadow:0 6px 20px rgba(239,68,68,0.5);"><i class="fa fa-ban"></i> HẾT HÀNG</span>
                         <span style="color:#fecaca;font-size:13px;font-weight:600;">Sản phẩm hiện tại đã hết, vui lòng quay lại sau</span>
                     </div>
                     <?php endif; ?>
@@ -132,11 +132,11 @@ $allImagesJson = json_encode($allImages);
         <!-- THÔNG TIN SẢN PHẨM -->
 
 
-        <div style="flex: 1;">
+        <div class="product-detail-info" style="flex: 1;">
             <h1 style="font-size: 28px; color: #333; margin-top: 0;"><?php echo $product['name']; ?></h1>
             <p style="color: #666;">Mã sản phẩm: #<?php echo $product['id']; ?></p>
             <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-            
+
             <div style="margin: 20px 0;">
                 <?php
                 $hasDis  = !empty($product['discount_percent']) && $product['discount_percent'] > 0;
@@ -149,7 +149,7 @@ $allImagesJson = json_encode($allImages);
                         <span style="background:#e10c00;color:#fff;font-size:13px;font-weight:800;padding:4px 12px;border-radius:99px;">-<?php echo $product['discount_percent']; ?>%</span>
                     </div>
                     <div style="margin-top:6px;font-size:13px;color:#16a34a;font-weight:600;">
-                        💰 Tiết kiệm <?php echo number_format($product['price'] - $saleAmt, 0, ',', '.'); ?> ₫
+                        <i class="fa fa-money"></i> Tiết kiệm <?php echo number_format($product['price'] - $saleAmt, 0, ',', '.'); ?> ₫
                     </div>
                 <?php else: ?>
                     <span style="font-size: 30px; color: #e10c00; font-weight: bold;">
@@ -157,7 +157,7 @@ $allImagesJson = json_encode($allImages);
                     </span>
                 <?php endif; ?>
             </div>
-            
+
             <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #ff9800;">
                 <h4 style="margin-top: 0; margin-bottom: 10px; color: #333;">Đặc điểm nổi bật:</h4>
                 <p style="margin: 0; line-height: 1.6; color: #555;"><?php echo $product['description'] ? $product['description'] : 'Đang cập nhật nội dung cho sản phẩm này...'; ?></p>
@@ -243,7 +243,7 @@ $allImagesJson = json_encode($allImages);
             }
             </script>
             <?php endif; ?>                    <div style="display:flex; flex-direction: column; gap: 15px; margin-top: 25px;">
-                
+
                 <?php if ($isOutOfStock): ?>
                     <!-- Thông báo hết hàng + nút Đăng ký -->
                     <div style="
@@ -259,11 +259,11 @@ $allImagesJson = json_encode($allImages);
                         </div>
                     </div>
                     <div style="display:flex; gap:15px;">
-                        <button onclick="openBisModal(<?php echo (int)$product['id']; ?>)" 
+                        <button class="pd-notify-btn" onclick="openBisModal(<?php echo (int)$product['id']; ?>)"
                                 style="flex:1;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;padding:14px;font-size:15px;font-weight:bold;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 14px rgba(99,102,241,0.35);"
                                 onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(99,102,241,0.45)'"
                                 onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(99,102,241,0.35)'">
-                            <i class="fa fa-bell"></i> 🔔 BÁO KHI CÓ HÀNG
+                            <i class="fa fa-bell"></i> BÁO KHI CÓ HÀNG
                         </button>
                         <button disabled style="flex:1;background:#e2e8f0;color:#94a3b8;border:none;padding:12px;font-size:16px;font-weight:bold;border-radius:5px;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:8px;">
                             <i class="fa fa-ban"></i> Hết hàng
@@ -271,25 +271,25 @@ $allImagesJson = json_encode($allImages);
                     </div>
                 <?php else: ?>
                     <div style="display: flex; gap: 15px;">
-                        <button onclick="location.href='<?php echo BASE_URL; ?>giohang.php?action=add&id=<?php echo $product['id']; ?>'" 
+                        <button class="pd-cart-btn" onclick="location.href='<?php echo BASE_URL; ?>giohang.php?action=add&id=<?php echo $product['id']; ?>'"
                                 style="flex: 1; background: #fff; color: #ff9800; border: 2px solid #ff9800; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
                             <i class="fa fa-cart-plus"></i> THÊM VÀO GIỎ
                         </button>
 
-                        <button onclick="location.href='<?php echo BASE_URL; ?>giohang.php?action=add&id=<?php echo $product['id']; ?>&checkout=1'" 
+                        <button class="pd-buy-btn" onclick="location.href='<?php echo BASE_URL; ?>giohang.php?action=add&id=<?php echo $product['id']; ?>&checkout=1'"
                                 style="flex: 1; background: #e10c00; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(225, 12, 0, 0.3);">
                             <i class="fa fa-bolt"></i> MUA NGAY
                         </button>
                     </div>
                 <?php endif; ?>
 
-                <a href="<?php echo BASE_URL; ?>buildpc.php?action=add&cat_id=<?php echo $product['category_id']; ?>&product_id=<?php echo $product['id']; ?>" 
+                <a class="pd-build-btn" href="<?php echo BASE_URL; ?>buildpc.php?action=add&cat_id=<?php echo $product['category_id']; ?>&product_id=<?php echo $product['id']; ?>"
                    style="width: 100%; box-sizing: border-box; background: linear-gradient(to right, #ff4b2b, #ff416c); color: white; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; text-decoration: none; text-align: center; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3);">
                     <i class="fa fa-cogs"></i> BUILD PC VỚI MÓN NÀY
                 </a>
 
                 <?php if (!$isOutOfStock): ?>
-                <button onclick="addToCompare(<?php echo $product['id']; ?>, '<?php echo addslashes(htmlspecialchars($product['name'])); ?>')"
+                <button class="pd-compare-btn" onclick="addToCompare(<?php echo $product['id']; ?>, '<?php echo addslashes(htmlspecialchars($product['name'])); ?>')"
                         style="width:100%;padding:11px;border:2px dashed #c7d2fe;background:#f5f3ff;color:#6366f1;font-weight:700;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
                     <i class="fa fa-balance-scale"></i> Thêm vào so sánh
                 </button>
@@ -456,7 +456,7 @@ window.currentProduct = {
 <div class="container" style="margin-bottom:40px;">
 <div style="background:white;border-radius:14px;padding:28px 30px;box-shadow:0 2px 16px rgba(0,0,0,.07);">
   <h3 style="margin:0 0 20px;font-size:18px;font-weight:800;color:#1e293b;display:flex;align-items:center;gap:10px;">
-    <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;width:38px;height:38px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;">🛒</span>
+    <span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;width:38px;height:38px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;"><i class="fa fa-shopping-cart"></i></span>
     Thường mua cùng nhau
   </h3>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;">
@@ -486,15 +486,15 @@ window.currentProduct = {
 <div class="container" style="margin-bottom:40px;">
 <div style="background:white;border-radius:14px;padding:28px 30px;box-shadow:0 2px 16px rgba(0,0,0,.07);">
   <h3 style="margin:0 0 20px;font-size:18px;font-weight:800;color:#1e293b;display:flex;align-items:center;gap:10px;">
-    <span style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;width:38px;height:38px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;">🎁</span>
+    <span style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;width:38px;height:38px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;"><i class="fa fa-gift"></i></span>
     Combo ưu đãi có sản phẩm này
   </h3>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
-  <?php foreach ($relatedCombos as $rc): 
+  <?php foreach ($relatedCombos as $rc):
     $rcSavings = ($rc['original_price'] > 0 && $rc['combo_price'] > 0) ? round((1 - $rc['combo_price']/$rc['original_price'])*100) : 0;
   ?>
   <a href="<?php echo BASE_URL; ?>combo.php" style="text-decoration:none;display:block;background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1.5px solid #c4b5fd;border-radius:14px;padding:18px 20px;transition:all .2s;" onmouseover="this.style.borderColor='#8b5cf6';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(139,92,246,.15)'" onmouseout="this.style.borderColor='#c4b5fd';this.style.transform='translateY(0)';this.style.boxShadow='none'">
-    <div style="font-size:15px;font-weight:800;color:#5b21b6;margin-bottom:8px;">🎁 <?php echo htmlspecialchars($rc['name']); ?></div>
+    <div style="font-size:15px;font-weight:800;color:#5b21b6;margin-bottom:8px;"><i class="fa fa-gift"></i> <?php echo htmlspecialchars($rc['name']); ?></div>
     <div style="font-size:13px;color:#6d28d9;"><?php echo (int)$rc['item_count']; ?> sản phẩm</div>
     <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
       <?php if ($rc['original_price'] > 0): ?>
@@ -527,7 +527,7 @@ window.currentProduct = {
     <div style="background:#fff;border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative;animation:slideUp .3s ease;">
         <button onclick="closeBisModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#94a3b8;line-height:1;">&times;</button>
         <div style="text-align:center;margin-bottom:20px;">
-            <span style="font-size:48px;">🔔</span>
+            <span style="font-size:48px;"><i class="fa fa-bell"></i></span>
             <h3 style="margin:12px 0 4px;font-size:20px;font-weight:800;color:#1e293b;">Báo khi có hàng</h3>
             <p style="margin:0;color:#64748b;font-size:14px;">Nhập email để nhận thông báo ngay khi <strong id="bisProductName" style="color:#6366f1;">sản phẩm</strong> về kho!</p>
         </div>
@@ -544,12 +544,12 @@ window.currentProduct = {
             </div>
             <button type="submit" id="bisSubmitBtn"
                     style="width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 14px rgba(99,102,241,0.3);">
-                🔔 Gửi đăng ký
+                <i class="fa fa-bell"></i> Gửi đăng ký
             </button>
             <p style="margin:12px 0 0;font-size:11px;color:#94a3b8;text-align:center;">Chúng tôi sẽ chỉ gửi email khi sản phẩm này có hàng trở lại. Không spam.</p>
         </form>
         <div id="bisResult" style="display:none;text-align:center;padding:20px 0;">
-            <span id="bisResultIcon" style="font-size:48px;">✅</span>
+            <span id="bisResultIcon" style="font-size:48px;"><i class="fa fa-check-circle"></i></span>
             <p id="bisResultMsg" style="font-size:15px;color:#1e293b;font-weight:600;margin:12px 0 0;"></p>
             <button onclick="closeBisModal()" style="margin-top:16px;padding:10px 24px;background:#f1f5f9;border:none;border-radius:10px;font-weight:700;color:#475569;cursor:pointer;">Đóng</button>
         </div>
@@ -563,7 +563,7 @@ function openBisModal(productId) {
     document.getElementById('bisForm').style.display = 'block';
     document.getElementById('bisResult').style.display = 'none';
     document.getElementById('bisSubmitBtn').disabled = false;
-    document.getElementById('bisSubmitBtn').innerHTML = '🔔 Gửi đăng ký';
+    document.getElementById('bisSubmitBtn').innerHTML = '<i class="fa fa-bell"></i> Gửi đăng ký';
     document.getElementById('bisEmail').focus();
     // Set product name from page
     var nameEl = document.querySelector('h1');
@@ -587,7 +587,7 @@ function submitBis(e) {
     .then(function(res) {
         document.getElementById('bisForm').style.display = 'none';
         document.getElementById('bisResult').style.display = 'block';
-        document.getElementById('bisResultIcon').textContent = res.ok ? '✅' : '❌';
+        document.getElementById('bisResultIcon').innerHTML = res.ok ? '<i class="fa fa-check-circle"></i>' : '<i class="fa fa-times-circle"></i>';
         document.getElementById('bisResultMsg').textContent = res.message;
         if (!res.ok) {
             var closeBtn = document.getElementById('bisResult').querySelector('button');
@@ -597,7 +597,7 @@ function submitBis(e) {
     .catch(function() {
         document.getElementById('bisForm').style.display = 'none';
         document.getElementById('bisResult').style.display = 'block';
-        document.getElementById('bisResultIcon').textContent = '❌';
+        document.getElementById('bisResultIcon').innerHTML = '<i class="fa fa-times-circle"></i>';
         document.getElementById('bisResultMsg').textContent = 'Lỗi kết nối. Vui lòng thử lại sau.';
     });
 }

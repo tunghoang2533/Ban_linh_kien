@@ -929,9 +929,9 @@
                                  src="<?php echo BASE_URL . ltrim($imgPath, '/'); ?>" 
                                  alt="<?php echo htmlspecialchars($item['name']); ?>"
                                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-                            <div class="od-product-img-placeholder" style="display:none;">🖥️</div>
+                            <div class="od-product-img-placeholder" style="display:none;"><i class="fa fa-desktop"></i></div>
                         <?php else: ?>
-                            <div class="od-product-img-placeholder">🖥️</div>
+                            <div class="od-product-img-placeholder"><i class="fa fa-desktop"></i></div>
                         <?php endif; ?>
 
                         <!-- Thông tin sản phẩm -->

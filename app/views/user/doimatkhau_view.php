@@ -205,7 +205,7 @@
             { pct: '50%',  color: '#f59e0b', text: 'Độ mạnh: Trung bình' },
             { pct: '75%',  color: '#3b82f6', text: 'Độ mạnh: Khá' },
             { pct: '88%',  color: '#10b981', text: 'Độ mạnh: Mạnh' },
-            { pct: '100%', color: '#059669', text: 'Độ mạnh: Rất mạnh 💪' },
+            { pct: '100%', color: '#059669', text: 'Độ mạnh: Rất mạnh' },
         ];
         var lvl = levels[Math.min(score, 5)];
         fill.style.width = pw.length ? lvl.pct : '0%';

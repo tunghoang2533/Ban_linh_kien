@@ -292,7 +292,7 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 
     <!-- Hero -->
     <div class="checkout-hero">
-        <div class="checkout-hero-icon">📦</div>
+        <div class="checkout-hero-icon"><i class="fa fa-shopping-bag"></i></div>
         <div>
             <h2>Xác nhận đặt hàng</h2>
             <p>Vui lòng kiểm tra thông tin và hoàn tất đơn hàng của bạn</p>
@@ -302,7 +302,7 @@ textarea.form-control { resize: vertical; min-height: 90px; }
     <?php if ($isGuest ?? false): ?>
     <!-- Guest checkout banner -->
     <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:14px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;">
-        <span style="font-size:28px;">👤</span>
+        <span style="font-size:28px;"><i class="fa fa-user"></i></span>
         <div>
             <strong style="color:#92400e;font-size:14px;">Bạn đang đặt hàng không cần đăng nhập</strong>
             <p style="margin:4px 0 0;font-size:13px;color:#78350f;">Điền thông tin bên dưới để hoàn tất đơn hàng.
@@ -343,7 +343,7 @@ textarea.form-control { resize: vertical; min-height: 90px; }
                 <!-- Thông tin người nhận -->
                 <div class="co-card">
                     <div class="co-card-header">
-                        <div class="icon" style="background:#eff6ff;color:#2563eb;">👤</div>
+                        <div class="icon" style="background:#eff6ff;color:#2563eb;"><i class="fa fa-user"></i></div>
                         Thông tin người nhận
                     </div>
                     <div class="co-card-body">
@@ -375,7 +375,7 @@ textarea.form-control { resize: vertical; min-height: 90px; }
                 <!-- Địa chỉ giao hàng -->
                 <div class="co-card" id="addressSection">
                     <div class="co-card-header">
-                        <div class="icon" style="background:#fef3c7;color:#d97706;">📍</div>
+                        <div class="icon" style="background:#fef3c7;color:#d97706;"><i class="fa fa-map-marker"></i></div>
                         Địa chỉ giao hàng
                         <?php if (!empty($savedAddresses)): ?>
                             <span style="margin-left:auto;font-size:12px;color:#64748b;">
@@ -886,14 +886,14 @@ textarea.form-control { resize: vertical; min-height: 90px; }
                 <!-- Phương thức thanh toán -->
                 <div class="co-card">
                     <div class="co-card-header">
-                        <div class="icon" style="background:#fdf4ff;color:#9333ea;">💳</div>
+                        <div class="icon" style="background:#fdf4ff;color:#9333ea;"><i class="fa fa-credit-card"></i></div>
                         Phương thức thanh toán
                     </div>
                     <div class="co-card-body">
                         <div class="pay-options">
                             <label class="pay-option">
                                 <input type="radio" name="payment_method" value="cod" checked>
-                                <span class="pay-option-icon">💵</span>
+                                <span class="pay-option-icon"><i class="fa fa-money"></i></span>
                                 <span class="pay-option-label">
                                     <strong>Thanh toán khi nhận hàng (COD)</strong>
                                     <span>Trả tiền mặt khi shipper giao hàng đến tay bạn</span>
@@ -901,7 +901,7 @@ textarea.form-control { resize: vertical; min-height: 90px; }
                             </label>
                             <label class="pay-option">
                                 <input type="radio" name="payment_method" value="bank">
-                                <span class="pay-option-icon">🏦</span>
+                                <span class="pay-option-icon"><i class="fa fa-university"></i></span>
                                 <span class="pay-option-label">
                                     <strong>Chuyển khoản ngân hàng (Quét mã VietQR)</strong>
                                     <span>Quét mã QR qua MB Bank hoặc mọi app ngân hàng (tiền vào ngay)</span>
@@ -927,13 +927,13 @@ textarea.form-control { resize: vertical; min-height: 90px; }
                 <!-- Sản phẩm -->
                 <div class="co-card">
                     <div class="co-card-header">
-                        <div class="icon" style="background:#f0fdf4;color:#16a34a;">🛒</div>
+                        <div class="icon" style="background:#f0fdf4;color:#16a34a;"><i class="fa fa-shopping-cart"></i></div>
                         Sản phẩm đặt hàng
                         <span style="margin-left:auto;font-size:12.5px;color:#64748b;font-weight:500;"><?php echo count($cartItems); ?> sản phẩm</span>
                     </div>
                     <div class="co-card-body" style="padding:16px 20px;">
                         <?php
-                        $defaultImg = 'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="52" height="52"><rect width="52" height="52" fill="%23f0f5ff"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="%2394a3b8" font-size="20">📦</text></svg>';
+                        $defaultImg = 'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="52" height="52"><rect width="52" height="52" fill="%23f0f5ff"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="%2394a3b8" font-size="20">-</text></svg>';
                         foreach ($cartItems as $item):
                             if (strpos($item['image'], 'data:') === 0) {
                                 $src = $item['image'];
@@ -960,7 +960,7 @@ textarea.form-control { resize: vertical; min-height: 90px; }
                 <!-- Chi tiết thanh toán -->
                 <div class="co-card">
                     <div class="co-card-header">
-                        <div class="icon" style="background:#fff7ed;color:#ea580c;">📋</div>
+                        <div class="icon" style="background:#fff7ed;color:#ea580c;"><i class="fa fa-file-text-o"></i></div>
                         Chi tiết thanh toán
                     </div>
                     <div class="co-card-body" style="padding:16px 20px;">
@@ -1004,7 +1004,7 @@ textarea.form-control { resize: vertical; min-height: 90px; }
                         </div>
 
                         <p style="margin:12px 0 0;font-size:12px;color:#94a3b8;text-align:center;line-height:1.6;">
-                            🔒 Thông tin của bạn được bảo mật tuyệt đối.<br>
+                            <i class="fa fa-lock"></i> Thông tin của bạn được bảo mật tuyệt đối.<br>
                             Chúng tôi cam kết giao hàng nhanh và đảm bảo chất lượng.
                         </p>
                     </div>

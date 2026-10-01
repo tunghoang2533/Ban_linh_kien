@@ -32,7 +32,7 @@ include 'app/views/header.php';
 <div class="page-content">
     <div class="info-card">
         <div class="info-card-header">
-            <span class="icon">📌</span>
+            <span class="icon"><i class="fa fa-thumb-tack"></i></span>
             <h2>Sắp có tin tức mới</h2>
         </div>
         <div class="info-card-body">
@@ -42,7 +42,7 @@ include 'app/views/header.php';
     </div>
 
     <div class="news-empty">
-        <span class="icon">📰</span>
+        <span class="icon"><i class="fa fa-newspaper-o"></i></span>
         <h2>Chưa có bài đăng nào</h2>
         <p>Mục tin tức đang trong giai đoạn phát triển. Theo dõi fanpage để không bỏ lỡ thông tin!</p>
         <a href="index.php" class="btn-back"><i class="fa fa-home"></i> Về trang chủ</a>

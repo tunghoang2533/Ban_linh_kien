@@ -30,7 +30,7 @@ if (!empty($ids)) {
     }
 }
 
-$title = 'So sanh san pham - Ban Linh Kien';
+$title = 'So sánh sản phẩm - Bán Linh Kiện';
 include 'app/views/header.php';
 ?>
 
@@ -40,27 +40,27 @@ include 'app/views/header.php';
     <div style="background:linear-gradient(135deg,#1e293b,#334155);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;">
       <div>
         <h1 style="margin:0;color:white;font-size:22px;font-weight:800;">
-          <i class="fa fa-balance-scale" style="color:#6366f1;margin-right:8px;"></i>So sanh san pham
+          <i class="fa fa-balance-scale" style="color:#2563eb;margin-right:8px;"></i>So sánh sản phẩm
         </h1>
-        <p style="margin:4px 0 0;color:rgba(255,255,255,.55);font-size:13px;"><?php echo count($products); ?> san pham dang so sanh</p>
+        <p style="margin:4px 0 0;color:rgba(255,255,255,.55);font-size:13px;"><?php echo count($products); ?> sản phẩm đang so sánh</p>
       </div>
-      <a href="javascript:history.back()" style="color:rgba(255,255,255,.6);font-size:13px;text-decoration:none;padding:8px 16px;border:1px solid rgba(255,255,255,.2);border-radius:8px;">&#8592; Quay lai</a>
+      <a href="javascript:history.back()" style="color:rgba(255,255,255,.6);font-size:13px;text-decoration:none;padding:8px 16px;border:1px solid rgba(255,255,255,.2);border-radius:8px;">&#8592; Quay lại</a>
     </div>
 
     <?php if (empty($products)): ?>
     <div style="padding:70px;text-align:center;color:#94a3b8;">
       <i class="fa fa-balance-scale" style="font-size:52px;opacity:.25;display:block;margin-bottom:18px;"></i>
-      <p style="font-size:16px;margin:0 0 16px;">Chua co san pham nao de so sanh.</p>
-      <a href="<?php echo BASE_URL; ?>" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border-radius:12px;text-decoration:none;font-weight:700;">Ve trang chu</a>
+      <p style="font-size:16px;margin:0 0 16px;">Chưa có sản phẩm nào để so sánh.</p>
+      <a href="<?php echo BASE_URL; ?>" style="display:inline-block;padding:12px 28px;background:#2563eb;color:white;border-radius:12px;text-decoration:none;font-weight:700;">Về trang chủ</a>
     </div>
     <?php else: ?>
     <div style="overflow-x:auto;">
     <table style="width:100%;border-collapse:collapse;min-width:560px;">
       <thead>
         <tr>
-          <td style="width:175px;padding:16px 20px;background:#f8fafc;font-weight:700;color:#64748b;font-size:12px;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Thong so</td>
+          <td style="width:175px;padding:16px 20px;background:#f8fafc;font-weight:700;color:#64748b;font-size:12px;text-transform:uppercase;border-bottom:2px solid #e2e8f0;">Thông số</td>
           <?php
-          $colColors = ['#6366f1','#10b981','#f59e0b'];
+          $colColors = ['#2563eb','#2563eb','#2563eb'];
           foreach ($products as $i => $pr):
             $c     = $colColors[$i % 3];
             $saleP = (!empty($pr['discount_percent']) && $pr['discount_percent'] > 0)
@@ -80,7 +80,7 @@ include 'app/views/header.php';
               <?php endif; ?>
               <div style="margin-top:14px;display:flex;gap:6px;">
                 <a href="<?php echo BASE_URL; ?>chitietsanpham.php?id=<?php echo $pr['id']; ?>" style="flex:1;padding:8px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:12px;font-weight:700;color:#475569;text-decoration:none;text-align:center;">Xem</a>
-                <a href="<?php echo BASE_URL; ?>giohang.php?action=add&id=<?php echo $pr['id']; ?>" style="flex:2;padding:8px;background:<?php echo $c; ?>;color:white;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;text-align:center;">+ Gio hang</a>
+                <a href="<?php echo BASE_URL; ?>giohang.php?action=add&id=<?php echo $pr['id']; ?>" style="flex:2;padding:8px;background:<?php echo $c; ?>;color:white;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;text-align:center;">+ Giỏ hàng</a>
               </div>
             </div>
           </td>
@@ -91,8 +91,8 @@ include 'app/views/header.php';
         <?php
         $fixedRows = [
             'Danh muc'    => array_map(fn($p) => htmlspecialchars($p['cat_name'] ?? '-'), $products),
-            'Thuong hieu' => array_map(fn($p) => htmlspecialchars($p['brand_name'] ?? '-'), $products),
-            'Ton kho'     => array_map(function($p) {
+            'Thương hiệu' => array_map(fn($p) => htmlspecialchars($p['brand_name'] ?? '-'), $products),
+            'Tồn kho'     => array_map(function($p) {
                 return $p['quantity'] > 0
                     ? '<span style="color:#16a34a;font-weight:700;">Con hang ('.intval($p['quantity']).')</span>'
                     : '<span style="color:#dc2626;font-weight:700;">Het hang</span>';
@@ -110,7 +110,7 @@ include 'app/views/header.php';
         </tr>
         <?php endforeach; ?>
         <?php if (!empty($allSpecs)): ?>
-        <tr><td colspan="<?php echo count($products)+1; ?>" style="padding:10px 20px;background:#6366f112;font-size:11px;font-weight:800;color:#6366f1;text-transform:uppercase;border-top:2px solid #6366f120;">Thong so ky thuat</td></tr>
+        <tr><td colspan="<?php echo count($products)+1; ?>" style="padding:10px 20px;background:#eff6ff;font-size:11px;font-weight:800;color:#2563eb;text-transform:uppercase;border-top:2px solid #2563eb20;">Thông số kỹ thuật</td></tr>
         <?php foreach (array_keys($allSpecs) as $specKey):
             $rowIdx++;
         ?>
@@ -129,7 +129,7 @@ include 'app/views/header.php';
     <?php endif; ?>
   </div>
   <div style="text-align:center;margin-top:20px;">
-    <a href="<?php echo BASE_URL; ?>" style="color:#6366f1;font-size:14px;font-weight:600;text-decoration:none;">&#8592; Tiep tuc mua sam</a>
+    <a href="<?php echo BASE_URL; ?>" style="color:#2563eb;font-size:14px;font-weight:600;text-decoration:none;">&#8592; Tiếp tục mua sắm</a>
   </div>
 </div>
 <?php include 'app/views/footer.php'; ?>

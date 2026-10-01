@@ -439,7 +439,7 @@ include 'app/views/header.php';
 <div class="addr-page">
     <!-- Hero -->
     <div class="addr-hero">
-        <div class="addr-hero-icon">📍</div>
+        <div class="addr-hero-icon"><i class="fa fa-map-marker"></i></div>
         <div>
             <h1>Địa chỉ giao hàng</h1>
             <p>Quản lý địa chỉ giao hàng để thanh toán nhanh chóng hơn. Địa chỉ mặc định sẽ được tự động chọn khi đặt hàng.</p>
@@ -469,7 +469,7 @@ include 'app/views/header.php';
     <!-- Address List -->
     <?php if (empty($addresses)): ?>
         <div class="addr-empty">
-            <span class="addr-empty-icon">📭</span>
+            <span class="addr-empty-icon"><i class="fa fa-inbox"></i></span>
             <h3>Bạn chưa có địa chỉ nào</h3>
             <p>Thêm địa chỉ giao hàng để tiết kiệm thời gian khi mua sắm sau này!</p>
             <button onclick="openAddrForm()" class="addr-btn addr-btn-primary">

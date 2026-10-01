@@ -377,12 +377,12 @@
         <?php if (empty($orders)): ?>
             <div class="hs-empty">
                 <?php if ($currentFilter): ?>
-                    <span class="hs-empty-icon">📭</span>
+                    <span class="hs-empty-icon"><i class="fa fa-inbox"></i></span>
                     <h3>Không có đơn hàng nào</h3>
                     <p>Bạn chưa có đơn hàng nào ở trạng thái này.</p>
                     <a href="?page=1"><i class="fa fa-list"></i> Xem tất cả đơn hàng</a>
                 <?php else: ?>
-                    <span class="hs-empty-icon">🛒</span>
+                    <span class="hs-empty-icon"><i class="fa fa-shopping-cart"></i></span>
                     <h3>Bạn chưa có đơn hàng nào</h3>
                     <p>Hãy khám phá các sản phẩm hấp dẫn của chúng tôi!</p>
                     <a href="index.php"><i class="fa fa-shopping-bag"></i> Mua sắm ngay</a>

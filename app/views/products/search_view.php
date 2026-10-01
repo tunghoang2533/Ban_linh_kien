@@ -437,7 +437,7 @@ $defaultImg = 'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/20
             <!-- Product Grid -->
             <?php if (empty($products)): ?>
             <div class="search-empty">
-                <div class="empty-icon">🔍</div>
+                <div class="empty-icon"><i class="fa fa-search"></i></div>
                 <h3>Không tìm thấy sản phẩm nào</h3>
                 <p>Hãy thử từ khóa khác hoặc xóa bộ lọc để xem nhiều sản phẩm hơn</p>
                 <a href="<?php echo BASE_URL; ?>index.php">← Quay về trang chủ</a>
@@ -483,7 +483,7 @@ $defaultImg = 'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/20
                                 <span class="badge-discount">-<?php echo (int)$discountPct; ?>%</span>
                             <?php endif; ?>
                             <?php if ($totalSold >= 10 && !$isOutOfStock): ?>
-                                <span class="badge-hot">🔥 Hot</span>
+                                <span class="badge-hot"><i class="fa fa-fire"></i> Hot</span>
                             <?php endif; ?>
                         </a>
                         <button class="qv-trigger" onclick="openQuickView(<?php echo $p['id']; ?>);" title="Xem nhanh">
@@ -514,7 +514,7 @@ $defaultImg = 'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/20
                             <span class="btn-addcart disabled">Hết hàng</span>
                         <?php else: ?>
                             <a href="<?php echo BASE_URL; ?>giohang.php?action=add&id=<?php echo $p['id']; ?>"
-                               class="btn-addcart">🛒 Thêm vào giỏ</a>
+                               class="btn-addcart"><i class="fa fa-cart-plus"></i> Thêm vào giỏ</a>
                         <?php endif; ?>
                         <a href="<?php echo BASE_URL; ?>chitietsanpham.php?id=<?php echo $p['id']; ?>"
                            class="btn-detail" title="Xem chi tiết">

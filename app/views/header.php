@@ -1005,7 +1005,8 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
         }
     </style>
 
-
+    <!-- Inner pages share one restrained layout; the home page keeps its own composition. -->
+    <link rel="stylesheet" href="<?php echo AssetHelper::url('public/css/inner-pages.css'); ?>">
 
     <script src="<?php echo AssetHelper::url('public/js/Jquery/Jquery.min.js'); ?>"></script>
 
@@ -1152,7 +1153,12 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
     </script>
     <?php endif; ?>
 </head>
-<body>
+<?php
+    // Scope the inner-page polish without changing the already-finished home page.
+    $bodyPageName = pathinfo(basename($_SERVER['SCRIPT_NAME'] ?? 'index.php'), PATHINFO_FILENAME);
+    $bodyPageClass = preg_replace('/[^a-z0-9_-]/i', '-', $bodyPageName) ?: 'index';
+?>
+<body class="site-page page-<?php echo htmlspecialchars($bodyPageClass, ENT_QUOTES, 'UTF-8'); ?>">
     <div class="top-nav">
         <div class="container">
             <span class="top-nav-left">
@@ -1322,7 +1328,7 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
                                 </div>
                             </li>
                             <li><a href="<?php echo BASE_URL; ?>thongtin.php"><i class="fa fa-user"></i> Thông tin cá nhân</a></li>
-                            <li><a href="<?php echo BASE_URL; ?>diachigiaohang.php"><i class="fa fa-location-dot"></i> Địa chỉ giao hàng</a></li>
+                            <li><a href="<?php echo BASE_URL; ?>diachigiaohang.php"><i class="fa fa-map-marker"></i> Địa chỉ giao hàng</a></li>
                             <li><a href="<?php echo BASE_URL; ?>lichsu.php"><i class="fa fa-history"></i> Lịch sử đơn hàng</a></li>
                             <li><a href="<?php echo BASE_URL; ?>combo.php"><i class="fa fa-gift" style="color:#f59e0b;"></i> Combo ưu đãi</a></li>
                             <li><a href="<?php echo BASE_URL; ?>loyalty.php"><i class="fa fa-star" style="color:#f59e0b;"></i> Điểm tích lũy</a></li>
