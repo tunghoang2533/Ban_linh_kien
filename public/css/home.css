@@ -1,0 +1,636 @@
+/* ================================================================
+   PC Store — Trang chủ (home.css)
+   Mọi màu / bán kính / đổ bóng đều lấy từ design tokens của style.css
+   Không dùng màu hardcode ngoài các biến cục bộ bên dưới.
+   ================================================================ */
+
+/* ── Biến cục bộ chỉ dùng cho trang chủ ── */
+.home-shell {
+    --sale:        #dc2626;   /* chỉ dùng cho giá/flash sale */
+    --sale-soft:   #fef2f2;
+    --sale-border: #fecaca;
+    --sale-text:   #991b1b;
+    padding-bottom: var(--space-12);
+}
+
+/* Trung hoà rule "section" legacy của style.css trong phạm vi trang chủ
+   (nội dung đã nằm trong .container) */
+.home-shell section { max-width: none; margin: 0; padding: 0; }
+.home-shell section.hp-flash { padding: var(--space-4) var(--space-5) var(--space-5); }
+
+/* ================================================================
+   1. HÀNG HERO — slider trái + card Build PC phải
+   ================================================================ */
+.home-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: var(--space-5);
+    align-items: stretch;
+    margin: var(--space-6) 0 var(--space-10);
+}
+@media (max-width: 960px) {
+    .home-hero { grid-template-columns: 1fr; }
+}
+
+/* ── 1a. Slider ── */
+.hero-slider {
+    position: relative;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--txt-primary);
+    aspect-ratio: 1200 / 400;
+    box-shadow: var(--shadow-md);
+}
+.hero-track {
+    display: flex;
+    height: 100%;
+    transition: transform .65s cubic-bezier(.77, 0, .175, 1);
+}
+.hero-slide { position: relative; flex: 0 0 100%; overflow: hidden; }
+.hero-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.hero-slide-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: 0 var(--space-12);
+    background: linear-gradient(90deg, rgba(2, 6, 23, 0.82) 0%, rgba(2, 6, 23, 0.45) 48%, transparent 78%);
+}
+.hero-slide-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    background: var(--slide-accent, var(--accent));
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: var(--r-sm);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity .45s .25s, transform .45s .25s;
+}
+.hero-slide-title {
+    margin: 0;
+    max-width: 520px;
+    color: #fff;
+    font-size: clamp(22px, 3vw, 38px);
+    font-weight: 800;
+    line-height: 1.15;
+    text-shadow: 0 2px 12px rgba(2, 6, 23, 0.45);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .5s .35s, transform .5s .35s;
+}
+.hero-slide-sub {
+    margin: 0;
+    max-width: 440px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: clamp(13px, 1.4vw, 15px);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .45s .5s, transform .45s .5s;
+}
+.hero-slide-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: fit-content;
+    margin-top: var(--space-2);
+    padding: 11px 24px;
+    border-radius: var(--r-sm);
+    background: var(--slide-accent, var(--accent));
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .45s .6s, transform .45s .6s,
+                background var(--transition), filter var(--transition);
+}
+.hero-slide-btn:hover {
+    background: var(--slide-accent, var(--accent));
+    color: #fff;
+    filter: brightness(1.12);
+}
+.hero-slide.active .hero-slide-tag,
+.hero-slide.active .hero-slide-title,
+.hero-slide.active .hero-slide-sub,
+.hero-slide.active .hero-slide-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Mũi tên */
+.hero-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.38);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 10;
+    transition: background var(--transition);
+}
+.hero-arrow:hover { background: var(--accent); }
+.hero-arrow-prev { left: 14px; }
+.hero-arrow-next { right: 14px; }
+
+/* Chấm chuyển slide */
+.hero-dots {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 7px;
+    z-index: 10;
+}
+.hero-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    transition: width .25s, background .25s;
+}
+.hero-dot.active { width: 22px; background: #fff; }
+
+/* Thanh tiến trình */
+.hero-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: var(--slide-accent, var(--accent));
+    z-index: 10;
+    animation: heroProgress 5s linear forwards;
+}
+@keyframes heroProgress { from { width: 0; } to { width: 100%; } }
+
+/* ── 1b. Card Build PC (cột phải) ── */
+.hero-aside { display: flex; flex-direction: column; gap: var(--space-5); }
+.buildpc-promo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-8);
+    border-radius: var(--r-lg);
+    background: #0f172a; /* navy đậm — cố định, không theo token text */
+    color: #e2e8f0;
+}
+.buildpc-promo-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-md);
+    background: rgba(255, 255, 255, 0.08);
+    color: #93c5fd;
+    font-size: 20px;
+}
+.buildpc-promo h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+.buildpc-promo > p { margin: 0; color: #94a3b8; font-size: 13px; line-height: 1.55; }
+.buildpc-promo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: var(--space-2) 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+}
+.buildpc-promo-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.45;
+}
+.buildpc-promo-list li i {
+    color: #93c5fd;
+    font-size: 12px;
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+.buildpc-promo .btn { width: 100%; }
+
+/* Card phụ: hotline hỗ trợ */
+.hero-support {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--r-lg);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+.hero-support:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+.hero-support-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-md);
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 17px;
+}
+.hero-support small {
+    display: block;
+    color: var(--txt-tertiary);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.hero-support strong {
+    display: block;
+    color: var(--txt-primary);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+/* ================================================================
+   2. SECTION (khối danh sách sản phẩm)
+   ================================================================ */
+.hp-section { margin-bottom: var(--space-10); }
+
+.hp-section-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border);
+}
+.hp-sec-ico {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-sm);
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 15px;
+}
+.hp-section-head h2 {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    color: var(--txt-primary);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.hp-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    color: var(--txt-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color var(--transition);
+}
+.hp-view-all:hover { color: var(--accent); }
+.hp-view-all i { font-size: 12px; }
+
+/* Hàng cuộn ngang */
+.hp-scroll-row {
+    display: flex;
+    gap: var(--space-4);
+    overflow-x: auto;
+    padding: 4px 4px 12px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+.hp-scroll-row::-webkit-scrollbar { height: 5px; }
+.hp-scroll-row::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: var(--r-pill); }
+
+/* ================================================================
+   3. CARD SẢN PHẨM — dùng chung cho mọi section
+   ================================================================ */
+.pcard {
+    position: relative;
+    flex: 0 0 220px;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-sm);
+    scroll-snap-align: start;
+    transition: transform var(--transition), box-shadow var(--transition),
+                border-color var(--transition);
+}
+.pcard:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-ring);
+    box-shadow: var(--shadow-md);
+}
+
+/* Ảnh */
+.pcard-media {
+    position: relative;
+    display: block;
+    padding: var(--space-4) var(--space-4) 0;
+    text-decoration: none;
+}
+.pcard-media img {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    border-radius: var(--r-sm);
+    background: var(--bg-page);
+}
+
+/* Badge góc ảnh */
+.pcard-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+    padding: 2px 8px;
+    border-radius: var(--r-sm);
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.pcard-badge--sale { background: var(--sale); color: #fff; }
+.pcard-badge--sold { background: var(--bg-surface); color: var(--txt-secondary); border: 1px solid var(--border); }
+
+/* Lớp phủ hết hàng */
+.pcard-oos {
+    position: absolute;
+    inset: var(--space-4) var(--space-4) 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-sm);
+    background: rgba(15, 23, 42, 0.55);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+.pcard-oos i { margin-right: 6px; }
+
+/* Nút xem nhanh — hiện khi hover (base style nằm ở footer.php) */
+.pcard:hover .qv-trigger {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Nội dung */
+.pcard-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-3) var(--space-4) 0;
+}
+.pcard-cat {
+    color: var(--txt-tertiary);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pcard-name {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--txt-primary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.8em;
+}
+.pcard-name a { color: inherit; text-decoration: none; }
+.pcard-name a:hover { color: var(--accent); }
+
+/* Giá */
+.pcard-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+}
+.pcard-price-now {
+    color: var(--txt-primary);
+    font-size: 15px;
+    font-weight: 700;
+}
+.pcard-price-old {
+    color: var(--txt-tertiary);
+    font-size: 12px;
+    text-decoration: line-through;
+}
+/* Giá khuyến mãi / flash sale dùng đỏ */
+.pcard--sale .pcard-price-now,
+.pcard-price--sale { color: var(--sale); }
+
+/* Thanh "đã bán" của flash sale */
+.pcard-soldbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+.pcard-soldbar-track {
+    flex: 1;
+    height: 4px;
+    border-radius: var(--r-pill);
+    background: var(--sale-soft);
+    overflow: hidden;
+}
+.pcard-soldbar-fill {
+    height: 100%;
+    border-radius: var(--r-pill);
+    background: var(--sale);
+}
+.pcard-soldbar-text {
+    color: var(--sale);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Nút trên card */
+.pcard-actions {
+    display: flex;
+    gap: 8px;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+}
+.pcard-actions .btn { flex: 1; padding: 9px 10px; font-size: 13px; }
+.pcard-actions .btn i { font-size: 13px; }
+.pcard-btn-cart { flex: 0 0 44px; padding: 9px 0; }
+.pcard-actions .btn-disabled,
+.pcard-actions .btn-disabled:hover {
+    flex: 1;
+    background: var(--bg-muted);
+    color: var(--txt-tertiary);
+    border-color: var(--bg-muted);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ================================================================
+   4. FLASH SALE
+   ================================================================ */
+.hp-flash {
+    padding: var(--space-4) var(--space-5) var(--space-5);
+    border-radius: var(--r-lg);
+    background: var(--sale-soft);
+    border: 1px solid var(--sale-border);
+}
+.hp-flash .hp-section-head { border-bottom-color: var(--sale-border); }
+.hp-flash .hp-sec-ico { background: #fff; color: var(--sale); }
+.hp-flash .hp-section-head h2 { color: var(--sale); }
+.hp-flash .hp-scroll-row { padding-bottom: 4px; }
+
+.flash-countdown {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: var(--r-sm);
+    background: #fff;
+    border: 1px solid var(--sale-border);
+    color: var(--sale-text);
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+.flash-countdown i { color: var(--sale); font-size: 12px; }
+
+/* ================================================================
+   5. TRANG DANH MỤC / SECTION — breadcrumb + grid
+   ================================================================ */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: var(--space-5) 0 var(--space-3);
+    font-size: 13px;
+}
+.breadcrumb a { color: var(--txt-secondary); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--txt-tertiary); font-size: 11px; }
+.breadcrumb .current { color: var(--txt-primary); font-weight: 600; }
+
+.page-title {
+    margin: 0 0 var(--space-6);
+    color: var(--txt-primary);
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.pcard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.pcard-grid .pcard { flex: none; width: auto; }
+.pcard-grid .pcard-media img { height: 190px; }
+.pcard-empty {
+    grid-column: 1 / -1;
+    padding: var(--space-12) 0;
+    text-align: center;
+    color: var(--txt-tertiary);
+}
+
+/* ================================================================
+   6. Responsive
+   ================================================================ */
+@media (max-width: 960px) {
+    .home-hero { margin: var(--space-4) 0 var(--space-8); }
+    .hero-slider { aspect-ratio: 16 / 9; }
+    .hero-slide-overlay { padding: 0 var(--space-8); }
+}
+@media (max-width: 640px) {
+    .home-shell { padding-bottom: var(--space-8); }
+    .hero-slider { border-radius: var(--r-md); aspect-ratio: 16 / 10; }
+    .hero-slide-overlay { padding: 0 var(--space-5); gap: 10px; }
+    .hero-slide-sub { display: none; }
+    .hero-arrow { width: 32px; height: 32px; font-size: 13px; }
+    .buildpc-promo { padding: var(--space-5); }
+    .hp-section { margin-bottom: var(--space-8); }
+    .hp-section-head h2 { font-size: 17px; }
+    .pcard { flex-basis: 175px; }
+    .pcard-media img { height: 130px; }
+    .pcard-actions .btn span { display: none; } /* chỉ còn icon cho gọn */
+    .pcard-actions .btn { flex: 1; }
+    .pcard-btn-cart { flex: 1; }
+}
+
+/* ================================================================
+   7. Dark mode — chủ yếu tự động nhờ token, chỉnh vài chỗ riêng
+   ================================================================ */
+[data-theme="dark"] .pcard-media img { background: var(--bg-subtle); }
+[data-theme="dark"] .pcard-badge--sold { background: var(--bg-muted); color: var(--txt-secondary); }
+[data-theme="dark"] .hp-flash { background: rgba(220, 38, 38, 0.08); }
+[data-theme="dark"] .hp-flash .hp-sec-ico,
+[data-theme="dark"] .flash-countdown { background: var(--bg-surface); }
+[data-theme="dark"] .pcard-soldbar-track { background: rgba(220, 38, 38, 0.18); }

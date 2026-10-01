@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Preview — Trang chủ mới | PC Store</title>
+
+<!-- Fonts + Icons (giống hệt header.php) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!-- CSS THẬT của dự án -->
+<link rel="stylesheet" href="public/css/style.css">
+<link rel="stylesheet" href="public/css/home.css">
+
+<style>
+/* ══ Bản thu gọn của header CSS (trong dự án thật nằm trong app/views/header.php) ══ */
+.top-nav { background: var(--bg-muted); border-bottom: 1px solid var(--border); }
+.top-nav .container { display: flex; justify-content: space-between; align-items: center; height: 36px; }
+.top-nav .top-nav-left { color: var(--txt-secondary); font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.top-nav .top-nav-left i, .top-nav .top-nav-left strong { color: var(--accent); }
+.top-nav .top-nav-right { display: flex; align-items: center; }
+.top-nav a { color: var(--txt-secondary); text-decoration: none; font-size: 12px; font-weight: 500; padding: 0 14px; height: 36px; display: inline-flex; align-items: center; gap: 5px; border-left: 1px solid var(--border); }
+.top-nav a:first-child { border-left: none; }
+.top-nav a:hover { color: var(--txt-primary); background: var(--bg-page); }
+
+header { background: var(--bg-surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 1px 0 #f1f5f9, 0 2px 16px rgba(15,23,42,0.06); }
+.header-inner { display: flex; align-items: center; gap: 20px; height: 68px; }
+.logo a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-icon { width: 38px; height: 38px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 17px; }
+.logo-text { font-size: 20px; font-weight: 800; color: var(--txt-primary); letter-spacing: -0.04em; }
+.logo-text span { color: var(--accent); }
+.search-bar { flex: 1; max-width: 440px; }
+.search-bar form { display: flex; border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-page); transition: border-color .2s, box-shadow .2s; }
+.search-bar form:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); background: #fff; }
+.search-bar input { flex: 1; border: none; padding: 10px 16px; outline: none; font-size: 14px; font-family: 'Outfit', sans-serif; background: transparent; color: var(--txt-primary); }
+.search-bar button { background: var(--accent); color: #fff; border: none; padding: 0 20px; cursor: pointer; font-size: 14px; }
+.main-nav { display: flex; align-items: center; gap: 0; }
+.main-nav a, .main-nav .nav-dropdown-wrapper > span { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--txt-secondary); text-decoration: none; cursor: pointer; white-space: nowrap; }
+.main-nav a:hover { background: var(--bg-muted); color: var(--txt-primary); }
+.main-nav a.active { color: var(--accent); background: var(--accent-light); font-weight: 700; }
+.nav-buildpc-btn {
+    display: inline-flex !important; align-items: center !important; gap: 7px !important;
+    background: var(--accent) !important; color: #fff !important; border-radius: 10px !important;
+    padding: 7px 14px !important; font-weight: 600 !important; font-size: 13.5px !important;
+    text-decoration: none !important; border: none !important;
+}
+.nav-buildpc-btn:hover { background: var(--accent-hover) !important; color: #fff !important; }
+.nav-buildpc-badge { background: rgba(255,255,255,.18); color: #fff; font-size: 9px; font-weight: 800; border-radius: 5px; padding: 2px 6px; }
+.user-menu { display: flex; gap: 6px; align-items: center; }
+.cart-btn, .notif-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: transparent; color: var(--txt-secondary); text-decoration: none; font-size: 17px; border: 1.5px solid var(--border); }
+.cart-btn:hover, .notif-btn:hover { background: var(--accent-light); border-color: #bfdbfe; color: var(--accent); }
+.cart-count { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; border-radius: 999px; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+.avatar-btn { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg-muted); color: var(--txt-secondary); font-size: 22px; text-decoration: none; }
+.nav-dropdown-wrapper { position: relative; }
+.nav-cat-dropdown { display: none; position: absolute; left: 0; top: calc(100% + 10px); background: #fff; min-width: 240px; border-radius: 16px; box-shadow: var(--shadow-lg); border: 1.5px solid #e8edf3; padding: 8px; list-style: none; z-index: 9999; }
+.nav-dropdown-wrapper:hover .nav-cat-dropdown { display: block; }
+.nav-cat-dropdown li a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; font-size: 13.5px; color: #374151; border-radius: 10px; }
+.nav-cat-dropdown li a:hover { background: var(--bg-muted); }
+.nav-cat-dropdown li a i { color: var(--txt-tertiary); }
+
+/* ══ Bản thu gọn footer CSS ══ */
+.footer { background: var(--bg-surface); border-top: 1px solid var(--border); padding: 48px 0 0; margin-top: var(--space-10); }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.4fr; gap: 40px; }
+.footer-col h4 { font-size: 14px; font-weight: 700; color: var(--txt-primary); margin-bottom: 16px; }
+.footer-col ul { list-style: none; padding: 0; margin: 0; }
+.footer-col ul li { margin-bottom: 10px; }
+.footer-col ul li a { color: var(--txt-secondary); text-decoration: none; font-size: 13.5px; }
+.footer-col ul li a:hover { color: var(--accent); }
+.footer-social { display: flex; gap: 10px; margin-top: 16px; }
+.footer-social a { width: 36px; height: 36px; border-radius: 10px; background: var(--bg-muted); color: var(--txt-secondary); display: inline-flex; align-items: center; justify-content: center; font-size: 15px; text-decoration: none; }
+.footer-social a:hover { background: var(--accent); color: #fff; }
+.footer-divider { border: none; border-top: 1px solid var(--border); margin: 40px 0 0; }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; }
+.copyright { color: var(--txt-tertiary); font-size: 12.5px; margin: 0; }
+@media (max-width: 820px) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-bottom { flex-direction: column; gap: 8px; } }
+
+/* ══ Riêng cho preview ══ */
+.preview-note {
+    background: var(--txt-primary); color: #e2e8f0; font-size: 12.5px;
+    padding: 8px 20px; text-align: center;
+}
+.preview-note strong { color: #93c5fd; }
+@media (max-width: 960px) { .main-nav { display: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="preview-note">
+    <strong>Bản preview tĩnh</strong> — mô phỏng trang chủ sau khi làm lại (không cần DB). Trên dự án thật, nội dung do <code>index.php</code> + <code>home.css</code> render.
+</div>
+
+<!-- ══════════ HEADER ══════════ -->
+<div class="top-nav">
+    <div class="container">
+        <span class="top-nav-left"><i class="fa fa-phone"></i> Hotline: <strong>1800 6975</strong></span>
+        <div class="top-nav-right">
+            <a href="#"><i class="fa fa-gift"></i> Combo</a>
+            <a href="#"><i class="fa fa-newspaper-o"></i> Tin tức</a>
+            <a href="#"><i class="fa fa-envelope-o"></i> Liên hệ</a>
+            <a href="#"><i class="fa fa-info-circle"></i> Giới thiệu</a>
+        </div>
+    </div>
+</div>
+
+<header>
+    <div class="container header-inner">
+        <div class="logo">
+            <a href="#">
+                <span class="logo-icon"><i class="fa fa-microchip"></i></span>
+                <span class="logo-text">PC <span>Store</span></span>
+            </a>
+        </div>
+
+        <nav class="main-nav">
+            <a href="#" class="active"><i class="fa fa-home"></i> Trang chủ</a>
+            <a href="#"><i class="fa fa-headphones"></i> Hỗ trợ</a>
+            <a href="#" class="nav-buildpc-btn">
+                <i class="fa fa-microchip"></i> <span>Build PC</span>
+                <span class="nav-buildpc-badge">MỚI</span>
+            </a>
+            <div class="nav-dropdown-wrapper">
+                <span><i class="fa fa-th-large"></i> Danh mục <i class="fa fa-caret-down" style="font-size:11px"></i></span>
+                <ul class="nav-cat-dropdown">
+                    <li><a href="#"><i class="fa fa-circle-o"></i> CPU — Bộ vi xử lý</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Mainboard</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> RAM</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> SSD / HDD</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Card đồ hoạ</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Nguồn</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="search-bar">
+            <form onsubmit="return false">
+                <input type="text" placeholder="Tìm kiếm linh kiện...">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
+
+        <div class="user-menu">
+            <button class="notif-btn" title="Thông báo"><i class="fa fa-bell"></i></button>
+            <a href="#" class="cart-btn" title="Giỏ hàng"><i class="fa fa-shopping-cart"></i><span class="cart-count">3</span></a>
+            <a href="#" class="avatar-btn" title="Tài khoản"><i class="fa fa-user-circle"></i></a>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════ NỘI DUNG TRANG CHỦ ══════════ -->
+<div class="main-content home-shell">
+    <div class="container">
+
+        <section class="home-hero">
+            <div class="hero-slider" id="heroSlider">
+                <div class="hero-track" id="heroTrack">
+                    <div class="hero-slide active" style="--slide-accent:#2563eb">
+                        <img src="public/img/banners/banner1.png" alt="Linh kiện chính hãng">
+                        <div class="hero-slide-overlay">
+                            <span class="hero-slide-tag">Mới về</span>
+                            <h2 class="hero-slide-title">Linh kiện máy tính<br>chính hãng 100%</h2>
+                            <p class="hero-slide-sub">CPU, GPU, RAM, SSD chính hãng — bảo hành chuẩn đến 36 tháng.</p>
+                            <a href="#" class="hero-slide-btn">Mua sắm ngay <i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="hero-slide" style="--slide-accent:#dc2626">
+                        <img src="public/img/banners/banner2.png" alt="Giảm giá sốc">
+                        <div class="hero-slide-overlay">
+                            <span class="hero-slide-tag">Khuyến mãi</span>
+                            <h2 class="hero-slide-title">Giảm giá sốc<br>lên đến 40%</h2>
+                            <p class="hero-slide-sub">Chương trình sale mọi ngày — nhanh tay kẻo lỡ.</p>
+                            <a href="#" class="hero-slide-btn">Xem khuyến mãi <i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="hero-slide" style="--slide-accent:#f59e0b">
+                        <img src="public/img/banners/banner3.png" alt="Tự build PC">
+                        <div class="hero-slide-overlay">
+                            <span class="hero-slide-tag">Công cụ</span>
+                            <h2 class="hero-slide-title">Tự build PC<br>theo chuẩn gu của bạn</h2>
+                            <p class="hero-slide-sub">Kiểm tra tương thích linh kiện thông minh — dễ dàng và nhanh chóng.</p>
+                            <a href="#" class="hero-slide-btn">Bắt đầu build <i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="hero-arrow hero-arrow-prev" id="heroPrev" aria-label="Trước"><i class="fa fa-chevron-left"></i></button>
+                <button type="button" class="hero-arrow hero-arrow-next" id="heroNext" aria-label="Sau"><i class="fa fa-chevron-right"></i></button>
+                <div class="hero-dots" id="heroDots">
+                    <button type="button" class="hero-dot active" data-index="0" aria-label="Slide 1"></button>
+                    <button type="button" class="hero-dot" data-index="1" aria-label="Slide 2"></button>
+                    <button type="button" class="hero-dot" data-index="2" aria-label="Slide 3"></button>
+                </div>
+                <div class="hero-progress" id="heroProgress" style="--slide-accent:#2563eb"></div>
+            </div>
+
+            <aside class="hero-aside">
+                <div class="buildpc-promo">
+                    <span class="buildpc-promo-icon"><i class="fa fa-microchip"></i></span>
+                    <h3>Tự build PC theo cấu hình của bạn</h3>
+                    <p>Chọn linh kiện từng bước, hệ thống tự kiểm tra tương thích trước khi thêm vào giỏ.</p>
+                    <ul class="buildpc-promo-list">
+                        <li><i class="fa fa-check"></i> Lựa chọn đồng bộ, đúng chuẩn chân cắm (socket)</li>
+                        <li><i class="fa fa-check"></i> Tự động kiểm tra tương thích linh kiện</li>
+                        <li><i class="fa fa-check"></i> Thêm cả cấu hình vào giỏ trong 1 lần</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary"><i class="fa fa-wrench"></i> Build PC ngay</a>
+                </div>
+                <a href="#" class="hero-support">
+                    <span class="hero-support-icon"><i class="fa fa-headphones"></i></span>
+                    <span>
+                        <small>Hỗ trợ tư vấn</small>
+                        <strong>1800 6975</strong>
+                    </span>
+                </a>
+            </aside>
+        </section>
+
+        <!-- FLASH SALE -->
+        <section class="hp-section hp-flash">
+            <header class="hp-section-head">
+                <span class="hp-sec-ico"><i class="fa fa-bolt"></i></span>
+                <h2>Flash Sale hôm nay</h2>
+                <span class="flash-countdown"><i class="fa fa-clock-o"></i> <span class="flash-countdown-timer">2h 14m 36s</span></span>
+            </header>
+            <div class="hp-scroll-row" id="flashRow"></div>
+        </section>
+
+        <!-- SECTION: Đang giảm giá -->
+        <section class="hp-section">
+            <header class="hp-section-head">
+                <span class="hp-sec-ico"><i class="fa fa-tags"></i></span>
+                <h2>Đang giảm giá</h2>
+                <a class="hp-view-all" href="#">Xem tất cả <i class="fa fa-angle-right"></i></a>
+            </header>
+            <div class="hp-scroll-row" id="saleRow"></div>
+        </section>
+
+        <!-- SECTION: Mới nhất -->
+        <section class="hp-section">
+            <header class="hp-section-head">
+                <span class="hp-sec-ico"><i class="fa fa-cubes"></i></span>
+                <h2>Linh kiện mới nhất</h2>
+                <a class="hp-view-all" href="#">Xem tất cả <i class="fa fa-angle-right"></i></a>
+            </header>
+            <div class="hp-scroll-row" id="latestRow"></div>
+        </section>
+
+        <!-- SECTION: Top lượt mua -->
+        <section class="hp-section">
+            <header class="hp-section-head">
+                <span class="hp-sec-ico"><i class="fa fa-line-chart"></i></span>
+                <h2>Top lượt mua</h2>
+                <a class="hp-view-all" href="#">Xem tất cả <i class="fa fa-angle-right"></i></a>
+            </header>
+            <div class="hp-scroll-row" id="topRow"></div>
+        </section>
+
+    </div>
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <a href="#" class="logo">
+                    <span class="logo-icon"><i class="fa fa-microchip"></i></span>
+                    <span class="logo-text">PC <span>Store</span></span>
+                </a>
+                <p style="margin-top:14px;max-width:300px;">Cửa hàng linh kiện máy tính chính hãng — CPU, GPU, RAM, SSD, mainboard và phụ kiện.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fa fa-youtube"></i></a>
+                    <a href="#" aria-label="Zalo"><i class="fa fa-comment"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Về chúng tôi</h4>
+                <ul>
+                    <li><a href="#">Giới thiệu</a></li>
+                    <li><a href="#">Tin tức</a></li>
+                    <li><a href="#">Liên hệ</a></li>
+                    <li><a href="#">Sitemap</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Chính sách</h4>
+                <ul>
+                    <li><a href="#">Bảo mật</a></li>
+                    <li><a href="#">Điều khoản</a></li>
+                    <li><a href="#">Vận chuyển</a></li>
+                    <li><a href="#">Đổi trả</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Liên hệ</h4>
+                <ul>
+                    <li><i class="fa fa-map-marker"></i> 123 Đường ABC, Hà Nội</li>
+                    <li><i class="fa fa-phone"></i> Hotline: <strong>1800 6975</strong></li>
+                    <li><i class="fa fa-envelope-o"></i> contact@pcstore.vn</li>
+                    <li><i class="fa fa-clock-o"></i> 8:00 — 21:00 tất cả các ngày</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="footer-divider">
+        <div class="footer-bottom">
+            <p class="copyright">© 2026 PC Store — Đồ án tốt nghiệp CNTT</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+/* ── Sinh placeholder SVG cho ảnh sản phẩm ── */
+function ph(icon, tint) {
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="225">'
+        + '<rect width="300" height="225" fill="#f8fafc"/>'
+        + '<circle cx="150" cy="98" r="52" fill="' + tint + '"/>'
+        + '<text x="150" y="118" font-family="Arial" font-size="52" fill="#fff" text-anchor="middle">' + icon + '</text>'
+        + '</svg>';
+    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+}
+var ICONS = { cpu: '⬛', gpu: '▤', ram: '▬', ssd: '▪', psu: '✦', case: '▢', fan: '✳', main: '▦' };
+var TINT  = { cpu: '#93c5fd', gpu: '#86efac', ram: '#fca5a5', ssd: '#fcd34d', psu: '#a5b4fc', case: '#cbd5e1', fan: '#7dd3fc', main: '#c4b5fd' };
+
+function card(o) {
+    var badge = '';
+    if (o.discount) badge = '<span class="pcard-badge pcard-badge--sale">-' + o.discount + '%</span>';
+    else if (o.sold) badge = '<span class="pcard-badge pcard-badge--sold"><i class="fa fa-line-chart"></i> ' + o.sold + ' đã bán</span>';
+    var oldPrice = o.old ? '<span class="pcard-price-old">' + o.old + '</span>' : '';
+    var soldbar = '';
+    if (o.bar) {
+        soldbar = '<div class="pcard-soldbar"><div class="pcard-soldbar-track"><div class="pcard-soldbar-fill" style="width:' + o.bar + '%"></div></div>'
+                + '<span class="pcard-soldbar-text">Đã bán ' + o.soldBarText + '</span></div>';
+    }
+    var oos = o.oos ? '<span class="pcard-oos"><i class="fa fa-ban"></i>Hết hàng</span>' : '';
+    var actions = o.oos
+        ? '<span class="btn btn-ghost btn-disabled"><i class="fa fa-ban"></i> Hết hàng</span>'
+        : '<a class="btn btn-ghost pcard-btn-cart" href="#" title="Thêm vào giỏ" aria-label="Thêm vào giỏ"><i class="fa fa-cart-plus"></i></a>'
+          + '<a class="btn btn-primary" href="#"><i class="fa fa-bolt"></i><span>Mua ngay</span></a>';
+    return '<div class="pcard' + (o.old ? ' pcard--sale' : '') + '">'
+        + '<a class="pcard-media" href="#">'
+        + '<img src="' + ph(ICONS[o.icon], TINT[o.icon]) + '" alt="' + o.name + '">'
+        + badge + oos
+        + '<button type="button" class="qv-trigger" onclick="return false;" title="Xem nhanh"><i class="fa fa-eye"></i> Xem nhanh</button>'
+        + '</a>'
+        + '<div class="pcard-body">'
+        + '<div class="pcard-cat">' + o.cat + '</div>'
+        + '<h3 class="pcard-name"><a href="#">' + o.name + '</a></h3>'
+        + '<div class="pcard-price"><span class="pcard-price-now">' + o.price + '</span>' + oldPrice + '</div>'
+        + soldbar
+        + '</div>'
+        + '<div class="pcard-actions">' + actions + '</div>'
+        + '</div>';
+}
+
+var flash = [
+    { icon:'cpu', cat:'CPU',           name:'Intel Core i5-14400F',           price:'3.890.000 ₫', old:'4.690.000 ₫', discount:17, bar:78, soldBarText:'39/50' },
+    { icon:'ssd', cat:'SSD',           name:'Samsung 980 Pro 1TB NVMe',       price:'2.190.000 ₫', old:'2.890.000 ₫', discount:24, bar:55, soldBarText:'11/20' },
+    { icon:'ram', cat:'RAM',           name:'Corsair Vengeance LPX 16GB DDR4', price:'1.090.000 ₫', old:'1.490.000 ₫', discount:27, bar:90, soldBarText:'45/50' },
+    { icon:'gpu', cat:'Card đồ hoạ',   name:'Gigabyte RTX 4060 Eagle 8G',     price:'7.290.000 ₫', old:'8.190.000 ₫', discount:11, bar:30, soldBarText:'6/20' },
+    { icon:'main',cat:'Mainboard',     name:'MSI PRO B760M-A WiFi DDR4',      price:'3.350.000 ₫', old:'3.950.000 ₫', discount:15, bar:64, soldBarText:'32/50' },
+    { icon:'psu', cat:'Nguồn',         name:'Corsair CV650 80+ Bronze',       price:'1.350.000 ₫', old:'1.650.000 ₫', discount:18, bar:42, soldBarText:'21/50' },
+];
+var sale = [
+    { icon:'gpu', cat:'Card đồ hoạ', name:'MSI RTX 3050 Ventus 2X 8G',   price:'5.490.000 ₫', old:'5.990.000 ₫', discount:8 },
+    { icon:'fan',cat:'Tản nhiệt',    name:'Cooler Master Hyper 212',      price:'620.000 ₫',   old:'790.000 ₫',   discount:21 },
+    { icon:'case',cat:'Vỏ case',     name:'Case HAVOC RGB ATX Mid Tower', price:'860.000 ₫',   old:'1.050.000 ₫', discount:18 },
+    { icon:'ssd', cat:'SSD',         name:'Kingston NV2 500GB NVMe',      price:'799.000 ₫',   old:'999.000 ₫',   discount:20 },
+    { icon:'ram', cat:'RAM',         name:'G.SKILL Ripjaws V 16GB (2x8)', price:'1.190.000 ₫', old:'1.390.000 ₫', discount:14 },
+    { icon:'cpu', cat:'CPU',         name:'AMD Ryzen 5 5600',             price:'3.190.000 ₫', old:'3.590.000 ₫', discount:11 },
+];
+var latest = [
+    { icon:'cpu', cat:'CPU',         name:'Intel Core i7-14700K',            price:'8.990.000 ₫' },
+    { icon:'main',cat:'Mainboard',   name:'ASUS TUF Gaming Z790-Plus',       price:'7.450.000 ₫' },
+    { icon:'ram', cat:'RAM',         name:'Kingston Fury Beast 32GB DDR5',   price:'2.650.000 ₫' },
+    { icon:'ssd', cat:'SSD',         name:'WD Black SN770 2TB NVMe',         price:'3.190.000 ₫' },
+    { icon:'gpu', cat:'Card đồ hoạ', name:'ASUS Dual RTX 4070 Super 12G',   price:'15.490.000 ₫' },
+    { icon:'psu', cat:'Nguồn',       name:'Seasonic Focus GX-750 80+ Gold',  price:'2.890.000 ₫' },
+    { icon:'case',cat:'Vỏ case',     name:'Case Lian Li Lancool 216',        price:'1.850.000 ₫' },
+];
+var top = [
+    { icon:'cpu', cat:'CPU',         name:'Intel Core i5-12400F',            price:'2.890.000 ₫', sold:312 },
+    { icon:'ram', cat:'RAM',         name:'ADATA XPG 8GB DDR4 3200',         price:'549.000 ₫',   sold:487 },
+    { icon:'ssd', cat:'SSD',         name:'SSD Kingston A400 240GB',         price:'449.000 ₫',   sold:521, oos:true },
+    { icon:'gpu', cat:'Card đồ hoạ', name:'Palit RTX 3060 Dual 12G',         price:'7.190.000 ₫', sold:96 },
+    { icon:'psu', cat:'Nguồn',       name:'Nguồn FSP Hyper K 600W',          price:'1.090.000 ₫', sold:143 },
+    { icon:'main',cat:'Mainboard',   name:'Gigabyte H610M-K DDR4',           price:'1.890.000 ₫', sold:178 },
+];
+document.getElementById('flashRow').innerHTML  = flash.map(card).join('');
+document.getElementById('saleRow').innerHTML   = sale.map(card).join('');
+document.getElementById('latestRow').innerHTML = latest.map(card).join('');
+document.getElementById('topRow').innerHTML    = top.map(card).join('');
+
+/* ── Hero slider (bản rút gọn của JS trong index.php) ── */
+(function() {
+    var slider = document.getElementById('heroSlider');
+    var track = document.getElementById('heroTrack');
+    var slides = document.querySelectorAll('.hero-slide');
+    var dots = document.querySelectorAll('.hero-dot');
+    var progress = document.getElementById('heroProgress');
+    var total = slides.length, current = 0, timer = null, DELAY = 5000;
+    var accents = ['#2563eb', '#dc2626', '#f59e0b'];
+    function goTo(idx) {
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = (idx + total) % total;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+        track.style.transform = 'translateX(-' + current * 100 + '%)';
+        progress.style.setProperty('--slide-accent', accents[current]);
+        progress.style.animation = 'none';
+        void progress.offsetHeight;
+        progress.style.animation = 'heroProgress ' + DELAY + 'ms linear';
+    }
+    function resetTimer() { clearInterval(timer); timer = setInterval(function(){ goTo(current + 1); }, DELAY); }
+    resetTimer();
+    document.getElementById('heroPrev').addEventListener('click', function(){ goTo(current - 1); });
+    document.getElementById('heroNext').addEventListener('click', function(){ goTo(current + 1); });
+    dots.forEach(function(d){ d.addEventListener('click', function(){ goTo(+d.dataset.index); }); });
+    slider.addEventListener('mouseenter', function(){ clearInterval(timer); });
+    slider.addEventListener('mouseleave', resetTimer);
+})();
+
+/* ── Demo countdown flash sale ── */
+(function() {
+    var el = document.querySelector('.flash-countdown-timer');
+    var end = Date.now() + (2*3600 + 14*60 + 36) * 1000;
+    function tick() {
+        var d = end - Date.now();
+        if (d <= 0) { el.textContent = 'Đã kết thúc'; return; }
+        var h = Math.floor(d/3600000), m = Math.floor(d%3600000/60000), s = Math.floor(d%60000/1000);
+        el.textContent = h + 'h ' + m + 'm ' + s + 's';
+    }
+    tick(); setInterval(tick, 1000);
+})();
+
+/* ── Hiện nút "Xem nhanh" khi hover (trong dự án thật do footer.php lo) ── */
+var st = document.createElement('style');
+st.textContent = '.pcard:hover .qv-trigger{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}';
+document.head.appendChild(st);
+</script>
+</body>
+</html>

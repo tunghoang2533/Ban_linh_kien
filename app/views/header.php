@@ -318,16 +318,16 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
         .nav-cat-dropdown li a i { width: 18px; text-align: center; color: #94a3b8; font-size: 12px; }
         .nav-cat-dropdown li a:hover i { color: #2563eb; }
 
-        /* ── Build PC Button (special) ── */
+        /* ── Build PC Button (primary CTA — dùng accent của hệ thống) ── */
         .nav-buildpc-btn {
             display: inline-flex !important;
             align-items: center !important;
             gap: 7px !important;
-            background: #0f172a !important;
-            color: #38bdf8 !important;
+            background: var(--accent) !important;
+            color: #fff !important;
             border-radius: 10px !important;
             padding: 7px 14px !important;
-            font-weight: 700 !important;
+            font-weight: 600 !important;
             font-size: 13.5px !important;
             letter-spacing: 0;
             transition: background .18s, box-shadow .18s, transform .18s !important;
@@ -335,25 +335,20 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
             border: none !important;
         }
         .nav-buildpc-btn:hover, .nav-buildpc-btn.active {
-            background: #38bdf8 !important;
-            color: #0f172a !important;
-            box-shadow: 0 0 20px rgba(56,189,248,.35) !important;
+            background: var(--accent-hover) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 12px var(--accent-ring) !important;
             transform: translateY(-1px) !important;
         }
         .nav-buildpc-badge {
-            background: #38bdf8;
-            color: #0f172a;
+            background: rgba(255, 255, 255, 0.18);
+            color: #fff;
             font-size: 9px;
             font-weight: 800;
             border-radius: 5px;
             padding: 2px 6px;
             line-height: 1.4;
             letter-spacing: .04em;
-        }
-        .nav-buildpc-btn:hover .nav-buildpc-badge,
-        .nav-buildpc-btn.active .nav-buildpc-badge {
-            background: #0f172a;
-            color: #38bdf8;
         }
 
         /* ── USER MENU ROW ── */
@@ -1273,7 +1268,7 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
                     </button>
                     <div class="notif-dropdown" id="notifDropdown">
                         <div class="notif-header">
-                            <h4>🔔 Thông báo</h4>
+                            <h4>Thông báo</h4>
                             <button class="notif-read-all" id="notifReadAll">Đánh dấu tất cả đã đọc</button>
                         </div>
                         <div class="notif-list" id="notifList">
@@ -1308,13 +1303,13 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
                                 $hour = (int)date('H');
                                 if ($hour >= 5 && $hour < 12) {
                                     $greetTime = 'buổi sáng';
-                                    $greetIcon = '☀️';
+                                    $greetIcon = 'fa-sun-o';
                                 } elseif ($hour >= 12 && $hour < 18) {
                                     $greetTime = 'buổi chiều';
-                                    $greetIcon = '🌞';
+                                    $greetIcon = 'fa-smile-o';
                                 } else {
                                     $greetTime = 'buổi tối';
-                                    $greetIcon = '🌙';
+                                    $greetIcon = 'fa-moon-o';
                                 }
                             ?>
                             <li style="list-style:none">
@@ -1323,7 +1318,7 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
                                         <small>Xin chào <?php echo $greetTime; ?>,</small>
                                         <strong><?php echo htmlspecialchars($_SESSION['user']['fullname']); ?></strong>
                                     </div>
-                                    <span class="dropdown-greeting-emoji"><?php echo $greetIcon; ?></span>
+                                    <span class="dropdown-greeting-emoji"><i class="fa <?php echo $greetIcon; ?>"></i></span>
                                 </div>
                             </li>
                             <li><a href="<?php echo BASE_URL; ?>thongtin.php"><i class="fa fa-user"></i> Thông tin cá nhân</a></li>
@@ -1424,15 +1419,15 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
                 <div id="chatProductRefBanner" style="display:none; padding: 0 0 8px 0;">
                     <a id="chatProductRefLink" href="#" class="chat-product-ref" target="_blank">
                         <div id="chatProductRefImgWrap">
-                            <div class="cp-img-placeholder" id="chatProductRefPlaceholder">📦</div>
+                            <div class="cp-img-placeholder" id="chatProductRefPlaceholder"><i class="fa fa-cube"></i></div>
                             <img id="chatProductRefImg" class="cp-img" src="" alt="" style="display:none;">
                         </div>
                         <div class="cp-info">
-                            <div class="cp-label">📌 Sản phẩm đang xem</div>
+                            <div class="cp-label">Sản phẩm đang xem</div>
                             <div class="cp-name" id="chatProductRefName"></div>
                             <div class="cp-price" id="chatProductRefPrice"></div>
                         </div>
-                        <div style="font-size:18px;color:#f59e0b;flex-shrink:0;">&#128279;</div>
+                        <div style="flex-shrink:0;"><i class="fa fa-external-link" style="font-size:14px;color:var(--txt-tertiary);"></i></div>
                     </a>
                     <div style="text-align:center; font-size:11px; color:#94a3b8; margin-top:4px;">
                         Sản phẩm này sẽ được gắn kèm vào tin nhắn đầu tiên của bạn
@@ -1444,7 +1439,7 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
                 </div>
             <?php else: ?>
                 <div style="padding: 14px 0; text-align: center; color: #475569;">
-                    Vui lòng <a href="<?php echo BASE_URL; ?>taikhoan.php" style="color:#ec4899; font-weight:700;">đăng nhập</a> để chat.
+                    Vui lòng <a href="<?php echo BASE_URL; ?>taikhoan.php" style="color:var(--accent); font-weight:700;">đăng nhập</a> để chat.
                 </div>
             <?php endif; ?>
         </div>
@@ -1580,13 +1575,13 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
                 if (ref.image) {
                     imgHtml = '<img class="' + (forBubble ? 'mpc-img' : 'cp-img') + '" src="' + escHtml(ref.image) + '" alt="" onerror="this.style.display=\'none\'">';
                 } else {
-                    imgHtml = '<div style="' + (forBubble ? 'width:36px;height:36px;' : 'width:44px;height:44px;') + 'border-radius:6px;background:#fde68a;display:flex;align-items:center;justify-content:center;font-size:' + (forBubble ? '16' : '20') + 'px;flex-shrink:0;">\uD83D\uDCE6</div>';
+                    imgHtml = '<div style="' + (forBubble ? 'width:36px;height:36px;' : 'width:44px;height:44px;') + 'border-radius:6px;background:#dbeafe;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa fa-cube" style="color:#2563eb;font-size:' + (forBubble ? '14' : '18') + 'px;"></i></div>';
                 }
                 if (forBubble) {
                     return '<a href="' + escHtml(ref.url) + '" class="msg-product-card" target="_blank">'
                         + imgHtml
                         + '<div class="mpc-info">'
-                        + '<div class="mpc-label">\uD83D\uDCCC S\u1EA3n ph\u1EA9m li\u00ean quan</div>'
+                        + '<div class="mpc-label">S\u1EA3n ph\u1EA9m li\u00ean quan</div>'
                         + '<div class="mpc-name">' + escHtml(ref.name) + '</div>'
                         + '<div class="mpc-price">' + escHtml(ref.price) + '</div>'
                         + '</div></a>';
@@ -1594,10 +1589,10 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
                     return '<a href="' + escHtml(ref.url) + '" class="chat-product-ref" target="_blank">'
                         + imgHtml
                         + '<div class="cp-info">'
-                        + '<div class="cp-label">\uD83D\uDCCC S\u1EA3n ph\u1EA9m \u0111ang xem</div>'
+                        + '<div class="cp-label">S\u1EA3n ph\u1EA9m \u0111ang xem</div>'
                         + '<div class="cp-name">' + escHtml(ref.name) + '</div>'
                         + '<div class="cp-price">' + escHtml(ref.price) + '</div>'
-                        + '</div>&#128279;</a>';
+                        + '</div><i class="fa fa-external-link" style="font-size:14px;color:#94a3b8;"></i></a>';
                 }
             }
 
@@ -1775,4 +1770,5 @@ $seoMetaDesc  = htmlspecialchars($shopSettings['meta_description_home'] ?? '');
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
             updateThemeToggleUI(currentTheme);
         });
-    </script>
+    </script>ript>       });
+    </script>ript>
