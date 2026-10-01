@@ -21,58 +21,58 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
 
 <style>
     /* ════════════════════════════════════════════════════════════
-       PRODUCT QUICK VIEW MODAL
+       PRODUCT QUICK VIEW MODAL — Dark Gaming v3.0
        ════════════════════════════════════════════════════════════ */
     .qv-overlay {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(15,23,42,0.55);
+        background: rgba(4,5,8,0.72);
         z-index: 99999;
         align-items: center;
         justify-content: center;
-        backdrop-filter: blur(6px);
+        backdrop-filter: blur(5px);
         padding: 16px;
     }
     .qv-overlay.open { display: flex; }
 
     .qv-modal {
-        background: #fff;
-        border-radius: 24px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: 5px;
         width: 820px;
         max-width: 100%;
         max-height: 90vh;
         display: flex;
         flex-direction: column;
-        box-shadow: 0 40px 100px rgba(15,23,42,0.25);
-        animation: qvIn .28s cubic-bezier(.34,1.56,.64,1);
+        box-shadow: var(--shadow-xl);
+        animation: qvIn .24s cubic-bezier(.34,1.4,.64,1);
         overflow: hidden;
         position: relative;
     }
     @keyframes qvIn {
-        from { opacity: 0; transform: scale(.92) translateY(24px); }
+        from { opacity: 0; transform: scale(.95) translateY(20px); }
         to   { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     .qv-close {
         position: absolute;
-        top: 14px; right: 14px;
+        top: 12px; right: 12px;
         z-index: 10;
-        width: 36px; height: 36px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.9);
-        border: none;
+        width: 34px; height: 34px;
+        border-radius: 3px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-strong);
         cursor: pointer;
-        font-size: 20px;
-        color: #64748b;
+        font-size: 19px;
+        color: var(--txt-secondary);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transition: background .18s, color .18s, transform .18s;
+        transition: background .18s, color .18s, border-color .18s;
         line-height: 1;
     }
-    .qv-close:hover { background: #ef4444; color: #fff; transform: scale(1.1); }
+    .qv-close:hover { background: var(--danger); border-color: var(--danger); color: #fff; }
 
     .qv-body {
         display: flex;
@@ -81,14 +81,14 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         flex: 1;
     }
     .qv-body::-webkit-scrollbar { width: 4px; }
-    .qv-body::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+    .qv-body::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 
     /* Gallery column */
     .qv-gallery {
         width: 380px;
         flex-shrink: 0;
-        padding: 24px 20px;
-        background: #f8fafc;
+        padding: 22px 20px;
+        background: var(--bg-muted);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -97,9 +97,9 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
     .qv-gallery-main {
         width: 100%;
         aspect-ratio: 1/1;
-        border-radius: 14px;
-        background: #fff;
-        border: 1px solid #e8edf3;
+        border-radius: 3px;
+        background: var(--bg-page);
+        border: 1px solid var(--border);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -123,20 +123,20 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         scrollbar-width: thin;
     }
     .qv-gallery-thumbs::-webkit-scrollbar { height: 3px; }
-    .qv-gallery-thumbs::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .qv-gallery-thumbs::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
     .qv-thumb {
         width: 56px;
         height: 56px;
-        border-radius: 8px;
+        border-radius: 3px;
         overflow: hidden;
         cursor: pointer;
-        border: 2px solid #e2e8f0;
+        border: 1px solid var(--border-strong);
         flex-shrink: 0;
         transition: border-color .2s;
-        background: #fff;
+        background: var(--bg-page);
     }
-    .qv-thumb:hover { border-color: #94a3b8; }
-    .qv-thumb.active { border-color: #2563eb; }
+    .qv-thumb:hover { border-color: var(--txt-tertiary); }
+    .qv-thumb.active { border-color: var(--accent); }
     .qv-thumb img {
         width: 100%;
         height: 100%;
@@ -147,8 +147,8 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
     .qv-out-of-stock-badge {
         position: absolute;
         inset: 12px;
-        background: rgba(0,0,0,0.48);
-        border-radius: 10px;
+        background: rgba(8,9,13,0.6);
+        border-radius: 3px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -157,42 +157,42 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         pointer-events: none;
     }
     .qv-out-of-stock-badge span {
-        background: #ef4444;
+        background: #c1121f;
         color: #fff;
-        font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
         padding: 5px 16px;
-        border-radius: 999px;
+        border-radius: 2px;
         text-transform: uppercase;
-        box-shadow: 0 4px 14px rgba(239,68,68,0.45);
     }
 
     /* Info column */
     .qv-info {
         flex: 1;
-        padding: 24px 24px 20px;
+        padding: 22px 22px 18px;
         display: flex;
         flex-direction: column;
         gap: 12px;
         min-width: 0;
     }
     .qv-category {
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #2563eb;
-        background: #eff6ff;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+        background: var(--accent-light);
         display: inline-block;
         padding: 3px 10px;
-        border-radius: 20px;
+        border-radius: 2px;
         width: fit-content;
     }
     .qv-name {
+        font-family: var(--font-sans);
         font-size: 17px;
         font-weight: 700;
-        color: #0f172a;
+        color: var(--txt-primary);
         line-height: 1.4;
         margin: 0;
         display: -webkit-box;
@@ -206,13 +206,13 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         gap: 6px;
         font-size: 13px;
     }
-    .qv-stars { color: #f59e0b; font-size: 14px; }
-    .qv-stars-empty { color: #e2e8f0; font-size: 14px; }
-    .qv-review-count { color: #64748b; font-size: 12px; }
+    .qv-stars { color: var(--warn); font-size: 13px; }
+    .qv-stars-empty { color: var(--border-strong); font-size: 13px; }
+    .qv-review-count { color: var(--txt-tertiary); font-size: 12px; }
 
     .qv-divider {
         border: none;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--border);
         margin: 2px 0;
     }
 
@@ -224,26 +224,26 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
     }
     .qv-price-final {
         font-size: 26px;
-        font-weight: 800;
-        color: #dc2626;
-        letter-spacing: -0.02em;
+        font-weight: 700;
+        color: var(--color-price);
+        letter-spacing: 0;
     }
     .qv-price-original {
-        font-size: 15px;
-        color: #94a3b8;
+        font-size: 14px;
+        color: var(--txt-tertiary);
         text-decoration: line-through;
     }
     .qv-price-badge {
-        background: #dc2626;
+        background: #c1121f;
         color: #fff;
         font-size: 11px;
-        font-weight: 800;
+        font-weight: 700;
         padding: 3px 9px;
-        border-radius: 20px;
+        border-radius: 2px;
     }
     .qv-description {
         font-size: 13px;
-        color: #64748b;
+        color: var(--txt-secondary);
         line-height: 1.6;
         display: -webkit-box;
         -webkit-line-clamp: 3;
@@ -256,8 +256,9 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 4px 16px;
-        background: #f8fafc;
-        border-radius: 10px;
+        background: var(--bg-muted);
+        border: 1px solid var(--border);
+        border-radius: 3px;
         padding: 10px 14px;
     }
     .qv-spec-item {
@@ -267,21 +268,21 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         line-height: 1.6;
     }
     .qv-spec-name {
-        color: #64748b;
-        font-weight: 500;
+        color: var(--txt-tertiary);
+        font-weight: 400;
         flex-shrink: 0;
     }
     .qv-spec-name::after { content: ':'; }
     .qv-spec-value {
-        color: #1e293b;
-        font-weight: 600;
+        color: var(--txt-primary);
+        font-weight: 500;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
     .qv-specs-more {
         font-size: 11px;
-        color: #2563eb;
+        color: var(--accent);
         font-weight: 600;
         text-decoration: none;
         grid-column: 1 / -1;
@@ -294,16 +295,16 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
     .qv-variants { display: flex; flex-wrap: wrap; gap: 6px; }
     .qv-variant-chip {
         padding: 5px 12px;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 8px;
+        border: 1px solid var(--border-strong);
+        border-radius: 3px;
         font-size: 12px;
         font-weight: 600;
-        color: #475569;
-        background: #fff;
+        color: var(--txt-secondary);
+        background: var(--bg-surface);
         cursor: pointer;
-        transition: border-color .2s, background .2s;
+        transition: border-color .2s, background .2s, color .2s;
     }
-    .qv-variant-chip:hover { border-color: #93c5fd; background: #eff6ff; }
+    .qv-variant-chip:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
 
     /* Actions */
     .qv-actions {
@@ -318,39 +319,44 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         align-items: center;
         justify-content: center;
         gap: 7px;
-        padding: 12px 14px;
-        border-radius: 12px;
-        font-size: 14px;
+        padding: 11px 14px;
+        border-radius: 3px;
+        font-family: var(--font-display);
+        font-size: 13.5px;
         font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
         text-decoration: none;
         cursor: pointer;
-        border: none;
-        transition: transform .15s, box-shadow .15s, background .15s;
+        border: 1px solid transparent;
+        transition: transform .15s, background .15s, border-color .15s, color .15s;
     }
     .qv-btn:hover { transform: translateY(-1px); }
     .qv-btn-cart {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        color: #fff;
-        box-shadow: 0 6px 18px rgba(37,99,235,0.25);
+        background: var(--bg-muted);
+        border-color: var(--border-strong);
+        color: var(--txt-primary);
     }
-    .qv-btn-cart:hover { box-shadow: 0 8px 24px rgba(37,99,235,0.35); }
+    .qv-btn-cart:hover { border-color: var(--accent); color: var(--accent); }
     .qv-btn-buy {
-        background: linear-gradient(135deg, #f97316, #ea580c);
-        color: #fff;
-        box-shadow: 0 6px 18px rgba(249,115,22,0.25);
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #14161c;
     }
-    .qv-btn-buy:hover { box-shadow: 0 8px 24px rgba(249,115,22,0.35); }
+    .qv-btn-buy:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
     .qv-btn-detail {
         grid-column: 1 / -1;
-        background: #f1f5f9;
-        color: #475569;
-        font-size: 13px;
-        padding: 10px;
+        background: transparent;
+        border-color: var(--border);
+        color: var(--txt-secondary);
+        font-size: 12.5px;
+        padding: 9px;
     }
-    .qv-btn-detail:hover { background: #e2e8f0; }
+    .qv-btn-detail:hover { border-color: var(--border-strong); color: var(--txt-primary); }
     .qv-btn-disabled {
-        background: #e2e8f0;
-        color: #94a3b8;
+        background: var(--bg-muted);
+        border-color: var(--border);
+        color: var(--txt-tertiary);
         cursor: not-allowed;
         pointer-events: none;
         box-shadow: none;
@@ -365,13 +371,13 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         padding: 80px 40px;
         gap: 14px;
         flex-direction: column;
-        color: #94a3b8;
+        color: var(--txt-tertiary);
     }
     .qv-loading .qv-spinner {
         width: 40px;
         height: 40px;
-        border: 3px solid #e2e8f0;
-        border-top-color: #2563eb;
+        border: 3px solid var(--border-strong);
+        border-top-color: var(--accent);
         border-radius: 50%;
         animation: qvSpin .7s linear infinite;
     }
@@ -387,47 +393,51 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         padding: 60px 40px;
         flex-direction: column;
         gap: 12px;
-        color: #64748b;
+        color: var(--txt-secondary);
         text-align: center;
     }
-    .qv-error i { font-size: 40px; color: #ef4444; }
+    .qv-error i { font-size: 40px; color: var(--danger); }
 
     /* Quick View button on product cards */
     .qv-trigger {
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(0.9);
-        background: rgba(255,255,255,0.95);
-        color: #1e293b;
-        border: none;
-        border-radius: 12px;
-        padding: 9px 16px;
-        font-size: 13px;
-        font-weight: 700;
+        bottom: 10px;
+        top: auto;
+        transform: translateX(-50%) translateY(6px);
+        background: rgba(10,12,16,0.88);
+        color: #e8ebf2;
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 3px;
+        padding: 6px 14px;
+        font-size: 11px;
+        font-weight: 500;
         cursor: pointer;
         opacity: 0;
         pointer-events: none;
-        transition: opacity .2s, transform .2s;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        transition: opacity .18s, transform .18s, background .18s;
         display: inline-flex;
         align-items: center;
         gap: 6px;
         z-index: 5;
         white-space: nowrap;
+        box-shadow: none;
     }
     .product-item:hover .qv-trigger,
     .product-card:hover .qv-trigger,
-    .sec-card:hover .qv-trigger {
+    .sec-card:hover .qv-trigger,
+    .img-wrap:hover .qv-trigger {
         opacity: 1;
         pointer-events: auto;
-        transform: translate(-50%, -50%) scale(1);
+        transform: translateX(-50%) translateY(0);
     }
     .qv-trigger:hover {
-        background: #fff;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-        transform: translate(-50%, -50%) scale(1.05);
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #14161c;
+        transform: translateX(-50%) translateY(0);
     }
+    .qv-trigger i { font-size: 11px; }
 
     @media (max-width: 768px) {
         .qv-body { flex-direction: column; }
@@ -442,18 +452,20 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         .qv-trigger { display: none; }
     }
 
-    /* ── Footer v2.0 ── */
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
-
+    /* ── Footer v3.0 — Dark Gaming ── */
     .footer {
-        background: var(--bg-page);
-        color: var(--txt-secondary);
-        padding: 64px 0 0;
-        margin-top: 80px;
-        font-family: 'Outfit', sans-serif;
-        font-size: 14px;
-        line-height: 1.7;
-        border-top: 1px solid var(--border);
+        background: #08090d;
+        color: #8a93a5;
+        padding: 48px 0 0;
+        margin-top: 64px;
+        font-family: var(--font-sans);
+        font-size: 13.5px;
+        line-height: 1.65;
+        border-top: 1px solid #1b1f29;
+    }
+    [data-theme="light"] .footer {
+        background: #101320;
+        border-top-color: #232a3a;
     }
 
     .footer-inner {
@@ -466,30 +478,32 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
     .footer-grid {
         display: grid;
         grid-template-columns: 1.4fr 1fr 1fr 1fr;
-        gap: 48px;
-        padding-bottom: 48px;
+        gap: 44px;
+        padding-bottom: 40px;
     }
 
     @media (max-width: 900px) {
         .footer-grid {
             grid-template-columns: 1fr 1fr;
-            gap: 36px;
+            gap: 32px;
         }
     }
     @media (max-width: 540px) {
         .footer-grid {
             grid-template-columns: 1fr;
-            gap: 28px;
+            gap: 26px;
         }
-        .footer { padding: 48px 0 0; }
+        .footer { padding: 40px 0 0; }
     }
 
     /* Brand column */
     .footer-brand .brand-name {
+        font-family: var(--font-display);
         font-size: 22px;
         font-weight: 800;
-        color: var(--txt-primary);
-        letter-spacing: -0.03em;
+        color: #f1f3f8;
+        letter-spacing: .02em;
+        text-transform: uppercase;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -497,38 +511,38 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         margin-bottom: 14px;
     }
     .footer-brand .brand-name .brand-icon {
-        width: 36px;
-        height: 36px;
-        background: #2563eb;
-        border-radius: 8px;
+        width: 34px;
+        height: 34px;
+        background: var(--accent);
+        border-radius: 3px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
-        color: #fff;
+        font-size: 17px;
+        color: #14161c;
         flex-shrink: 0;
     }
     .footer-brand p {
-        color: var(--txt-secondary);
-        font-size: 13.5px;
+        color: #697181;
+        font-size: 13px;
         line-height: 1.65;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
         max-width: 280px;
     }
 
     /* Social links */
     .footer-social {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
     }
     .footer-social a {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: var(--bg-surface);
-        border: 1.5px solid var(--border);
-        color: var(--txt-secondary);
+        width: 34px;
+        height: 34px;
+        border-radius: 3px;
+        background: #14171f;
+        border: 1px solid #262c3a;
+        color: #8a93a5;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -539,44 +553,52 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
     .footer-social a:hover {
         background: var(--accent);
         border-color: var(--accent);
-        color: #fff;
-        transform: translateY(-3px);
+        color: #14161c;
+        transform: translateY(-2px);
     }
 
     /* Footer column headings */
     .footer-col h4 {
-        color: var(--txt-primary);
-        margin-bottom: 20px;
-        font-size: 13px;
+        color: #f1f3f8;
+        margin-bottom: 18px;
+        font-family: var(--font-display);
+        font-size: 14px;
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
         position: relative;
-        padding-bottom: 0;
+        padding-bottom: 8px;
     }
-    .footer-col h4::after { display: none; } /* Remove old underline */
+    .footer-col h4::after {
+        content: '';
+        display: block;
+        width: 26px;
+        height: 2px;
+        background: var(--accent);
+        margin-top: 8px;
+    }
 
     /* Footer links */
     .footer-col ul { list-style: none; padding: 0; margin: 0; }
     .footer-col ul li { margin-bottom: 10px; }
     .footer-col ul li a {
-        color: var(--txt-secondary);
+        color: #8a93a5;
         text-decoration: none;
-        font-size: 14px;
+        font-size: 13.5px;
         font-weight: 400;
         transition: color 0.18s ease;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
     }
     .footer-col ul li a:hover { color: var(--accent); }
     .footer-col ul li a::before {
         content: '';
         display: inline-block;
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background: var(--border-strong);
+        width: 5px;
+        height: 5px;
+        border-radius: 1px;
+        background: #333b4a;
         flex-shrink: 0;
         transition: background 0.18s ease;
     }
@@ -588,21 +610,24 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         align-items: flex-start;
         gap: 10px;
         margin-bottom: 12px;
-        color: var(--txt-secondary);
-        font-size: 13.5px;
+        color: #8a93a5;
+        font-size: 13px;
     }
     .footer-contact li i {
-        color: #2563eb;
+        color: var(--accent);
         font-size: 13px;
         margin-top: 2px;
         flex-shrink: 0;
+        width: 14px;
+        text-align: center;
     }
     .footer-contact li::before { display: none; }
+    .footer-contact strong { color: #f1f3f8 !important; }
 
     /* Divider */
     .footer-divider {
         border: none;
-        border-top: 1px solid var(--border);
+        border-top: 1px solid #1b1f29;
         margin: 0;
     }
 
@@ -611,13 +636,13 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 20px 0;
-        gap: 16px;
+        padding: 18px 0;
+        gap: 14px;
         flex-wrap: wrap;
     }
     .footer-bottom .copyright {
-        color: var(--txt-tertiary);
-        font-size: 13px;
+        color: #565e6e;
+        font-size: 12.5px;
     }
     .footer-bottom .footer-bottom-links {
         display: flex;
@@ -625,8 +650,8 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         flex-wrap: wrap;
     }
     .footer-bottom .footer-bottom-links a {
-        color: var(--txt-tertiary);
-        font-size: 13px;
+        color: #565e6e;
+        font-size: 12.5px;
         text-decoration: none;
         transition: color 0.18s ease;
     }
@@ -637,17 +662,17 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         position: fixed;
         right: 24px;
         bottom: 24px;
-        background: var(--bg-surface);
-        border: 1.5px solid var(--border);
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-strong);
         color: var(--txt-secondary);
-        width: 44px;
-        height: 44px;
+        width: 42px;
+        height: 42px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 12px;
+        border-radius: 3px;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 15px;
         box-shadow: var(--shadow-md);
         transition: all 0.18s ease;
         z-index: 100;
@@ -656,7 +681,7 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
     #goto-top-page:hover {
         background: var(--accent);
         border-color: var(--accent);
-        color: #fff;
+        color: #14161c;
         transform: translateY(-3px);
     }
 </style>
@@ -819,7 +844,7 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
             galleryHtml = '<div class="qv-gallery-main" id="qvGalleryMain">';
             galleryHtml += '<img id="qvMainImg" src="' + mainImg + '" alt="' + escHtml(p.name) + '" onerror="this.src=\'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 width%3D%22200%22 height%3D%22200%22%3E%3Crect width%3D%22200%22 height%3D%22200%22 fill%3D%22%23f3f4f6%22/%3E%3Ctext x%3D%2250%%22 y%3D%2250%%22 dominant-baseline%3D%22middle%22 text-anchor%3D%22middle%22 fill%3D%22%23aaa%22 font-size%3D%2214%22%3ENo image%3C/text%3E%3C/svg%3E\'">';
             if (!p.in_stock) {
-                galleryHtml += '<div class="qv-out-of-stock-badge"><span>🚫 Hết hàng</span></div>';
+                galleryHtml += '<div class="qv-out-of-stock-badge"><span>Hết hàng</span></div>';
             }
             galleryHtml += '</div>';
 
@@ -951,7 +976,7 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
             z-index: 50;  /* Nằm dưới header (z-index: 1000) khi cuộn lên */
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             padding: 0;
         }
         .side-banner-left  { left: 8px; }
@@ -961,25 +986,23 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         .side-banner-card {
             flex: 1;
             min-height: 0;
-            background: var(--bg-surface, #fff);
-            border-radius: 18px;
-            border: 2.5px solid var(--border, #e2e8f0);
+            background: var(--bg-surface);
+            border-radius: 3px;
+            border: 1px solid var(--border);
             overflow: hidden;
-            box-shadow: 0 4px 24px rgba(15,23,42,0.12);
             text-decoration: none;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: box-shadow .22s ease, border-color .22s ease, transform .22s ease;
+            transition: border-color .2s ease, transform .2s ease;
             cursor: pointer;
         }
         .side-banner-card:hover {
-            box-shadow: 0 12px 40px rgba(37,99,235,0.25);
-            border-color: #2563eb;
-            transform: scale(1.012);
+            border-color: var(--accent);
+            transform: translateY(-2px);
         }
 
-        /* Phần màu/ảnh chiếm 52% card */
+        /* Phần icon chiếm 52% card */
         .side-banner-img {
             flex: 0 0 52%;
             width: 100%;
@@ -990,31 +1013,42 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
             gap: 8px;
             padding: 10px 10px;
             text-decoration: none;
+            background: var(--bg-muted);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .side-banner-img::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: -1px;
+            width: 44px; height: 2px;
+            background: var(--sb-accent, var(--accent));
         }
         .banner-emoji {
-            font-size: clamp(28px, 2.8vw, 48px);
+            font-size: clamp(30px, 2.6vw, 44px);
             line-height: 1;
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.22));
-            animation: bannerFloat 3s ease-in-out infinite;
-        }
-        @keyframes bannerFloat {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-6px); }
+            color: var(--sb-accent, var(--accent));
         }
         .banner-tag {
-            font-size: clamp(8px, 0.6vw, 11px);
-            font-weight: 800;
-            letter-spacing: .08em;
+            font-size: clamp(8px, 0.6vw, 10px);
+            font-weight: 700;
+            letter-spacing: .12em;
             text-transform: uppercase;
-            padding: 3px 10px;
-            border-radius: 20px;
+            padding: 3px 9px;
+            border-radius: 2px;
             white-space: nowrap;
+            border: 1px solid var(--sb-accent, var(--accent));
+            color: var(--sb-accent, var(--accent));
         }
         .banner-product-name {
-            font-size: clamp(10.5px, 0.85vw, 14px);
+            font-size: clamp(11px, 0.85vw, 13.5px);
             font-weight: 700;
             line-height: 1.35;
             text-align: center;
+            color: var(--txt-primary);
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: .04em;
         }
 
         /* Phần text chiếm 48% còn lại */
@@ -1030,60 +1064,49 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
             gap: 3px;
         }
         .side-banner-title {
-            font-size: clamp(11.5px, 0.95vw, 16px);
+            font-size: clamp(13px, 1vw, 17px);
             font-weight: 800;
-            color: #0f172a;
-            line-height: 1.3;
-            font-family: 'Outfit', sans-serif;
+            color: var(--txt-primary);
+            line-height: 1.25;
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: .03em;
         }
         .side-banner-sub {
-            font-size: clamp(9.5px, 0.75vw, 12px);
-            color: #64748b;
+            font-size: clamp(9.5px, 0.75vw, 11.5px);
+            color: var(--txt-tertiary);
             line-height: 1.45;
-            font-family: 'Outfit', sans-serif;
         }
         .side-banner-cta {
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 6px;
             margin-top: 6px;
-            font-size: clamp(9.5px, 0.78vw, 13px);
+            font-size: clamp(9.5px, 0.78vw, 12px);
             font-weight: 700;
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: .06em;
             padding: 7px 14px;
-            border-radius: 999px;
-            letter-spacing: .02em;
-            transition: transform .15s, box-shadow .15s;
+            border-radius: 3px;
+            border: 1px solid var(--border-strong);
+            color: var(--txt-secondary);
+            transition: border-color .15s, color .15s, background .15s;
             text-decoration: none;
             width: calc(100% - 16px);
-            font-family: 'Outfit', sans-serif;
         }
-        .side-banner-cta:hover { transform: scale(1.05); }
+        .side-banner-card:hover .side-banner-cta {
+            border-color: var(--sb-accent, var(--accent));
+            color: var(--sb-accent, var(--accent));
+        }
+
+        /* ── Màu nhấn từng banner (tông trầm, đồng nhất) ── */
+        .banner-left-1  { --sb-accent: #ff7a1b; }
+        .banner-left-2  { --sb-accent: #f04438; }
+        .banner-right-1 { --sb-accent: #fbbf24; }
+        .banner-right-2 { --sb-accent: #34d399; }
     }
-
-    /* ── Màu từng banner ── */
-    .banner-left-1 .side-banner-img { background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 60%, #0f172a 100%); }
-    .banner-left-1 .banner-tag      { background: #38bdf8; color: #0f172a; }
-    .banner-left-1 .banner-product-name { color: #bae6fd; }
-    .banner-left-1 .side-banner-cta { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: #fff; box-shadow: 0 4px 16px rgba(14,165,233,0.4); }
-    .banner-left-1 .side-banner-cta:hover { box-shadow: 0 6px 24px rgba(14,165,233,0.6); }
-
-    .banner-left-2 .side-banner-img { background: linear-gradient(160deg, #9f1239 0%, #dc2626 50%, #b91c1c 100%); }
-    .banner-left-2 .banner-tag      { background: #fef2f2; color: #dc2626; }
-    .banner-left-2 .banner-product-name { color: #fecaca; }
-    .banner-left-2 .side-banner-cta { background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; box-shadow: 0 4px 16px rgba(239,68,68,0.4); }
-    .banner-left-2 .side-banner-cta:hover { box-shadow: 0 6px 24px rgba(239,68,68,0.6); }
-
-    .banner-right-1 .side-banner-img { background: linear-gradient(160deg, #4c1d95 0%, #7c3aed 50%, #5b21b6 100%); }
-    .banner-right-1 .banner-tag      { background: #fbbf24; color: #78350f; }
-    .banner-right-1 .banner-product-name { color: #e9d5ff; }
-    .banner-right-1 .side-banner-cta { background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,0.4); }
-    .banner-right-1 .side-banner-cta:hover { box-shadow: 0 6px 24px rgba(124,58,237,0.6); }
-
-    .banner-right-2 .side-banner-img { background: linear-gradient(160deg, #064e3b 0%, #059669 50%, #047857 100%); }
-    .banner-right-2 .banner-tag      { background: #d1fae5; color: #065f46; }
-    .banner-right-2 .banner-product-name { color: #a7f3d0; }
-    .banner-right-2 .side-banner-cta { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 4px 16px rgba(16,185,129,0.4); }
-    .banner-right-2 .side-banner-cta:hover { box-shadow: 0 6px 24px rgba(16,185,129,0.6); }
 </style>
 
 <div class="side-banners" id="sideBanners">
@@ -1094,28 +1117,28 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         <!-- Banner 1: Build PC -->
         <a href="<?php echo BASE_URL; ?>buildpc.php" class="side-banner-card banner-left-1">
             <div class="side-banner-img">
-                <span class="banner-emoji">🖥️</span>
+                <span class="banner-emoji"><i class="fa fa-desktop"></i></span>
                 <span class="banner-tag">MỚI 2026</span>
                 <span class="banner-product-name">Tự Build PC<br>theo ý bạn</span>
             </div>
             <div class="side-banner-body">
                 <div class="side-banner-title">Build PC<br>Chuẩn Gu</div>
                 <div class="side-banner-sub">Kiểm tra tương thích<br>linh kiện thông minh</div>
-                <span class="side-banner-cta">🔧 Thử ngay</span>
+                <span class="side-banner-cta">Build ngay <i class="fa fa-arrow-right"></i></span>
             </div>
         </a>
 
         <!-- Banner 2: Flash Sale -->
         <a href="<?php echo BASE_URL; ?>index.php?sort=discount" class="side-banner-card banner-left-2">
             <div class="side-banner-img">
-                <span class="banner-emoji">🔥</span>
+                <span class="banner-emoji"><i class="fa fa-fire"></i></span>
                 <span class="banner-tag">HOT DEAL</span>
                 <span class="banner-product-name">Giảm đến<br>50% hôm nay</span>
             </div>
             <div class="side-banner-body">
                 <div class="side-banner-title">Sale Khủng<br>Linh Kiện</div>
                 <div class="side-banner-sub">CPU · GPU · RAM<br>Giá siêu tốt</div>
-                <span class="side-banner-cta">🛒 Xem ngay</span>
+                <span class="side-banner-cta">Xem ngay <i class="fa fa-arrow-right"></i></span>
             </div>
         </a>
 
@@ -1127,28 +1150,28 @@ if (!isset($shopZalo))    $shopZalo    = htmlspecialchars($shopSettings['shop_za
         <!-- Banner 3: Combo giờ vàng -->
         <a href="<?php echo BASE_URL; ?>combo.php" class="side-banner-card banner-right-1">
             <div class="side-banner-img">
-                <span class="banner-emoji">⚡</span>
+                <span class="banner-emoji"><i class="fa fa-gift"></i></span>
                 <span class="banner-tag">GIỜ VÀNG</span>
                 <span class="banner-product-name">Combo PC<br>Gaming cực hot</span>
             </div>
             <div class="side-banner-body">
                 <div class="side-banner-title">Combo Ưu<br>Đãi Đặc Biệt</div>
                 <div class="side-banner-sub">Tiết kiệm hơn<br>mua lẻ 30%</div>
-                <span class="side-banner-cta">🎁 Xem Combo</span>
+                <span class="side-banner-cta">Xem Combo <i class="fa fa-arrow-right"></i></span>
             </div>
         </a>
 
         <!-- Banner 4: Bảo hành chính hãng -->
         <a href="<?php echo BASE_URL; ?>chinh_sach.php" class="side-banner-card banner-right-2">
             <div class="side-banner-img">
-                <span class="banner-emoji">🛡️</span>
+                <span class="banner-emoji"><i class="fa fa-shield"></i></span>
                 <span class="banner-tag">CHÍNH HÃNG</span>
                 <span class="banner-product-name">Bảo hành<br>36 tháng</span>
             </div>
             <div class="side-banner-body">
                 <div class="side-banner-title">Cam Kết<br>Chính Hãng</div>
                 <div class="side-banner-sub">Bảo hành tận nơi<br>Đổi trả 7 ngày</div>
-                <span class="side-banner-cta">✅ Xem chính sách</span>
+                <span class="side-banner-cta">Xem chính sách <i class="fa fa-arrow-right"></i></span>
             </div>
         </a>
 
